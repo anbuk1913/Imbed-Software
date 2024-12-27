@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>E-Commerce Login</title>
+    <style>
+        body, html {
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background: #4e535c;
+        }
+
+        .container {
+            width: 400px;
+            height: auto;
+            background: rgba(255, 255, 255, 0.8);
+            box-shadow: 0 15px 25px rgba(0, 0, 0, 0.5);
+            border-radius: 10px;
+            padding: 40px;
+        }
+
+        .login-box h2 {
+            margin: 0 0 30px;
+            color: #0830a9;
+            text-transform: uppercase;
+            text-align: center;
+        }
+
+        .user-box {
+            position: relative;
+            margin-bottom: 30px;
+        }
+
+        .user-box input {
+            width: 100%;
+            padding: 10px 0;
+            font-size: 16px;
+            color: black;
+            border: none;
+            border-bottom: 1px solid gray;
+            outline: none;
+            background: transparent;
+        }
+
+        .user-box label {
+            position: absolute;
+            top: 10px;
+            left: 0;
+            font-size: 16px;
+            color: black;
+            pointer-events: none;
+            transition: 0.5s;
+        }
+
+        .user-box input:focus ~ label,
+        .user-box input:not(:placeholder-shown) ~ label {
+            top: -20px;
+            left: 0;
+            color: #0830a9;
+            font-size: 12px;
+        }
+
+        .error {
+            color: red;
+            font-size: 0.9em;
+            margin-top: 4px;
+        }
+
+        button {
+            width: 100%;
+            padding: 10px;
+            background-color: #0830a9;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        button:hover {
+            background-color: #062e8b;
+        }
+    </style>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const form = document.getElementById('loginForm');
+            const emailInput = document.getElementById('email');
+            const passwordInput = document.getElementById('password');
+            const emailError = document.getElementById('emailError');
+            const passwordError = document.getElementById('passwordError');
+
+            function validateField(input, errorElement, validatorFn, errorMessage) {
+                const value = input.value.trim();
+                if (!validatorFn(value)) {
+                    errorElement.textContent = errorMessage;
+                    return false;
+                }
+                errorElement.textContent = '';
+                return true;
+            }
+
+            function validateEmail(value) {
+                return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
+            }
+
+            function validatePassword(value) {
+                return value.length >= 6;
+            }
+
+            emailInput.addEventListener('blur', () => {
+                validateField(
+                    emailInput,
+                    emailError,
+                    (value) => value && validateEmail(value),
+                    'Please enter a valid email address.'
+                );
+            });
+
+            passwordInput.addEventListener('blur', () => {
+                validateField(
+                    passwordInput,
+                    passwordError,
+                    (value) => value && validatePassword(value),
+                    'Password must be at least 6 characters long.'
+                );
+            });
+
+            form.addEventListener('submit', (event) => {
+                const isEmailValid = validateField(
+                    emailInput,
+                    emailError,
+                    (value) => value && validateEmail(value),
+                    'Please enter a valid email address.'
+                );
+
+                const isPasswordValid = validateField(
+                    passwordInput,
+                    passwordError,
+                    (value) => value && validatePassword(value),
+                    'Password must be at least 6 characters long.'
+                );
+
+                if (!isEmailValid || !isPasswordValid) {
+                    event.preventDefault();
+                }
+            });
+        });
+    </script>
+</head>
+<body>
+    <div class="container">
+        <div class="login-box">
+            <h2>Admin Login</h2>
+            <form id="loginForm">
+                <div class="user-box">
+                    <input type="text" id="email" name="email" placeholder=" ">
+                    <label>Email</label>
+                    <p id="emailError" class="error"></p>
+                </div>
+                <div class="user-box">
+                    <input type="password" id="password" name="password" placeholder=" ">
+                    <label>Password</label>
+                    <p id="passwordError" class="error"></p>
+                </div>
+                <button type="submit">Login</button>
+            </form>
+        </div>
+    </div>
+</body>
+</html>
