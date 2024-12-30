@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Electronics Shop</title>
+    <link rel="stylesheet" href="/css/styles.css"> <!-- Link to your CSS -->
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <style>
+        /* General Styles */
+        body {
+            font-family: 'Roboto', sans-serif;
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        a {
+            text-decoration: none;
+            color: inherit;
+        }
+
+        img {
+            max-width: 100%;
+            height: auto;
+        }
+
+        /* Navbar */
+        .navbar {
+            padding: 15px 0;
+        }
+
+        .navbar-brand {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #4CAF50;
+        }
+
+        .navbar-nav .nav-link {
+            color: #555;
+            font-size: 1rem;
+            margin: 0 10px;
+        }
+
+        .navbar-nav .nav-link:hover {
+            color: #4CAF50;
+        }
+
+        /* Hero Section */
+        .hero {
+            background-color: #f5f5f5;
+            padding: 50px 0;
+        }
+
+        .hero h1 {
+            font-size: 2.5rem;
+            margin-bottom: 20px;
+        }
+
+        .hero .btn {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 5px;
+            font-size: 1rem;
+        }
+
+        .hero .btn:hover {
+            background-color: #45a049;
+        }
+
+        /* Categories Section */
+        .categories {
+            background-color: #f9f9f9;
+            padding: 30px 0;
+        }
+
+        .categories h2 {
+            font-size: 2rem;
+            margin-bottom: 30px;
+        }
+
+        .categories .category {
+            text-align: center;
+            margin: 10px;
+        }
+
+        .categories .category img {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            border: 2px solid #4CAF50;
+            padding: 10px;
+            margin-bottom: 10px;
+        }
+
+        .categories .category p {
+            font-size: 1rem;
+            font-weight: 500;
+            margin: 0;
+        }
+
+        /* Products Section */
+        .products h2 {
+            font-size: 2rem;
+            margin-bottom: 30px;
+            color: #333;
+        }
+
+        .products .card {
+            border: 1px solid #e0e0e0;
+            border-radius: 10px;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .products .card:hover {
+            transform: scale(1.05);
+            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .products .card-title {
+            font-size: 1rem;
+            color: #4CAF50;
+            margin-bottom: 10px;
+        }
+
+        .products .card-text {
+            font-size: 0.9rem;
+        }
+
+        .products .card-text del {
+            color: #999;
+        }
+
+        /* Footer */
+        footer {
+            background-color: #4CAF50;
+            color: white;
+            padding: 40px 0;
+        }
+
+        footer h5 {
+            font-size: 1.2rem;
+            margin-bottom: 20px;
+        }
+
+        footer a {
+            color: white;
+            transition: color 0.3s;
+        }
+
+        footer a:hover {
+            color: #ddd;
+        }
+
+        footer .bi {
+            font-size: 1.5rem;
+            margin: 0 10px;
+        }
+
+        footer p {
+            margin-top: 20px;
+            font-size: 0.9rem;
+        }
+
+    </style>
+</head>
+<body>
+    <!-- Header Section -->
+    <header>
+        <nav class="navbar navbar-expand-lg navbar-light bg-light">
+            <div class="container">
+                <a class="navbar-brand" href="/">Electronics Shop</a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarNav">
+                    <ul class="navbar-nav ms-auto">
+                        <li class="nav-item"><a class="nav-link" href="/">Home</a></li>
+                        <li class="nav-item"><a class="nav-link" href="/shop">Shop</a></li>
+                        <li class="nav-item"><a class="nav-link" href="/cart">Cart</a></li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="container text-center">
+            <div class="row">
+                <div class="col-md-4"><img src="/images/hero1.jpg" alt="Electronics 1" class="img-fluid"></div>
+                <div class="col-md-4">
+                    <h1>PCB Boards</h1>
+                    <a href="/shop" class="btn btn-success">Buy Now</a>
+                </div>
+                <div class="col-md-4"><img src="/images/hero2.jpg" alt="Electronics 2" class="img-fluid"></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Categories Section -->
+    <section class="categories py-5">
+        <div class="container text-center">
+            <h2>Shop by Category</h2>
+            <div class="d-flex justify-content-center">
+                <% const categories = ['AT Mega', 'Arduino', 'Texas', 'Microchip', 'Molex', 'Analog Devices', 'Intel']; %>
+                <% categories.forEach(category => { %>
+                    <div class="category mx-2">
+                        <a href="/shop/<%= category.toLowerCase() %>">
+                            <img src="/images/<%= category.toLowerCase() %>.png" alt="<%= category %>" class="img-fluid">
+                            <p><%= category %></p>
+                        </a>
+                    </div>
+                <% }) %>
+            </div>
+        </div>
+    </section>
+
+    <!-- Best Selling Products Section -->
+    <section class="products py-5">
+        <div class="container">
+            <h2 class="text-center">Best Selling Products</h2>
+            <div class="row">
+                <% const products = [
+                    { name: 'IC 7400', price: '₹69', oldPrice: null, image: 'ic7400.png' },
+                    { name: 'IR - Transmitter', price: '₹159', oldPrice: '₹200', image: 'ir_transmitter.png' },
+                    { name: 'Transistor BC557', price: '₹25', oldPrice: '₹35', image: 'transistor.png' },
+                    { name: 'Raspberry Pi 4', price: '₹2599', oldPrice: null, image: 'raspberry_pi.png' },
+                ]; %>
+                <% products.forEach(product => { %>
+                    <div class="col-md-3">
+                        <div class="card">
+                            <img src="/images/<%= product.image %>" class="card-img-top" alt="<%= product.name %>">
+                            <div class="card-body text-center">
+                                <h5 class="card-title"><%= product.name %></h5>
+                                <p class="card-text">
+                                    <strong><%= product.price %></strong>
+                                    <% if (product.oldPrice) { %>
+                                        <del><%= product.oldPrice %></del>
+                                    <% } %>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                <% }); %>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer Section -->
+    <footer class="bg-success text-white py-4">
+        <div class="container text-center">
+            <div class="row">
+                <div class="col-md-4">
+                    <h5>Contact Us</h5>
+                    <p>Email: support@example.com</p>
+                    <p>Phone: +91-1234567890</p>
+                </div>
+                <div class="col-md-4">
+                    <h5>Information</h5>
+                    <ul class="list-unstyled">
+                        <li><a href="#" class="text-white">Privacy Policy</a></li>
+                        <li><a href="#" class="text-white">Terms & Conditions</a></li>
+                    </ul>
+                </div>
+                <div class="col-md-4">
+                    <h5>Follow Us</h5>
+                    <a href="#"><i class="bi bi-facebook text-white"></i></a>
+                    <a href="#"><i class="bi bi-twitter text-white"></i></a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

@@ -23,7 +23,7 @@ app.use(session({
 }));
 
 
-// app.use(userRouter)
+app.use(userRouter)
 app.use(adminRouter)
 
 app.listen(3000,()=>{

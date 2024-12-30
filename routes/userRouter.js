@@ -2,6 +2,6 @@ const express = require("express")
 const userController = require("../controller/userController")
 const router = express.Router()
 
-router.get("/",userController)
+router.get("/",userController.homePage)
 
 module.exports = router
