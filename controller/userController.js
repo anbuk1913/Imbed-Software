@@ -4,4 +4,8 @@ const homePage = async (req,res)=>{
     res.render("user/home")
 }
 
-module.exports = {homePage}
+const loginPage = async(req,res)=>{
+    res.render("user/login")
+}
+
+module.exports = {homePage,loginPage}
