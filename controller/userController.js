@@ -5,7 +5,17 @@ const homePage = async (req,res)=>{
 }
 
 const loginPage = async(req,res)=>{
-    res.render("user/login")
+    const logErr = req.session.logErr
+    res.render("user/login",{logErr})
 }
 
-module.exports = {homePage,loginPage}
+const signUpPage = async(req,res)=>{
+    const signErr = req.session.signErr
+    res.render("user/signup",{signErr})
+}
+
+const otpPage = async(req,res)=>{
+    res.render("user/otp")
+}
+
+module.exports = {homePage,loginPage,signUpPage,otpPage}

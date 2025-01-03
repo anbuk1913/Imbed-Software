@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard</title>
+    <link rel="stylesheet" href="/css/styles.css"> <!-- Add your CSS file -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css">
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <div class="container">
+            <a class="navbar-brand" href="#">Green Software</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item"><a class="nav-link" href="#">Home</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#">Banner</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#">User</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#">Orders</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#">Products</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#">Coupons</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#">Offer</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#">Categories</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#">Sales</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Admin Dashboard -->
+    <div class="container my-5">
+        <h2 class="text-center">Admin Dashboard</h2>
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <button class="btn btn-success">Add User</button>
+            <input type="text" class="form-control w-25" placeholder="Search User">
+        </div>
+        <table class="table table-bordered">
+            <thead class="table-dark">
+                <tr>
+                    <th>Name</th>
+                    <th>Email</th>
+                    <th>Phone</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                <% users.forEach(function(user) { %>
+                    <tr>
+                        <td><%= user.name %></td>
+                        <td><%= user.email %></td>
+                        <td><%= user.phone %></td>
+                        <td>
+                            <button class="btn btn-primary">Edit</button>
+                            <button class="btn btn-danger">Delete</button>
+                            <% if (user.status === 'blocked') { %>
+                                <button class="btn btn-success">Unblock</button>
+                            <% } else { %>
+                                <button class="btn btn-warning">Block</button>
+                            <% } %>
+                        </td>
+                    </tr>
+                <% }); %>
+            </tbody>
+        </table>
+        <button class="btn btn-danger float-end">Log Out</button>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-success text-white py-4">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-3">
+                    <h5>Contact Us</h5>
+                    <p>Address: Lords, London, UK - 1259</p>
+                    <p>Phone: 002-63565-24264</p>
+                    <p>FAX: 002-78965-369552</p>
+                    <p>Email: support@example.com</p>
+                </div>
+                <div class="col-md-3">
+                    <h5>Information</h5>
+                    <ul>
+                        <li>Your Account</li>
+                        <li>Free Shipping Policy</li>
+                        <li>Your Cart</li>
+                        <li>Return Policy</li>
+                        <li>Free Coupon</li>
+                        <li>Delivery Info</li>
+                    </ul>
+                </div>
+                <div class="col-md-3">
+                    <h5>Account</h5>
+                    <ul>
+                        <li>Product Support</li>
+                        <li>Terms & Conditions</li>
+                        <li>Help</li>
+                        <li>Payment Method</li>
+                    </ul>
+                </div>
+                <div class="col-md-3">
+                    <h5>Support</h5>
+                    <ul>
+                        <li>Payment Method</li>
+                        <li>Help</li>
+                        <li>Product Support</li>
+                        <li>Terms & Conditions</li>
+                    </ul>
+                    <input type="email" class="form-control" placeholder="Your Email Address">
+                    <button class="btn btn-dark mt-2">Subscribe</button>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
