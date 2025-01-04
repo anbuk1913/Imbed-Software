@@ -6,7 +6,7 @@ const homePage = async (req,res)=>{
 
 const loginPage = async(req,res)=>{
     try {
-        const logErr = req.session.logErr
+        const logErr = "req.session.logErr"
         res.render("user/login",{logErr})
     } catch (error){
         console.log(error)
