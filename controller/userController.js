@@ -5,8 +5,12 @@ const homePage = async (req,res)=>{
 }
 
 const loginPage = async(req,res)=>{
-    const logErr = req.session.logErr
-    res.render("user/login",{logErr})
+    try {
+        const logErr = req.session.logErr
+        res.render("user/login",{logErr})
+    } catch (error){
+        console.log(error)
+    }
 }
 
 const signUpPage = async(req,res)=>{
