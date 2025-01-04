@@ -6,7 +6,7 @@ const homePage = async (req,res)=>{
 
 const loginPage = async(req,res)=>{
     try {
-        const logErr = "req.session.logErr"
+        const logErr = req.session.logErr
         res.render("user/login",{logErr})
     } catch (error){
         console.log(error)
@@ -14,8 +14,13 @@ const loginPage = async(req,res)=>{
 }
 
 const signUpPage = async(req,res)=>{
-    const signErr = req.session.signErr
-    res.render("user/signup",{signErr})
+    try {
+        const signErr = req.session.signErr
+        res.render("user/signup",{signErr})
+    } catch (error){
+        console.log(error)
+    }
+    
 }
 
 const otpPage = async(req,res)=>{
