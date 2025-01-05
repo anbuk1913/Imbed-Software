@@ -34,9 +34,9 @@ const path = require("path");
 const emailTemplatePath = path.join(__dirname, '/../views/admin/otp.html');
 const emailTemplate = fs.readFileSync(emailTemplatePath, 'utf8');
 
-let sendOtp = async (otp, email) => {
-    const personalizedHtml = emailTemplate.replace('{{OTP}}', otp);
-
+let sendOtp = async (otp, email, name) => {
+    let personalizedHtml = emailTemplate.replace('{{OTP}}', otp);
+    personalizedHtml = personalizedHtml.replace('{{NAME}}', name);
     try {
         await transporter.sendMail({
             from: process.env.OTP_EMAIL, // Use email from environment variables

@@ -30,7 +30,9 @@
 
         /* Navbar */
         .navbar {
+            width: 100%;
             padding: 15px 0;
+            box-shadow: 10px 10px 15px rgba(0, 0, 0, 0.5);
         }
 
         .navbar-brand {
@@ -180,11 +182,26 @@
                         <li class="nav-item"><a class="nav-link" href="/">Home</a></li>
                         <li class="nav-item"><a class="nav-link" href="/shop">Shop</a></li>
                         <li class="nav-item"><a class="nav-link" href="/cart">Cart</a></li>
+                        <li class="nav-item"><a class="nav-link" href="/wishlist">Wishlist</a></li>
                     </ul>
+                    <!-- User Profile Section -->
+                    <div class="dropdown ms-3">
+                        <a href="#" class="d-flex align-items-center text-decoration-none dropdown-toggle" id="userProfileDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                            <img src="/images/user-profile.jpg" alt="User" style="width: 30px; height: 30px; border-radius: 50%;">
+                            <span class="ms-2"><%= name %></span>
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userProfileDropdown">
+                            <li><a class="dropdown-item" href="/profile">My Profile</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" href="/logout">Logout</a></li>
+                        </ul>
+                    </div>
+                    <!-- End of User Profile Section -->
                 </div>
             </div>
         </nav>
     </header>
+    
 
     <!-- Hero Section -->
     <section class="hero">
@@ -205,7 +222,7 @@
         <div class="container text-center">
             <h2>Shop by Category</h2>
             <div class="d-flex justify-content-center">
-                <% const categories = ['AT Mega', 'Arduino', 'Texas', 'Microchip', 'Molex', 'Analog Devices', 'Intel']; %>
+                <% const categories = ['AT Mega', 'Arduino', 'Texas', 'Microchip', 'Molex']; %>
                 <% categories.forEach(category => { %>
                     <div class="category mx-2">
                         <a href="/shop/<%= category.toLowerCase() %>">
