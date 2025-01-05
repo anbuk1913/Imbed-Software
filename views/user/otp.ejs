@@ -209,10 +209,14 @@
         <img src="/images/logo.png" alt="Logo" style="width: 30px; height: auto;"><br>
         <img src="/images/logofont.png" alt="IMBED SOFTWARE" style="width: 200px; height: auto;">
     </div>
-        <form action="/verify-otp" method="POST">
-            <label for="otp">Enter your OTP</label>
+        <form action="/otp" method="POST">
+            <label for="otp">Check Your Email & Enter OTP</label>
             <input type="text" id="otp" name="otp" placeholder="OTP" maxlength="6" pattern="[0-9]*">
-            <div id="incorrectOtp" style="color: red;"></div>
+            <% if (otpError) { %>
+                <p style="color: red;display: flex;justify-content: center;">
+                  <%=otpError%>
+                </p>
+            <% } %>
             <button type="submit">Confirm</button>
             <p>Time Left: <span id="timer">75</span></p>
             <div class="resend">Resend OTP</div>

@@ -5,7 +5,9 @@ const router = express.Router()
 router.get("/",userController.homePage)
 router.get("/login",userController.loginPage)
 router.get("/signup",userController.signUpPage)
+router.post("/signup",userController.signUpPost)
 router.get("/otp",userController.otpPage)
-
+router.get("/otpsend",userController.otpSend)
+router.post("/otp",userController.otpPost)
 
 module.exports = router

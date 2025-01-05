@@ -4,7 +4,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Imbed Software - Admin</title>
+  <title>Imbed Software - Sign</title>
   <link rel="icon" href="/images/logo.png">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css">
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
@@ -177,6 +177,16 @@
         <input type="text" id="phone" name="phone" maxlength="10">
         <div class="error" id="phone-error" style="color: red;"></div>
       </div>
+      <div class="form-group">
+        <label for="password">Password</label>
+        <input type="password" id="password" name="password">
+        <div class="error" style="color: red;" id="password-error"></div>
+      </div>
+      <div class="form-group">
+        <label for="confirm-password">Confirm Password</label>
+        <input type="password" id="confirm-password" name="confirm-password">
+        <div class="error" style="color: red;" id="confirm-password-error"></div>
+      </div>
       <% if (signErr) { %>
         <p style="color: red;display: flex;justify-content: center;">
           <%=signErr%>
@@ -233,126 +243,91 @@
     </div>
 </footer>
   
-  <script>
-    const form = document.getElementById('signUpForm');
-    const username = document.getElementById('username');
-    const email = document.getElementById('email');
-    const phone = document.getElementById('phone');
-    const usernameError = document.getElementById('username-error');
-    const emailError = document.getElementById('email-error');
-    const phoneError = document.getElementById('phone-error');
+<script>
+  const form = document.getElementById('signUpForm');
+  const username = document.getElementById('username');
+  const email = document.getElementById('email');
+  const phone = document.getElementById('phone');
+  const password = document.getElementById('password');
+  const confirmPassword = document.getElementById('confirm-password');
 
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    const usernameRegex = /^[a-zA-Z\s]+$/;
-    const phoneRegex = /^[0-9]{10}$/;
+  const usernameError = document.getElementById('username-error');
+  const emailError = document.getElementById('email-error');
+  const phoneError = document.getElementById('phone-error');
+  const passwordError = document.getElementById('password-error');
+  const confirmPasswordError = document.getElementById('confirm-password-error');
 
-    // Validate username
-    username.addEventListener('blur', () => {
-      if (username.value.trim() === '') {
-        usernameError.textContent = '*Name is required';
-        username.classList.add('error');
-      } else if (!usernameRegex.test(username.value.trim())) {
-        usernameError.textContent = '*Name must only contain letters';
-        username.classList.add('error');
+  const usernameRegex = /^[a-zA-Z\s]+$/;
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  const phoneRegex = /^[0-9]{10}$/;
+  const passwordRegex = /^(?=.*\d)[^\s]{8,}$/;
+
+  function validateField(input, regex, errorElement, errorMessage) {
+      if (input.value.trim() === '') {
+          errorElement.textContent = `*${errorMessage} is required`;
+          input.classList.add('error');
+          return false;
+      } else if (!regex.test(input.value.trim())) {
+          errorElement.textContent = `*Invalid ${errorMessage}`;
+          input.classList.add('error');
+          return false;
       } else {
-        usernameError.textContent = '';
-        username.classList.remove('error');
+          errorElement.textContent = '';
+          input.classList.remove('error');
+          return true;
       }
-    });
+  }
 
-    // Validate email
-    email.addEventListener('blur', () => {
-      if (email.value.trim() === '') {
-        emailError.textContent = '*Email is required';
-        email.classList.add('error');
-      } else if (!emailRegex.test(email.value.trim())) {
-        emailError.textContent = '*Invalid email format';
-        email.classList.add('error');
+  function validatePassword() {
+      if (password.value.trim() === '') {
+          passwordError.textContent = '*Password is required';
+          password.classList.add('error');
+          return false;
+      } else if (!passwordRegex.test(password.value)) {
+          passwordError.textContent = '*Password must be at least 8 characters, include 1 number, and contain no spaces';
+          password.classList.add('error');
+          return false;
       } else {
-        emailError.textContent = '';
-        email.classList.remove('error');
+          passwordError.textContent = '';
+          password.classList.remove('error');
+          return true;
       }
-    });
+  }
 
-    // Validate phone
-    phone.addEventListener('blur', () => {
-      if (phone.value.trim() === '') {
-        phoneError.textContent = '*Phone number is required';
-        phone.classList.add('error');
-      } else if (!phoneRegex.test(phone.value.trim())) {
-        phoneError.textContent = '*Phone number must be 10 digits';
-        phone.classList.add('error');
+  function validateConfirmPassword() {
+      if (confirmPassword.value.trim() === '') {
+          confirmPasswordError.textContent = '*Confirm Password is required';
+          confirmPassword.classList.add('error');
+          return false;
+      } else if (confirmPassword.value !== password.value) {
+          confirmPasswordError.textContent = '*Passwords do not match';
+          confirmPassword.classList.add('error');
+          return false;
       } else {
-        phoneError.textContent = '';
-        phone.classList.remove('error');
+          confirmPasswordError.textContent = '';
+          confirmPassword.classList.remove('error');
+          return true;
       }
-    });
+  }
 
-    // Prevent form submission if fields are invalid
-    form.addEventListener('submit', (e) => {
-      if (
-        username.value.trim() === '' ||
-        email.value.trim() === '' ||
-        phone.value.trim() === '' ||
-        username.classList.contains('error') ||
-        email.classList.contains('error') ||
-        phone.classList.contains('error')
-      ) {
-        e.preventDefault();
-      }
-    });
+  username.addEventListener('blur', () => validateField(username, usernameRegex, usernameError, 'Name'));
+  email.addEventListener('blur', () => validateField(email, emailRegex, emailError, 'Email'));
+  phone.addEventListener('blur', () => validateField(phone, phoneRegex, phoneError, 'Phone number'));
+  password.addEventListener('blur', validatePassword);
+  confirmPassword.addEventListener('blur', validateConfirmPassword);
+
   form.addEventListener('submit', (e) => {
-  let hasError = false;
+      const isUsernameValid = validateField(username, usernameRegex, usernameError, 'Name');
+      const isEmailValid = validateField(email, emailRegex, emailError, 'Email');
+      const isPhoneValid = validateField(phone, phoneRegex, phoneError, 'Phone number');
+      const isPasswordValid = validatePassword();
+      const isConfirmPasswordValid = validateConfirmPassword();
 
-  // Validate username
-  if (username.value.trim() === '') {
-    usernameError.textContent = '*Name is required';
-    username.classList.add('error');
-    hasError = true;
-  } else if (!usernameRegex.test(username.value.trim())) {
-    usernameError.textContent = '*Name must only contain letters';
-    username.classList.add('error');
-    hasError = true;
-  } else {
-    usernameError.textContent = '';
-    username.classList.remove('error');
-  }
-
-  // Validate email
-  if (email.value.trim() === '') {
-    emailError.textContent = '*Email is required';
-    email.classList.add('error');
-    hasError = true;
-  } else if (!emailRegex.test(email.value.trim())) {
-    emailError.textContent = '*Invalid email format';
-    email.classList.add('error');
-    hasError = true;
-  } else {
-    emailError.textContent = '';
-    email.classList.remove('error');
-  }
-
-  // Validate phone
-  if (phone.value.trim() === '') {
-    phoneError.textContent = '*Phone number is required';
-    phone.classList.add('error');
-    hasError = true;
-  } else if (!phoneRegex.test(phone.value.trim())) {
-    phoneError.textContent = '*Phone number must be 10 digits';
-    phone.classList.add('error');
-    hasError = true;
-  } else {
-    phoneError.textContent = '';
-    phone.classList.remove('error');
-  }
-
-  // Prevent form submission if there's an error
-  if (hasError) {
-    e.preventDefault();
-  }
-});
-
-  </script>
+      if (!isUsernameValid || !isEmailValid || !isPhoneValid || !isPasswordValid || !isConfirmPasswordValid) {
+          e.preventDefault(); // Prevent form submission if validation fails
+      }
+  });
+</script>
 </body>
 
 </html>

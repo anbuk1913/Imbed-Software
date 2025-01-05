@@ -1,12 +1,12 @@
 const express = require("express")
 const app = express()
 const env = require("dotenv");
+env.config();
 const setUser = require('./model/userModel');
 const session = require('express-session');
 const userRouter = require("./routes/userRouter")
 const adminRouter = require("./routes/adminRouter")
 
-env.config();
 require("./config/dbConnect")
 app.set('view engine', 'ejs'); 
 app.use(express.static('public'));
