@@ -1,6 +1,7 @@
 const bcrypt = require('bcrypt')
 const usercollection = require("../model/userModel");
 const sendotp = require('../helper/sendOtp')
+const { render } = require('ejs');
 
 async function encryptPassword(password) {
     const saltRounds = 10;
@@ -55,17 +56,31 @@ const signUpPage = async(req,res)=>{
     }
 }
 
-const otpPage = async(req,res)=>{
-    const otpError = req.session.otpError
-    res.render("user/otp",{otpError})
-}
-
 const otpSend = async(req,res)=>{
     const generatedOtp = Math.floor(100000 + Math.random() * 900000).toString()
     req.session.otp = generatedOtp
+    req.session.otpError = null
+    if (!req.session.otpTime) {  // Check if otpTime is not set
+        req.session.otpTime = 75;  // Set it only if it's not already set
+    }
     sendotp(generatedOtp,req.session.user.email,req.session.user.name)
     res.redirect("/otp")
 }
+
+const otpPage = async(req,res)=>{
+    const otpError = req.session.otpError
+    const countdown = setInterval(() => {
+        if (req.session.otpTime > 0) {
+            req.session.otpTime-=1;
+        } else {
+            req.session.otpTime = 0
+            clearInterval(countdown)
+        }
+    }, 1000);
+    const time = req.session.otpTime
+    res.render("user/otp",{otpError:otpError,time:time})
+}
+
 
 const otpPost = async(req,res)=>{
     if(req.body.otp==req.session.otp){
@@ -97,7 +112,6 @@ const signUpPost = async(req,res)=>{
         req.session.signError = "Email already Exits!";
         res.redirect("/signup");
     } else {
-        req.session.signup = true;
         req.session.user=user
         req.session.signup = true;
         res.redirect("/otpsend");
@@ -127,4 +141,17 @@ const loginPost = async(req,res)=>{
     }
 }
 
-module.exports = {homePage,loginPage,signUpPage,otpPage,signUpPost,otpPost,otpSend,loginPost}
+const blockedUser = async(req,res)=>{
+    userAuth()
+    if(req.session.block){
+        return res.render("user/blockedUser")
+    } else {
+        return res.redirect("/")
+    }
+}
+
+const logout = async(req,res)=>{
+    req.session.destroy()
+}
+
+module.exports = {homePage,loginPage,signUpPage,otpPage,signUpPost,otpPost,otpSend,loginPost,blockedUser,logout}

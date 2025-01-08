@@ -1,4 +1,4 @@
-
+const usercollection = require("../model/userModel")
 
 const adminLog = async(req,res)=>{
     if(req.session.adminVer){
@@ -29,14 +29,7 @@ const adminLogPost = async(req,res)=>{
 
 const adminUser = async(req,res)=>{
     if(req.session.adminVer){
-        const users = [
-            { name: "Anbu", email: "anbukumar@gmail.com", phone: "9876543210", status: "active" },
-            { name: "Midun", email: "midun55@gmail.com", phone: "9870987654", status: "blocked" },
-            { name: "Mohan", email: "mohan@gmail.com", phone: "7654321235", status: "active" },
-            { name: "Poornima", email: "poor@gmail.com", phone: "7654456788", status: "blocked" },
-            { name: "Sasi", email: "sasi@gmail.com", phone: "9876540987", status: "blocked" }
-          ];
-          
+        const users = await usercollection.find({})
         return res.render("admin/users",{users})
     } else {
         res.redirect("/admin")

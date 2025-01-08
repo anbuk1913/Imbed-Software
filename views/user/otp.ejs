@@ -117,6 +117,14 @@
             cursor: pointer;
         }
 
+        /* Back Button Style */
+        .back-btn {
+            margin-bottom: 10px;
+            color: #8CBF3A;
+            cursor: pointer;
+            text-align: center;
+        }
+
         /* Footer Styles */
         footer {
             width: 100%;
@@ -204,7 +212,6 @@
         </div>
     </nav>
 
-
     <!-- Authentication Form -->
     <div class="auth-container">
         <!-- Logo -->
@@ -212,6 +219,12 @@
         <img src="/images/logo.png" alt="Logo" style="width: 30px; height: auto;"><br>
         <img src="/images/logofont.png" alt="IMBED SOFTWARE" style="width: 200px; height: auto;">
     </div>
+
+    <!-- Back Button -->
+    <div class="back-btn">
+        <a href="javascript:history.back()">Change Email</a>
+    </div>
+
         <form action="/otp" method="POST">
             <label for="otp">Check Your Email & Enter OTP</label>
             <input type="text" id="otp" name="otp" placeholder="OTP" maxlength="6" pattern="[0-9]*">
@@ -221,8 +234,8 @@
                 </p>
             <% } %>
             <button type="submit">Confirm</button>
-            <p>Time Left: <span id="timer">75</span></p>
-            <div class="resend">Resend OTP</div>
+            <p>Time Left: <span id="timer"><%= time %></span></p>
+            <a href="/otpsend"><div class="resend">Resend OTP</div></a>
         </form>
     </div>
 
@@ -271,17 +284,41 @@
     </footer>
 
     <script>
-        // Countdown Timer for OTP
-        let timer = time;
+        // Ensure 'time' is correctly injected from EJS into JavaScript
+        let time = <%= time %>;  // 'time' is injected here from the server
+        
         const timerElement = document.getElementById('timer');
+        const submitButton = document.querySelector('button[type="submit"]');
+        const resendButton = document.querySelector('.resend');
+        
+        // Countdown logic
         const countdown = setInterval(() => {
-            if (timer > 0) {
-                timer--;
-                timerElement.textContent = timer;
+            if (time > 0) {
+                time--;
+                timerElement.textContent = time;  // Update the displayed time
             } else {
-                clearInterval(countdown);
+                clearInterval(countdown);  // Stop the countdown when time is up
+                submitButton.disabled = true;  // Disable the "Confirm" button
+                submitButton.style.backgroundColor = '#ccc';  // Change button appearance
+                submitButton.style.cursor = 'not-allowed';  // Show the "disabled" cursor
             }
         }, 1000);
+    
+        // Disable Resend OTP button for 15 seconds after page load
+        resendButton.classList.add('disabled');
+        resendButton.style.cursor = 'not-allowed';
+        setTimeout(() => {
+            resendButton.classList.remove('disabled');
+            resendButton.style.pointerEvents = 'auto';
+            resendButton.style.cursor = 'pointer';
+        }, 15000);
     </script>
+    
+    
+    
+    <!-- If you want to show otpError in the HTML -->
+    <p class="otp-error"></p>
+    
+    
 </body>
 </html>

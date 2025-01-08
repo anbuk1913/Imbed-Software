@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Categories</title>
+    <link rel="stylesheet" href="/css/styles.css"> <!-- Link to your CSS file -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"> <!-- Bootstrap CSS -->
+</head>
+<body>
+    <%- include('../adminPartials/header') %>
+    <!-- Categories Section -->
+    <div class="container my-4">
+        <div class="d-flex justify-content-between mb-3">
+            <h2>Categories</h2>
+            <button class="btn btn-success">Add New Category</button>
+        </div>
+        <input type="text" class="form-control mb-3" placeholder="Search Category">
+
+        <table class="table table-bordered">
+            <thead class="thead-light">
+                <tr>
+                    <th>Name</th>
+                    <th>Description</th>
+                    <th>List / Unlist</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                <% categories.forEach(category => { %>
+                    <tr>
+                        <td><%= category.name %></td>
+                        <td><%= category.description %></td>
+                        <td>
+                            <% if (category.listed) { %>
+                                <button class="btn btn-success">List</button>
+                            <% } else { %>
+                                <button class="btn btn-danger">Unlist</button>
+                            <% } %>
+                        </td>
+                        <td>
+                            <button class="btn btn-primary">Edit</button>
+                        </td>
+                    </tr>
+                <% }); %>
+            </tbody>
+        </table>
+    </div>
+    <%- include('../adminPartials/footer') %>
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>
