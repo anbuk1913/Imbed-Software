@@ -2,7 +2,7 @@ const usercollection = require("../model/userModel")
 
 const adminLog = async(req,res)=>{
     if(req.session.adminVer){
-        return res.redirect("/adminHome")
+        return res.redirect("/adminusers")
     } else {
         const adminError = req.session.adminError
         return res.render("admin/login",{adminError})
@@ -10,11 +10,7 @@ const adminLog = async(req,res)=>{
 }
 
 const adminHome = async (req,res)=>{
-    if(req.session.adminVer){
         return res.render("admin/adminDash")
-    } else {
-        return res.redirect("/admin")
-    }
 }
 
 const adminLogPost = async(req,res)=>{
@@ -28,12 +24,8 @@ const adminLogPost = async(req,res)=>{
 }
 
 const adminUser = async(req,res)=>{
-    if(req.session.adminVer){
-        const users = await usercollection.find({})
-        return res.render("admin/users",{users})
-    } else {
-        res.redirect("/admin")
-    }
+    const users = await usercollection.find({})
+    return res.render("admin/users",{users})
 }
 
 module.exports = {adminLog,adminHome,adminUser,adminLogPost}

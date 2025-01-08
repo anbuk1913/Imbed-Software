@@ -1,7 +1,6 @@
 const bcrypt = require('bcrypt')
 const usercollection = require("../model/userModel");
 const sendotp = require('../helper/sendOtp')
-const { render } = require('ejs');
 
 async function encryptPassword(password) {
     const saltRounds = 10;
@@ -20,8 +19,13 @@ const homePage = async (req,res)=>{
         const uEmail = req.session.user.email
         userVer = await usercollection.findOne({ email: uEmail });
         if(userVer){
-            name = userVer.name
-            return res.render("user/home",{name})
+            if(userVer.isActive == false){
+                req.session.block = true
+                return res.redirect("/blocked")
+            } else {
+                name = userVer.name
+                return res.render("user/home",{name})
+            }
         } else {
             return res.render("user/home",{name})
         }
@@ -142,7 +146,6 @@ const loginPost = async(req,res)=>{
 }
 
 const blockedUser = async(req,res)=>{
-    userAuth()
     if(req.session.block){
         return res.render("user/blockedUser")
     } else {
@@ -152,6 +155,7 @@ const blockedUser = async(req,res)=>{
 
 const logout = async(req,res)=>{
     req.session.destroy()
+    return res.redirect('/')
 }
 
 module.exports = {homePage,loginPage,signUpPage,otpPage,signUpPost,otpPost,otpSend,loginPost,blockedUser,logout}

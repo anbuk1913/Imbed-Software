@@ -21,8 +21,7 @@ app.use((req, res, next) => {
 app.use(session({
     secret: "secret-key",
     resave: false,
-    saveUninitialized: true,
-    cookie: { secure: false },
+    saveUninitialized: true
 }));
 
 

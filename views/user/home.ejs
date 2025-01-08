@@ -187,13 +187,13 @@
                     <!-- User Profile Section -->
                     <div class="dropdown ms-3">
                         <a href="#" class="d-flex align-items-center text-decoration-none dropdown-toggle" id="userProfileDropdown" data-bs-toggle="dropdown" aria-expanded="false">
-                            <img src="/images/user-profile.jpg" alt="User" style="width: 30px; height: 30px; border-radius: 50%;">
+                            <img src="/images/userProfile.jpg" style="width: 30px; height: 30px; border-radius: 50%;">
                             <span class="ms-2"><%= name %></span>
                         </a>
                         <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userProfileDropdown">
                             <li><a class="dropdown-item" href="/login">My Profile</a></li>
                             <li><hr class="dropdown-divider"></li>
-                            <li><a class="dropdown-item" href="/logout">Logout</a></li>
+                            <li><a class="dropdown-item" href="" onclick="document.getElementById('logoutForm').submit(); return false;">Logout</a></li>
                         </ul>
                     </div>
                     <!-- End of User Profile Section -->
@@ -264,6 +264,7 @@
                 <% }); %>
             </div>
         </div>
+        <form id="logoutForm" action="/logout" method="post" style="display: none;"></form>
     </section>
 
     <!-- Footer Section -->
