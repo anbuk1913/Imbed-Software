@@ -78,6 +78,7 @@
         </div>
         <input type="text" class="form-control mb-3" placeholder="Search Category">
 
+        <!-- Table -->
         <table class="table table-bordered">
             <thead class="thead-light">
                 <tr>
@@ -98,14 +99,52 @@
                             <% } else { %>
                                 <button class="btn btn-success list-toggle" data-id="<%= category._id %>" data-action="list">List</button>
                             <% } %>
-                        </td>                        
+                        </td>
                         <td>
-                            <button class="btn btn-primary">Edit</button>
+                            <!-- Edit Button -->
+                            <button 
+                                class="btn btn-primary" 
+                                data-bs-toggle="modal" 
+                                data-bs-target="#editCategoryModal" 
+                                data-id="<%= category._id %>"
+                                data-name="<%= category.categoryName %>" 
+                                data-description="<%= category.categoryDescription %>"
+                            >
+                                Edit
+                            </button>
                         </td>
                     </tr>
                 <% }); %>
             </tbody>
         </table>
+
+        <!-- Edit Category Modal -->
+        <div class="modal fade" id="editCategoryModal" tabindex="-1" aria-labelledby="editCategoryModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="editCategoryModalLabel">Edit Category</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <form id="editForm" action="/categories/edit?_method=PUT" method="post">
+                            <input type="hidden" id="categoryId" name="id"> <!-- Hidden field for category ID -->
+                            <div class="mb-3">
+                                <label for="editCategoryName" class="form-label">Category Name</label>
+                                <input type="text" class="form-control" id="editCategoryName" name="name">
+                                <small class="text-danger d-none" id="editCategoryNameError">Please enter a category name.</small>
+                            </div>
+                            <div class="mb-3">
+                                <label for="editCategoryDescription" class="form-label">Description</label>
+                                <textarea class="form-control" id="editCategoryDescription" name="description" rows="4"></textarea>
+                                <small class="text-danger d-none" id="editCategoryDescriptionError">Please provide a description.</small>
+                            </div>
+                            <button type="submit" class="btn btn-success">Save Changes</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 
     <!-- Add Category Modal -->
@@ -121,12 +160,12 @@
                         <div class="mb-3">
                             <label for="categoryName" class="form-label">Category Name</label>
                             <input type="text" class="form-control" id="categoryName" name="categoryName" required>
-                            <small class="text-danger d-none" id="categoryNameError">Please enter a category name.</small>
+                            <small class="text-danger d-none" id="editCategoryNameError">Please enter a category name.</small>
                         </div>
                         <div class="mb-3">
                             <label for="categoryDescription" class="form-label">Description</label>
                             <textarea class="form-control" id="categoryDescription" name="categoryDescription" rows="4" required></textarea>
-                            <small class="text-danger d-none" id="categoryDescriptionError">Please provide a description.</small>
+                            <small class="text-danger d-none" id="editCategoryDescriptionError">Please provide a description.</small>
                         </div>
                         <p style="display: none; color: red;" id="">Category already exits</p>
                         <button type="submit" class="btn btn-success">Save</button>
@@ -248,6 +287,10 @@
     </script>
 
     <script>
+        // List Or Unlist
+        const toastContainer = document.querySelector(".toast-container");
+        const toast = document.createElement("div");
+        toast.className = "toast";
         document.querySelectorAll('.list-toggle').forEach(button => {
             button.addEventListener('click', async function () {
                 const categoryId = this.dataset.id; // Get the category ID
@@ -292,16 +335,15 @@
             
                         setTimeout(() => {
                             toast.style.animation = "slideOutToRight 0.8s ease-out forwards";
-                        }, 3000);
+                        }, 2000);
             
                         setTimeout(() => {
                             toast.style.display = "none";
                             toast.remove(); // Remove toast from DOM
-                        }, 3800);
+                        }, 2800);
                     }
-                } catch (error) {
-                    console.error('Error:', error);
-                    alert('An error occurred. Please try again.');
+                } catch(error){
+                    console.log(error);
                 }
             });
         });
@@ -325,7 +367,52 @@
                 }
             });
         });
-    </script>    
+    </script>
+    
+    <script>
+        // Edit Validation
+        document.getElementById('editForm').addEventListener('submit', function (event) {
+            let isValid = true;
+    
+            // Validate Category Name
+            const categoryName = document.getElementById('editCategoryName');
+            const categoryNameError = document.getElementById('editCategoryNameError');
+            if (!categoryName.value.trim()) {
+                categoryNameError.classList.remove('d-none');
+                isValid = false;
+            } else {
+                categoryNameError.classList.add('d-none');
+            }
+    
+            // Validate Description
+            const categoryDescription = document.getElementById('editCategoryDescription');
+            const categoryDescriptionError = document.getElementById('editCategoryDescriptionError');
+            if (!categoryDescription.value.trim()) {
+                categoryDescriptionError.classList.remove('d-none');
+                isValid = false;
+            } else {
+                categoryDescriptionError.classList.add('d-none');
+            }
+    
+            // Prevent form submission if validation fails
+            if (!isValid) {
+                event.preventDefault();
+            }
+        });
+            // EDIT Category
+            const editCategoryModal = document.getElementById('editCategoryModal');
+            editCategoryModal.addEventListener('show.bs.modal', function (event) {
+            const button = event.relatedTarget; // Button that triggered the modal
+            const id = button.getAttribute('data-id'); // Extract data-id attribute
+            const name = button.getAttribute('data-name'); // Extract data-name attribute
+            const description = button.getAttribute('data-description'); // Extract data-description attribute
+            
+            // Fill the form fields 
+            document.getElementById('categoryId').value = id;
+            document.getElementById('editCategoryName').value = name;
+            document.getElementById('editCategoryDescription').value = description;
+        });
+    </script>
 
 </body>
 </html>

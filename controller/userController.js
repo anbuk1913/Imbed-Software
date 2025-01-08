@@ -16,8 +16,8 @@ async function comparePassword(enteredPassword, storedPassword) {
 const homePage = async (req,res)=>{
     let name=""
     if(req.session.loginSession || req.session.signupSession){
-        const uEmail = req.session.user.email
-        userVer = await usercollection.findOne({ email: uEmail });
+        const userEmail = req.session.user.email
+        userVer = await usercollection.findOne({ email: userEmail });
         if(userVer){
             if(userVer.isActive == false){
                 req.session.block = true
@@ -146,7 +146,8 @@ const loginPost = async(req,res)=>{
 }
 
 const blockedUser = async(req,res)=>{
-    if(req.session.block){
+    const user = await userCollection.findOne({ email: req.session.user.email })
+    if(user.isActive == false){
         return res.render("user/blockedUser")
     } else {
         return res.redirect("/")

@@ -14,6 +14,7 @@ router.post("/adminVer",adminController.adminLogPost)
 router.get("/admin/category",adminAuth, categoryController.categoryPage)
 router.post("/addcategory",categoryController.addCategory)
 router.post("/categories/list/:id",categoryController.listCategory)
-router.post("/categories/unlist/:id",categoryController.listCategory)
+router.post("/categories/unlist/:id",categoryController.unListCategory)
+router.put("/categories/edit",categoryController.editCategory)
 
 module.exports = router

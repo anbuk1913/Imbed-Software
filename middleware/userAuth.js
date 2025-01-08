@@ -6,7 +6,6 @@ module.exports = async function (req,res,next){
         if(req.session.loginSession || req.session.signupSession){
             const user = await userCollection.findOne({ email: req.session.user.email })
             if(user.isActive == false){
-                req.session.block = true
                 return res.redirect("/blocked")
             } else {
             next()

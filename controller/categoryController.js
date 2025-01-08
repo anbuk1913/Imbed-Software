@@ -25,26 +25,40 @@ const addCategory = async(req,res)=>{
     }
 }
 
-const listCategory = async(req,res)=>{
+const unListCategory = async(req,res)=>{
     try {
         const categoryId = req.params.id;
-        await category.findByIdAndUpdate(categoryId, { isListed: true });
-        res.json({ success: true, message: 'Category listed successfully.' });
+        await category.updateOne({ _id:categoryId}, { isListed:false});
+        res.json({ success: true, message: 'Category Unlisted successfully.' });
     } catch (error) {
         console.error(error);
         res.status(500).json({ success: false, message: 'Failed to list category.' });
     }
 }
 
-const unListCategory = async(req,res)=>{
+const listCategory = async(req,res)=>{
     try {
         const categoryId = req.params.id;
-        await category.findByIdAndUpdate(categoryId, { isListed: false });
-        res.json({ success: true, message: 'Category unlisted successfully.' });
+        await category.updateOne({ _id:categoryId}, { isListed:true});
+        res.json({ success: true, message: 'Category Listed successfully.' });
     } catch (error) {
         console.error(error);
         res.status(500).json({ success: false, message: 'Failed to unlist category.' });
     }
 }
 
-module.exports = {categoryPage, addCategory, listCategory, unListCategory}
+const editCategory = async(req,res)=>{
+    try{
+    const editedCategory = {
+            _id : req.body.id,
+            categoryName: req.body.name,
+            categoryDescription : req.body.description
+        }
+        await category.updateOne({ _id:editedCategory._id}, { categoryName:editedCategory.categoryName, categoryDescription:editedCategory.categoryDescription})
+        res.redirect("/admin/category")
+    } catch(error) {
+        console.log(error)
+    }
+}
+
+module.exports = {categoryPage, addCategory, listCategory, unListCategory, editCategory}
