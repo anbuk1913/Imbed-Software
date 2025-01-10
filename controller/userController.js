@@ -1,6 +1,7 @@
 const bcrypt = require('bcrypt')
 const usercollection = require("../model/userModel");
 const sendotp = require('../helper/sendOtp')
+const passport = require('passport');
 
 async function encryptPassword(password) {
     const saltRounds = 10;
@@ -145,8 +146,30 @@ const loginPost = async(req,res)=>{
     }
 }
 
+const googleCallback=async (req, res) => {
+    try {
+      const user = await usercollection.findOneAndUpdate(
+        { email: req.user._json.email},
+        { $set: { name: req.user.displayName} },
+        { upsert: true,new :true }
+      );
+  
+      req.session.user = {
+        email:req.user._json.email
+      }
+      // Set the user session
+      req.session.loginSession=true
+      // Redirect to the homepage
+      res.redirect('/');
+    } catch (err) {
+      console.error(err);
+      res.redirect('/login');
+    }
+  } 
+
+
 const blockedUser = async(req,res)=>{
-    const user = await userCollection.findOne({ email: req.session.user.email })
+    const user = await usercollection.findOne({ email: req.session.user.email })
     if(user.isActive == false){
         return res.render("user/blockedUser")
     } else {
@@ -155,8 +178,15 @@ const blockedUser = async(req,res)=>{
 }
 
 const logout = async(req,res)=>{
-    req.session.destroy()
+    req.session.loginSession = null
+    req.session.signupSession = null
+    req.session.user = null
+    req.session.block = null
+    req.session.logError = null
+    req.session.signError = null
+    req.session.otp = null
+    req.session.otpError = null
     return res.redirect('/')
 }
 
-module.exports = {homePage,loginPage,signUpPage,otpPage,signUpPost,otpPost,otpSend,loginPost,blockedUser,logout}
+module.exports = {homePage,loginPage,signUpPage,otpPage,signUpPost,otpPost,otpSend,loginPost,googleCallback,blockedUser,logout}

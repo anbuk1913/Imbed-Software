@@ -28,4 +28,26 @@ const adminUser = async(req,res)=>{
     return res.render("admin/users",{users})
 }
 
-module.exports = {adminLog,adminHome,adminUser,adminLogPost}
+const unListUser = async(req,res)=>{
+    try {
+        const userId = req.params.id;
+        await usercollection.updateOne({ _id:userId}, { isActive:false});
+        res.json({ success: true, message: 'User Blocked successfully.' });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ success: false, message: 'Failed to block User.' });
+    }
+}
+
+const listUser = async(req,res)=>{
+    try {
+        const userId = req.params.id;
+        await usercollection.updateOne({ _id:userId}, { isActive:true});
+        res.json({ success: true, message: 'User Unblocked successfully.' });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ success: false, message: 'Failed to block User.' });
+    }
+}
+
+module.exports = {adminLog,adminHome,adminUser,adminLogPost,unListUser,listUser}

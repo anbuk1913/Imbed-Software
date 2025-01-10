@@ -6,6 +6,7 @@
     <title>Admin Dashboard</title>
     <link rel="icon" href="/images/logo.png">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Afacad+Flux:wght@100..1000&display=swap" rel="stylesheet">
@@ -17,12 +18,54 @@
             padding: 0;
             box-sizing: border-box;
         }
+        .toast-container {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 9999;
+        }
+        .toast {
+            display: none;
+            background-color: #ff6600;
+            color: white;
+            padding: 15px 30px;
+            border-radius: 12px;
+            font-size: 16px;
+            text-align: center;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+            opacity: 0;
+            transform: translateX(100%);
+            animation: slideInFromRight 0.8s ease-out forwards;
+        }
+
+        @keyframes slideInFromRight {
+            0% {
+                opacity: 0;
+                transform: translateX(100%);
+            }
+            100% {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        @keyframes slideOutToRight {
+            0% {
+                opacity: 1;
+                transform: translateX(0);
+            }
+            100% {
+                opacity: 0;
+                transform: translateX(100%);
+            }
+        }
     </style>
 </head>
 <body>
     <%- include('../adminPartials/header') %>
     <!-- Admin Dashboard -->
     <div class="container my-5">
+        <div class="toast-container"></div>
         <h2 class="text-center">Admin Dashboard</h2>
         <div class="d-flex justify-content-between align-items-center mb-3">
             <button class="btn btn-success">Add User</button>
@@ -46,10 +89,10 @@
                         <td>
                             <button class="btn btn-primary">Edit</button>
                             <button class="btn btn-danger">Delete</button>
-                            <% if (user.isActive === false) { %>
-                                <button class="btn btn-success">Unblock</button>
+                            <% if (user.isActive) { %>
+                                <button class="btn btn-danger list-toggle" data-id="<%= user._id %>" data-action="unlist">Block</button>
                             <% } else { %>
-                                <button class="btn btn-warning">Block</button>
+                                <button class="btn btn-success list-toggle" data-id="<%= user._id %>" data-action="list">Unblock</button>
                             <% } %>
                         </td>
                     </tr>
@@ -82,31 +125,63 @@
     </script> 
     
     <script>
+        // Block Or Unblock
+        const toastContainer = document.querySelector(".toast-container");
+        const toast = document.createElement("div");
+        toast.className = "toast";
         document.querySelectorAll('.list-toggle').forEach(button => {
             button.addEventListener('click', async function () {
                 const categoryId = this.dataset.id; // Get the category ID
                 const action = this.dataset.action; // Get the action (list or unlist)
-    
+
                 try {
                     // Send a request to the server to toggle the list/unlist status
-                    const response = await fetch(`/categories/${action}/${categoryId}`, {
+                    const response = await fetch(`/user/${action}/${categoryId}`, {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json'
                         }
                     });
-    
+
                     const result = await response.json();
-    
-                    if (result.success) {
-                        // Reload the page to reflect changes
-                        window.location.reload();
-                    } else {
-                        alert(result.message || 'Something went wrong!');
+
+                       if (result.success) {
+                        toast.textContent = result.message;
+                        toast.style.backgroundColor = "#28a745"; // Green color for success
+                        toastContainer.appendChild(toast);
+
+                        setTimeout(() => {
+                            toast.style.display = "block";
+                        }, 100);
+            
+                        setTimeout(() => {
+                            toast.style.animation = "slideOutToRight 0.8s ease-out forwards";
+                        }, 2000);
+                        
+                        setTimeout(() => {
+                            toast.style.display = "none";
+                            toast.remove(); // Remove toast from DOM
+                            window.location.reload()
+                        }, 2800);
+                    }else{
+                        toast.textContent = result.message;
+                        toast.style.backgroundColor = "#dc3545"; // Red color for error
+                        toastContainer.appendChild(toast);
+                        setTimeout(() => {
+                            toast.style.display = "block";
+                        }, 100);
+            
+                        setTimeout(() => {
+                            toast.style.animation = "slideOutToRight 0.8s ease-out forwards";
+                        }, 2000);
+            
+                        setTimeout(() => {
+                            toast.style.display = "none";
+                            toast.remove(); // Remove toast from DOM
+                        }, 2800);
                     }
-                } catch (error) {
-                    console.error('Error:', error);
-                    alert('An error occurred. Please try again.');
+                } catch(error){
+                    console.log(error);
                 }
             });
         });
