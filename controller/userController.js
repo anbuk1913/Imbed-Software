@@ -113,21 +113,24 @@ const otpPost = async(req,res)=>{
 }
 
 const signUpPost = async(req,res)=>{
-    const hashedPassword = await encryptPassword(req.body.password)
-    const userExists = await usercollection.findOne({ email: req.body.email });
-    if (userExists) {
-        req.session.signError = "Email already Exits!";
-        res.redirect("/signup");
-    } else {
-        const user = new usercollection({
-            name: req.body.username,
-            email: req.body.email,
-            phone: req.body.phone,
-            password: hashedPassword
-        });
-        req.session.user=user
-        req.session.signup = true;
-        res.redirect("/otpsend");
+    try{
+        const hashedPassword = await encryptPassword(req.body.password)
+        const userExists = await usercollection.findOne({ email: req.body.email });
+        if (userExists) {
+            return res.status(409).send({ success: false });
+        } else {
+            const user = new usercollection({
+                name: req.body.username,
+                email: req.body.email,
+                phone: req.body.phone,
+                password: hashedPassword
+            });
+            req.session.user=user
+            return res.status(200).send({ success: true });
+        }
+    } catch (error){
+        console.error("Signup error:", error);
+        return res.status(500).send({ success: false, message: "Server error" });
     }
 }
 
@@ -135,19 +138,17 @@ const loginPost = async(req,res)=>{
     try{
         const userData = await usercollection.findOne({ email: req.body.email });
         if (userData) {
-            if (await comparePassword(req.body.password,userData.password)) {
+            if (userData.password && await comparePassword(req.body.password,userData.password)) {
               req.session.loginSession = true;
               req.session.user = {
                 email:req.body.email
               }
-              res.redirect("/");
+              return res.status(200).send({ success: true })
             } else {
-              req.session.logError = "Incorrect Email or Password";
-              res.redirect("/login");
+                return res.status(208).send({ success: false })
             }
           } else {
-            req.session.logError = "Incorrect Email or Password";
-            res.redirect("/login");
+            return res.status(208).send({ success: false })
           }
     } catch (error) {
         console.log(error);

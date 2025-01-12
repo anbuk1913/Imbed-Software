@@ -1,15 +1,18 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login - Imbed Software</title>
     <link rel="icon" href="/images/logo.png">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css">
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Source+Sans+3:ital,wght@0,200..900;1,200..900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Source+Sans+3:ital,wght@0,200..900;1,200..900&display=swap"
+        rel="stylesheet">
     <style>
         /* General Styles */
         body {
@@ -27,6 +30,51 @@
 
         a:hover {
             text-decoration: underline;
+        }
+
+        .toast-container {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 9999;
+        }
+
+        .toast {
+            display: none;
+            background-color: #ff6600;
+            color: white;
+            padding: 15px 30px;
+            border-radius: 12px;
+            font-size: 16px;
+            text-align: center;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+            opacity: 0;
+            transform: translateX(100%);
+            animation: slideInFromRight 0.8s ease-out forwards;
+        }
+
+        @keyframes slideInFromRight {
+            0% {
+                opacity: 0;
+                transform: translateX(100%);
+            }
+
+            100% {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        @keyframes slideOutToRight {
+            0% {
+                opacity: 1;
+                transform: translateX(0);
+            }
+
+            100% {
+                opacity: 0;
+                transform: translateX(100%);
+            }
         }
 
         /* Navbar Styles */
@@ -59,12 +107,13 @@
             border: none;
             border-radius: 10px;
             position: relative;
-            background-image: url('/images/log.jpg'); /* Background image */
+            background-image: url('/images/log.jpg');
+            /* Background image */
             background-size: cover;
             background-position: center;
         }
 
-        .col-md-4{
+        .col-md-4 {
             padding: 0px;
             border-radius: 10px;
             box-shadow: 10px 10px 15px rgba(0, 0, 0, 0.5);
@@ -76,7 +125,7 @@
             color: #8CBF3A;
         }
 
-        span{
+        span {
             color: white;
         }
 
@@ -186,24 +235,34 @@
             height: 20px;
             margin-right: 10px;
         }
+
         /* Transparent Input Fields */
         .form-control {
-            background-color: rgba(255, 255, 255, 0.5); /* Transparent background */
-            border: 1px solid #8CBF3A; /* Green border */
-            border-radius: 5px; /* Rounded corners */
-            color: #333; /* Text color */
+            background-color: rgba(255, 255, 255, 0.5);
+            /* Transparent background */
+            border: 1px solid #8CBF3A;
+            /* Green border */
+            border-radius: 5px;
+            /* Rounded corners */
+            color: #333;
+            /* Text color */
             padding: 0.75rem;
             font-size: 1rem;
         }
 
         .form-control:focus {
-            background-color: rgba(255, 255, 255, 0.7); /* Slightly less transparent on focus */
-            border-color: #45A049; /* Darker green border on focus */
-            outline: none; /* Remove default outline */
-            box-shadow: 0 0 5px rgba(69, 160, 73, 0.8); /* Green shadow effect */
+            background-color: rgba(255, 255, 255, 0.7);
+            /* Slightly less transparent on focus */
+            border-color: #45A049;
+            /* Darker green border on focus */
+            outline: none;
+            /* Remove default outline */
+            box-shadow: 0 0 5px rgba(69, 160, 73, 0.8);
+            /* Green shadow effect */
         }
     </style>
 </head>
+
 <body>
     <!-- Navbar -->
     <nav class="navbar navbar-expand-lg navbar-light bg-white">
@@ -211,7 +270,8 @@
             <a class="navbar-brand" href="#">
                 <img src="/images/logo.png" alt="Logo" style="width: 30px;">
             </a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+                aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
             </button>
             <div class="collapse navbar-collapse" id="navbarNav">
@@ -233,6 +293,7 @@
     <!-- Login Section -->
     <div class="login-section py-5" style="background-color: #f5f5f5;">
         <div class="container">
+            <div class="toast-container"></div>
             <div class="row justify-content-center">
                 <div class="col-md-4">
                     <div class="card p-4 shadow">
@@ -240,10 +301,11 @@
                             <!-- Logo -->
                             <div class="text-center mb-4">
                                 <img src="/images/logo.png" alt="Logo" style="width: 30px; height: auto;"><br>
-                                <img src="/images/logofont.png" alt="IMBED SOFTWARE" style="width: 200px; height: auto;">
+                                <img src="/images/logofont.png" alt="IMBED SOFTWARE"
+                                    style="width: 200px; height: auto;">
                             </div>
-                            
-                            <form id="login" action="/login" method="POST">
+
+                            <form id="login">
                                 <div class="mb-3">
                                     <label for="email" class="form-label">Email</label>
                                     <input type="email" class="form-control" id="email" name="email">
@@ -253,11 +315,6 @@
                                     <label for="password" class="form-label">Password</label>
                                     <input type="password" class="form-control" id="password" name="password">
                                     <div id="password-error" class="text-danger" style="display:none;"></div>
-                                    <% if (logErr) { %>
-                                        <p style="color: red;display: flex;justify-content: center;">
-                                          <%=logErr%>
-                                        </p>
-                                    <% } %>
                                 </div>
                                 <div class="d-grid">
                                     <button type="submit" class="btn btn-success">Log In</button>
@@ -276,8 +333,8 @@
                                     Sign Up with Google
                                 </a>
                             </div>
-                        </div>  
-                        <div class="overlay"></div>                      
+                        </div>
+                        <div class="overlay"></div>
                     </div>
                 </div>
             </div>
@@ -327,8 +384,8 @@
             </div>
         </div>
     </footer>
-
     <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
 
     <script defer>
         $(document).ready(function () {
@@ -336,17 +393,16 @@
             $('#email').on('blur', function () {
                 const email = $(this).val().trim();
                 const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-
+    
                 if (!email) {
                     $('#email-error').text('*Email is required').show();
-                }
-                else if (!emailRegex.test(email)) {
+                } else if (!emailRegex.test(email)) {
                     $('#email-error').text('*Please enter a valid email address').show();
                 } else {
                     $('#email-error').hide();
                 }
             });
-
+    
             // Password validation on blur
             $('#password').on('blur', function () {
                 const password = $(this).val().trim();
@@ -356,14 +412,16 @@
                     $('#password-error').hide();
                 }
             });
-
+    
             // Form submission validation
-            $('#login').submit(function (event) {
+            $('#login').submit(async function (event) {
+                event.preventDefault(); // Prevent form reload
+    
                 const email = $('#email').val().trim();
                 const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
                 const password = $('#password').val().trim();
                 let valid = true;
-
+    
                 // Validate email
                 if (!email) {
                     $('#email-error').text('*Email is required').show();
@@ -374,7 +432,7 @@
                 } else {
                     $('#email-error').hide();
                 }
-
+    
                 // Validate password
                 if (!password) {
                     $('#password-error').text('*Password is required').show();
@@ -382,13 +440,52 @@
                 } else {
                     $('#password-error').hide();
                 }
+    
+                // Proceed only if the form is valid
+                if (valid) {
+                    let formData = {
+                        email: $('#email').val(),
+                        password: $('#password').val()
+                    };
+    
+                    try {
+                        let response = await fetch('/login', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify(formData)
+                        });
+                        const result = await response.json();
+                        const toastContainer = document.querySelector(".toast-container");
+                        const toast = document.createElement("div");
+                        toast.className = "toast";
+                        if (result.success==false) {
+                            toast.textContent = "Incorrect Email or Password!";
+                            toast.style.backgroundColor = "#dc3545"; // Red color for error
+                            toastContainer.appendChild(toast);
+                            setTimeout(() => {
+                                toast.style.display = "block";
+                            }, 100);
 
-                // Prevent form submission if not valid
-                if (!valid) {
-                    event.preventDefault();
+                            setTimeout(() => {
+                                toast.style.animation = "slideOutToRight 0.8s ease-out forwards";
+                            }, 3000);
+
+                            setTimeout(() => {
+                                toast.style.display = "none";
+                                toast.remove(); // Remove toast from DOM
+                            }, 3800);
+                        } else {
+                            // Redirect on successful login
+                            window.location.href = "/";
+                        }
+                    } catch (error) {
+                        console.error("Login error:", error);
+                    }
                 }
             });
         });
     </script>
+    
 </body>
+
 </html>

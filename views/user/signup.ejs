@@ -7,13 +7,14 @@
   <title>Imbed Software - SignUp</title>
   <link rel="icon" href="/images/logo.png">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css">
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Source+Sans+3:ital,wght@0,200..900;1,200..900&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Source+Sans+3:ital,wght@0,200..900;1,200..900&display=swap"
+    rel="stylesheet">
   <style>
-
     body {
       font-family: 'Source Sans 3', sans-serif;
       margin: 0;
@@ -26,22 +27,70 @@
       0% {
         background-position: 0% 50%;
       }
+
       50% {
         background-position: 100% 50%;
       }
+
       100% {
         background-position: 0% 50%;
       }
     }
 
-    .navbar{
-        width: 100%;
-        box-shadow: 10px 10px 15px rgba(0, 0, 0, 0.5);
+    .navbar {
+      width: 100%;
+      box-shadow: 10px 10px 15px rgba(0, 0, 0, 0.5);
+    }
+
+    .toast-container {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      z-index: 9999;
+    }
+
+    .toast {
+      display: none;
+      background-color: #ff6600;
+      color: white;
+      padding: 15px 30px;
+      border-radius: 12px;
+      font-size: 16px;
+      text-align: center;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+      opacity: 0;
+      transform: translateX(100%);
+      animation: slideInFromRight 0.8s ease-out forwards;
+    }
+
+    @keyframes slideInFromRight {
+      0% {
+        opacity: 0;
+        transform: translateX(100%);
+      }
+
+      100% {
+        opacity: 1;
+        transform: translateX(0);
+      }
+    }
+
+    @keyframes slideOutToRight {
+      0% {
+        opacity: 1;
+        transform: translateX(0);
+      }
+
+      100% {
+        opacity: 0;
+        transform: translateX(100%);
+      }
     }
 
     .signup-container {
       margin: 50px 0px;
-      background-image: url('/images/log.jpg'); /* Background image */
+      background-image: url('/images/log.jpg');
+      /* Background image */
       background-size: cover;
       background-position: center;
       padding: 20px;
@@ -68,21 +117,29 @@
     }
 
     .form-group input {
-        width: 100%;
-        background-color: rgba(255, 255, 255, 0.5); /* Transparent background */
-        border: 1px solid #8CBF3A; /* Green border */
-        border-radius: 5px; /* Rounded corners */
-        color: #333; /* Text color */
-        padding: 0.75rem;
-        font-size: 1rem;
+      width: 100%;
+      background-color: rgba(255, 255, 255, 0.5);
+      /* Transparent background */
+      border: 1px solid #8CBF3A;
+      /* Green border */
+      border-radius: 5px;
+      /* Rounded corners */
+      color: #333;
+      /* Text color */
+      padding: 0.75rem;
+      font-size: 1rem;
     }
 
     .form-group input:focus {
-        background-color: rgba(255, 255, 255, 0.7); /* Slightly less transparent on focus */
-        border-color: #45A049; /* Darker green border on focus */
-        outline: none; /* Remove default outline */
-        box-shadow: 0 0 5px rgba(69, 160, 73, 0.8); /* Green shadow effect */
-        outline: none;
+      background-color: rgba(255, 255, 255, 0.7);
+      /* Slightly less transparent on focus */
+      border-color: #45A049;
+      /* Darker green border on focus */
+      outline: none;
+      /* Remove default outline */
+      box-shadow: 0 0 5px rgba(69, 160, 73, 0.8);
+      /* Green shadow effect */
+      outline: none;
     }
 
     .btn {
@@ -125,44 +182,45 @@
       border-color: red;
     }
 
-    .py-5{
-        width: 100%;
+    .py-5 {
+      width: 100%;
     }
-
   </style>
 </head>
 
 <body>
-     <!-- Navbar -->
-     <nav class="navbar navbar-expand-lg navbar-light bg-white">
-        <div class="container">
-            <a class="navbar-brand" href="#">
-                <img src="/images/logo.png" alt="Logo" style="width: 30px;">
-            </a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav ms-auto">
-                    <li class="nav-item">
-                        <a class="nav-link" href="#">Home</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#">Shop</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#"><i class="bi bi-person"></i></a>
-                    </li>
-                </ul>
-            </div>
-        </div>
-    </nav>
-    
-    <!-- Logo -->
-    <div class="signup-container">
+  <!-- Navbar -->
+  <nav class="navbar navbar-expand-lg navbar-light bg-white">
+    <div class="container">
+      <a class="navbar-brand" href="#">
+        <img src="/images/logo.png" alt="Logo" style="width: 30px;">
+      </a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+        aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav ms-auto">
+          <li class="nav-item">
+            <a class="nav-link" href="#">Home</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="#">Shop</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="#"><i class="bi bi-person"></i></a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Logo -->
+  <div class="signup-container">
+    <div class="toast-container"></div>
     <div class="text-center mb-4">
-        <img src="/images/logo.png" alt="Logo" style="width: 30px; height: auto;"><br>
-        <img src="/images/logofont.png" alt="IMBED SOFTWARE" style="width: 200px; height: auto;">
+      <img src="/images/logo.png" alt="Logo" style="width: 30px; height: auto;"><br>
+      <img src="/images/logofont.png" alt="IMBED SOFTWARE" style="width: 200px; height: auto;">
     </div>
     <form id="signUpForm" action="/signup" method="POST">
       <div class="form-group">
@@ -190,12 +248,7 @@
         <input type="password" id="confirm-password" name="confirm-password">
         <div class="error" style="color: red;" id="confirm-password-error"></div>
       </div>
-      <% if (signErr) { %>
-        <p style="color: red;display: flex;justify-content: center;">
-          <%=signErr%>
-        </p>
-    <% } %>
-      <button type="submit" class="btn">Request OTP</button>
+          <button type="submit" class="btn">Request OTP</button>
     </form>
     <div class="already-member">
       <p style="color: white;">Already have an account? <a href="/login" style="color: #8CBF3A;">Login here</a></p>
@@ -205,132 +258,184 @@
   <!-- Footer -->
   <footer class="py-5" style="background-color: #8CBF3A; color: white;">
     <div class="container">
-        <div class="row">
-            <div class="col-md-3">
-                <h5>Contact Us</h5>
-                <p>Address: Lords, London, UK - 1920</p>
-                <p>Phone: 002 63546 24624</p>
-                <p>Fax: 002 78965 39652</p>
-                <p>Email: <a href="mailto:support@example.com" style="color: white;">support@example.com</a></p>
-            </div>
-            <div class="col-md-3">
-                <h5>Information</h5>
-                <ul class="list-unstyled">
-                    <li><a href="#" style="color: white;">Your Account</a></li>
-                    <li><a href="#" style="color: white;">Free Shipping Policy</a></li>
-                    <li><a href="#" style="color: white;">Return Policy</a></li>
-                </ul>
-            </div>
-            <div class="col-md-3">
-                <h5>Support</h5>
-                <ul class="list-unstyled">
-                    <li><a href="#" style="color: white;">Payment Method</a></li>
-                    <li><a href="#" style="color: white;">Product Support</a></li>
-                </ul>
-            </div>
-            <div class="col-md-3">
-                <h5>Join Our Mailing List</h5>
-                <form>
-                    <div class="input-group">
-                        <input type="email" class="form-control" placeholder="Your Email Address">
-                        <button class="btn btn-dark">→</button>
-                    </div>
-                </form>
-                <h5 class="mt-3">Download Our Mobile Apps</h5>
-                <img src="/path-to-app-store-badges.png" alt="App Stores" style="width: 100%;">
-            </div>
+      <div class="row">
+        <div class="col-md-3">
+          <h5>Contact Us</h5>
+          <p>Address: Lords, London, UK - 1920</p>
+          <p>Phone: 002 63546 24624</p>
+          <p>Fax: 002 78965 39652</p>
+          <p>Email: <a href="mailto:support@example.com" style="color: white;">support@example.com</a></p>
         </div>
-        <div class="text-center mt-3">
-            <p>Made with <i class="bi bi-heart-fill"></i> by Designing World</p>
+        <div class="col-md-3">
+          <h5>Information</h5>
+          <ul class="list-unstyled">
+            <li><a href="#" style="color: white;">Your Account</a></li>
+            <li><a href="#" style="color: white;">Free Shipping Policy</a></li>
+            <li><a href="#" style="color: white;">Return Policy</a></li>
+          </ul>
         </div>
+        <div class="col-md-3">
+          <h5>Support</h5>
+          <ul class="list-unstyled">
+            <li><a href="#" style="color: white;">Payment Method</a></li>
+            <li><a href="#" style="color: white;">Product Support</a></li>
+          </ul>
+        </div>
+        <div class="col-md-3">
+          <h5>Join Our Mailing List</h5>
+          <form>
+            <div class="input-group">
+              <input type="email" class="form-control" placeholder="Your Email Address">
+              <button class="btn btn-dark">→</button>
+            </div>
+          </form>
+          <h5 class="mt-3">Download Our Mobile Apps</h5>
+          <img src="/path-to-app-store-badges.png" alt="App Stores" style="width: 100%;">
+        </div>
+      </div>
+      <div class="text-center mt-3">
+        <p>Made with <i class="bi bi-heart-fill"></i> by Designing World</p>
+      </div>
     </div>
-</footer>
-  
-<script>
-  const form = document.getElementById('signUpForm');
-  const username = document.getElementById('username');
-  const email = document.getElementById('email');
-  const phone = document.getElementById('phone');
-  const password = document.getElementById('password');
-  const confirmPassword = document.getElementById('confirm-password');
+  </footer>
 
-  const usernameError = document.getElementById('username-error');
-  const emailError = document.getElementById('email-error');
-  const phoneError = document.getElementById('phone-error');
-  const passwordError = document.getElementById('password-error');
-  const confirmPasswordError = document.getElementById('confirm-password-error');
+  <script>
+    const form = document.getElementById('signUpForm');
+    const username = document.getElementById('username');
+    const email = document.getElementById('email');
+    const phone = document.getElementById('phone');
+    const password = document.getElementById('password');
+    const confirmPassword = document.getElementById('confirm-password');
 
-  const usernameRegex = /^[a-zA-Z\s]+$/;
-  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-  const phoneRegex = /^[0-9]{10}$/;
-  const passwordRegex = /^(?=.*\d)[^\s]{8,}$/;
+    const usernameError = document.getElementById('username-error');
+    const emailError = document.getElementById('email-error');
+    const phoneError = document.getElementById('phone-error');
+    const passwordError = document.getElementById('password-error');
+    const confirmPasswordError = document.getElementById('confirm-password-error');
 
-  function validateField(input, regex, errorElement, errorMessage) {
+    const usernameRegex = /^[a-zA-Z\s]+$/;
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    const phoneRegex = /^[0-9]{10}$/;
+    const passwordRegex = /^(?=.*\d)[^\s]{8,}$/;
+
+    function validateField(input, regex, errorElement, errorMessage) {
       if (input.value.trim() === '') {
-          errorElement.textContent = `*${errorMessage} is required`;
-          input.classList.add('error');
-          return false;
+        errorElement.textContent = `*${errorMessage} is required`;
+        input.classList.add('error');
+        return false;
       } else if (!regex.test(input.value.trim())) {
-          errorElement.textContent = `*Invalid ${errorMessage}`;
-          input.classList.add('error');
-          return false;
+        errorElement.textContent = `*Invalid ${errorMessage}`;
+        input.classList.add('error');
+        return false;
       } else {
-          errorElement.textContent = '';
-          input.classList.remove('error');
-          return true;
+        errorElement.textContent = '';
+        input.classList.remove('error');
+        return true;
       }
-  }
+    }
 
-  function validatePassword() {
+    function validatePassword() {
       if (password.value.trim() === '') {
-          passwordError.textContent = '*Password is required';
-          password.classList.add('error');
-          return false;
+        passwordError.textContent = '*Password is required';
+        password.classList.add('error');
+        return false;
       } else if (!passwordRegex.test(password.value)) {
-          passwordError.textContent = '*Password must be at least 8 characters, include 1 number, and contain no spaces';
-          password.classList.add('error');
-          return false;
+        passwordError.textContent = '*Password must be at least 8 characters, include 1 number, and contain no spaces';
+        password.classList.add('error');
+        return false;
       } else {
-          passwordError.textContent = '';
-          password.classList.remove('error');
-          return true;
+        passwordError.textContent = '';
+        password.classList.remove('error');
+        return true;
       }
-  }
+    }
 
-  function validateConfirmPassword() {
+    function validateConfirmPassword() {
       if (confirmPassword.value.trim() === '') {
-          confirmPasswordError.textContent = '*Confirm Password is required';
-          confirmPassword.classList.add('error');
-          return false;
+        confirmPasswordError.textContent = '*Confirm Password is required';
+        confirmPassword.classList.add('error');
+        return false;
       } else if (confirmPassword.value !== password.value) {
-          confirmPasswordError.textContent = '*Passwords do not match';
-          confirmPassword.classList.add('error');
-          return false;
+        confirmPasswordError.textContent = '*Passwords do not match';
+        confirmPassword.classList.add('error');
+        return false;
       } else {
-          confirmPasswordError.textContent = '';
-          confirmPassword.classList.remove('error');
-          return true;
+        confirmPasswordError.textContent = '';
+        confirmPassword.classList.remove('error');
+        return true;
       }
-  }
+    }
 
-  username.addEventListener('blur', () => validateField(username, usernameRegex, usernameError, 'Name'));
-  email.addEventListener('blur', () => validateField(email, emailRegex, emailError, 'Email'));
-  phone.addEventListener('blur', () => validateField(phone, phoneRegex, phoneError, 'Phone number'));
-  password.addEventListener('blur', validatePassword);
-  confirmPassword.addEventListener('blur', validateConfirmPassword);
+    username.addEventListener('blur', () => validateField(username, usernameRegex, usernameError, 'Name'));
+    email.addEventListener('blur', () => validateField(email, emailRegex, emailError, 'Email'));
+    phone.addEventListener('blur', () => validateField(phone, phoneRegex, phoneError, 'Phone number'));
+    password.addEventListener('blur', validatePassword);
+    confirmPassword.addEventListener('blur', validateConfirmPassword);
 
-  form.addEventListener('submit', (e) => {
-      const isUsernameValid = validateField(username, usernameRegex, usernameError, 'Name');
-      const isEmailValid = validateField(email, emailRegex, emailError, 'Email');
-      const isPhoneValid = validateField(phone, phoneRegex, phoneError, 'Phone number');
-      const isPasswordValid = validatePassword();
-      const isConfirmPasswordValid = validateConfirmPassword();
+    form.addEventListener('submit', async (e) => {
+    e.preventDefault(); // Prevent form reload
 
-      if (!isUsernameValid || !isEmailValid || !isPhoneValid || !isPasswordValid || !isConfirmPasswordValid) {
-          e.preventDefault(); // Prevent form submission if validation fails
-      }
-  });
-</script>
+    const isUsernameValid = validateField(username, usernameRegex, usernameError, 'Name');
+    const isEmailValid = validateField(email, emailRegex, emailError, 'Email');
+    const isPhoneValid = validateField(phone, phoneRegex, phoneError, 'Phone number');
+    const isPasswordValid = validatePassword();
+    const isConfirmPasswordValid = validateConfirmPassword();
+
+    if (!isUsernameValid || !isEmailValid || !isPhoneValid || !isPasswordValid || !isConfirmPasswordValid) {
+        return; // Stop if validation fails
+    }
+
+    let formData = {
+        username: $('#username').val(),
+        email: $('#email').val(),
+        phone: $('#phone').val(),
+        password: $('#password').val()
+    };
+
+    try {
+        let response = await fetch('/signup', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(formData)
+        });
+
+        const result = await response.json();
+        const toastContainer = document.querySelector(".toast-container");
+        const toast = document.createElement("div");
+        toast.className = "toast";
+
+        if (result.success === false) {
+            toast.textContent = "Email already exists!";
+            toast.style.backgroundColor = "#dc3545"; // Red for error
+        } else {
+            toast.textContent = "OTP Sent Successfully!";
+            toast.style.backgroundColor = "#28a745"; // Green for success
+            setTimeout(() => {
+                window.location.href = "/otpsend";
+            }, 1500);
+        }
+
+        toastContainer.appendChild(toast);
+        setTimeout(() => {
+            toast.style.display = "block";
+        }, 100);
+
+        setTimeout(() => {
+            toast.style.animation = "slideOutToRight 0.8s ease-out forwards";
+        }, 3000);
+
+        setTimeout(() => {
+            toast.style.display = "none";
+            toast.remove();
+        }, 3800);
+
+    } catch (error) {
+        console.error("Signup error:", error);
+    }
+});
+
+  </script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 
 </html>

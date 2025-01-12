@@ -7,16 +7,14 @@ const categoryPage = async(req,res)=>{
 
 const addCategory = async(req,res)=>{
     try {
-        const newCategory = new category({
-            categoryName: req.body.categoryName,
-            categoryDescription: req.body.categoryDescription
-        });
-
         const categoryCheck = await category.findOne({categoryName:{$regex: new RegExp('^'+req.body.categoryName +'$','i') }});
-
         if (categoryCheck) {
             return res.status(208).send({ categoryExists: true })
         } else {
+            const newCategory = new category({
+                categoryName: req.body.categoryName,
+                categoryDescription: req.body.categoryDescription
+            });
             newCategory.save();
             return res.status(200).send({ success: true })
         }
