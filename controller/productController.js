@@ -5,7 +5,6 @@ const fs = require('fs');
 
 const productPage = async(req,res)=>{
     const products = await product.find({})
-    console.log('pr ', products)
     return res.render("admin/product",{products})
 }
 

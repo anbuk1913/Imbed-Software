@@ -14,6 +14,7 @@
         body {
             font-family: 'Source Sans 3', sans-serif;
             margin: 0;
+            background-color: #d3d2d1;
             padding: 0;
             box-sizing: border-box;
         }
@@ -51,33 +52,108 @@
             color: #8CBF3A;
         }
 
-        /* Hero Section */
-        .hero {
-            background-color: #f5f5f5;
-            padding: 50px 0;
+        /* Banner */
+        .slider {
+            position: relative;
+            width: 100%;
+            height: 56.25vw; /* Maintain 16:9 aspect ratio (9/16 * 100%) */
+            max-height: 70vh; 
+            overflow: hidden;
+            background: black; /* Background color to fill empty spaces */
         }
 
-        .hero h1 {
-            font-size: 2.5rem;
-            margin-bottom: 20px;
+        .slides {
+            display: flex;
+            transition: transform 1s ease-in-out;
         }
 
-        .hero .btn {
-            background-color: #8CBF3A;
+        .slide {
+            flex: 0 0 100%; /* Each slide takes up 100% of the slider width */
+        }
+
+        .slide img {
+            width: 100%;
+            height: fit-content; /* Maintain aspect ratio */
+            display: block; /* Avoid inline spacing issues */
+        }
+
+        .dots {
+            position: absolute;
+            bottom: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 10px;
+        }
+
+        .dot {
+            width: 12px;
+            height: 12px;
+            background-color: #ddd;
+            border-radius: 50%;
+            cursor: pointer;
+        }
+
+        .dot.active {
+            background-color: #333;
+        }
+
+        /* General Overlay Setup */
+        .overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+        }
+
+        /* Layer 1: Subtle Dark Overlay */
+        .layer1 {
+            background: rgba(0, 0, 0, 0.3); /* Light black tint */
+            z-index: 1;
+        }
+
+        /* Layer 2: Soft Glow */
+        .layer2 {
+            background: rgba(255, 255, 255, 0.1); /* Soft white overlay */
+            mix-blend-mode: overlay;
+            z-index: 2;
+        }
+
+        /* Layer 3: Strong Dark Overlay */
+        .layer3 {
+            background: rgba(0, 0, 0, 0.5); /* Darker black tint */
+            z-index: 3;
+        }
+
+        /* Ensure Slides Stack Properly */
+        .slide {
+            position: relative;
+        }
+
+        .slide-title {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
             color: white;
-            padding: 10px 20px;
-            border-radius: 5px;
-            font-size: 1rem;
+            font-size: 3vw;
+            text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.7);
+            z-index: 4;
+            text-align: center;
         }
 
-        .hero .btn:hover {
-            background-color: #8CBF3A;
+        @media (max-width: 768px) {
+            .slide-title {
+                font-size: 5vw;
+            }
         }
 
         /* Categories Section */
         .categories {
-            background-color: #f9f9f9;
-            padding: 30px 0;
+            background-color: #d3d2d1;
+            padding: 10px 0;
         }
 
         .categories h2 {
@@ -90,20 +166,75 @@
             margin: 10px;
         }
 
+        /* Category Images */
         .categories .category img {
-            width: 80px;
-            height: 80px;
+            width: 120px;
+            height: 120px;
             border-radius: 50%;
-            border: 2px solid #8CBF3A;
-            padding: 10px;
+            border: 2px solid #365702;
             margin-bottom: 10px;
+            transition: transform 0.3s, box-shadow 0.3s;
+            object-fit: cover;
         }
 
+        /* Hover Effect */
+        .category img:hover {
+            transform: scale(1.1);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        /* Category Text */
         .categories .category p {
             font-size: 1rem;
             font-weight: 500;
             margin: 0;
         }
+
+        /* Flexbox Layout for Categories */
+        .categories .d-flex {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 20px;
+        }
+
+        /* Responsive for Tablets */
+        @media (max-width: 768px) {
+            .categories h2 {
+                font-size: 1.8rem;
+            }
+
+            .categories .category img {
+                width: 90px;
+                height: 90px;
+            }
+
+            .categories .category p {
+                font-size: 0.9rem;
+            }
+        }
+
+        /* Responsive for Mobile */
+        @media (max-width: 576px) {
+            .categories .d-flex {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .categories .category img {
+                width: 70px;
+                height: 70px;
+            }
+
+            .categories h2 {
+                font-size: 1.5rem;
+            }
+
+            .categories .category p {
+                font-size: 0.8rem;
+            }
+        }
+
 
         /* Products Section */
         .products h2 {
@@ -113,7 +244,8 @@
         }
 
         .products .card {
-            border: 1px solid #e0e0e0;
+            border: 1px solid #d2d1d1;
+            background-color: #e7e7e7;
             border-radius: 10px;
             transition: transform 0.3s, box-shadow 0.3s;
         }
@@ -187,7 +319,8 @@
                     <!-- User Profile Section -->
                     <div class="dropdown ms-3">
                         <a href="#" class="d-flex align-items-center text-decoration-none dropdown-toggle" id="userProfileDropdown" data-bs-toggle="dropdown" aria-expanded="false">
-                            <img src="/images/userProfile.jpg" style="width: 30px; height: 30px; border-radius: 50%;">
+                            <% if(name){ %>
+                                <img src="/images/userProfile.jpg" style="width: 30px; height: 30px; border-radius: 50%;">
                             <span class="ms-2"><%= name %></span>
                         </a>
                         <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userProfileDropdown">
@@ -195,6 +328,14 @@
                             <li><hr class="dropdown-divider"></li>
                             <li><a class="dropdown-item" href="" onclick="document.getElementById('logoutForm').submit(); return false;">Logout</a></li>
                         </ul>
+                            <% } else {%>
+                            <img src="/images/userProfile.jpg" style="width: 30px; height: 30px; border-radius: 50%;">
+                            <span class="ms-2"><%= name %></span>
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userProfileDropdown">
+                            <li><a class="dropdown-item" href="/login">Log In</a></li>
+                        </ul>
+                        <% } %>
                     </div>
                     <!-- End of User Profile Section -->
                 </div>
@@ -203,31 +344,48 @@
     </header>
     
 
-    <!-- Hero Section -->
-    <section class="hero">
-        <div class="container text-center">
-            <div class="row">
-                <div class="col-md-4"><img src="/images/hero1.jpg" alt="Electronics 1" class="img-fluid"></div>
-                <div class="col-md-4">
-                    <h1>PCB Boards</h1>
-                    <a href="/shop" class="btn btn-success">Buy Now</a>
-                </div>
-                <div class="col-md-4"><img src="/images/hero2.jpg" alt="Electronics 2" class="img-fluid"></div>
+    <!-- Banner -->
+    <div class="slider">
+        <div class="slides">
+            <div class="slide">
+                <img src="/uploads/banner2.png" alt="Slide 1">
+                <h1 class="slide-title">Trusted Supplier for All Your Projects</h1>
+                <div class="overlay layer1"></div>
+                <div class="overlay layer2"></div>
+                <div class="overlay layer3"></div>
+            </div>
+            <div class="slide">
+                <img src="/uploads/banner3.png" alt="Slide 2">
+                <h1 class="slide-title">High-Quality Electronic Components</h1>
+                <div class="overlay layer1"></div>
+                <div class="overlay layer2"></div>
+                <div class="overlay layer3"></div>
+            </div>
+            <div class="slide">
+                <img src="/uploads/banner1.png" alt="Slide 3">
+                <h1 class="slide-title">Wide Range of Circuit Solutions</h1>
+                <div class="overlay layer1"></div>
+                <div class="overlay layer2"></div>
+                <div class="overlay layer3"></div>
             </div>
         </div>
-    </section>
+        <div class="dots">
+            <div class="dot active" data-slide="0"></div>
+            <div class="dot" data-slide="1"></div>
+            <div class="dot" data-slide="2"></div>
+        </div>
+      </div>
 
     <!-- Categories Section -->
     <section class="categories py-5">
         <div class="container text-center">
             <h2>Shop by Category</h2>
             <div class="d-flex justify-content-center">
-                <% const categories = ['AT Mega', 'Arduino', 'Texas', 'Microchip', 'Molex']; %>
                 <% categories.forEach(category => { %>
                     <div class="category mx-2">
-                        <a href="/shop/<%= category.toLowerCase() %>">
-                            <img src="/images/<%= category.toLowerCase() %>.png" alt="<%= category %>" class="img-fluid">
-                            <p><%= category %></p>
+                        <a href="/shop/<%= category.categoryName.toLowerCase() %>">
+                            <img src="/category/<%= category.categoryName %>.jpg" alt="<%= category.categoryName %>" class="img-fluid">
+                            <p><%= category.categoryName %></p>
                         </a>
                     </div>
                 <% }) %>
@@ -239,23 +397,19 @@
     <section class="products py-5">
         <div class="container">
             <h2 class="text-center">Best Selling Products</h2>
-            <div class="row">
-                <% const products = [
-                    { name: 'IC 7400', price: '₹69', oldPrice: null, image: 'ic7400.png' },
-                    { name: 'IR - Transmitter', price: '₹159', oldPrice: '₹200', image: 'ir_transmitter.png' },
-                    { name: 'Transistor BC557', price: '₹25', oldPrice: '₹35', image: 'transistor.png' },
-                    { name: 'Raspberry Pi 4', price: '₹2599', oldPrice: null, image: 'raspberry_pi.png' },
-                ]; %>
+            <div class="row justify-content-center">
                 <% products.forEach(product => { %>
                     <div class="col-md-3">
                         <div class="card">
-                            <img src="/images/<%= product.image %>" class="card-img-top" alt="<%= product.name %>">
+                            <img src="<%= product.productImage1 %>" class="card-img-top" alt="<%= product.productName %>">
                             <div class="card-body text-center">
-                                <h5 class="card-title"><%= product.name %></h5>
+                                <h5 class="card-title"><%= product.productName %></h5>
                                 <p class="card-text">
-                                    <strong><%= product.price %></strong>
-                                    <% if (product.oldPrice) { %>
-                                        <del><%= product.oldPrice %></del>
+                                    <% if(product.productOfferPrice){ %>
+                                        <strong>₹<%= product.productOfferPrice %></strong>
+                                        <del>₹<%= product.productPrice %></del>
+                                    <% } else { %>
+                                        <strong>₹<%= product.productPrice %></strong>
                                     <% } %>
                                 </p>
                             </div>
@@ -308,5 +462,32 @@
         </div>
     </footer>    
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+        // Banner
+        const slides = document.querySelector('.slides');
+        const dots = document.querySelectorAll('.dot');
+        let currentIndex = 0;
+    
+        function showSlide(index) {
+            slides.style.transform = `translateX(-${index * 100}%)`;
+            dots.forEach(dot => dot.classList.remove('active'));
+            dots[index].classList.add('active');
+        }
+    
+        function nextSlide() {
+            currentIndex = (currentIndex + 1) % dots.length;
+            showSlide(currentIndex);
+        }
+    
+        dots.forEach(dot => {
+            dot.addEventListener('click', () => {
+                currentIndex = parseInt(dot.dataset.slide);
+                showSlide(currentIndex);
+            });
+        });
+    
+        setInterval(nextSlide, 5000);
+    </script>
 </body>
 </html>

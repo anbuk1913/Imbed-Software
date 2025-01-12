@@ -68,7 +68,7 @@
         <div class="toast-container"></div>
         <h2 class="text-center">Admin Dashboard</h2>
         <div class="d-flex justify-content-between align-items-center mb-3">
-            <button class="btn btn-success">Add User</button>
+            <!-- <button class="btn btn-success">Add User</button> -->
             <input type="text" class="form-control w-25"  placeholder="Search User">
         </div>
         <table class="table table-bordered">
@@ -87,8 +87,8 @@
                         <td><%= user.email %></td>
                         <td><%= user.phone %></td>
                         <td>
-                            <button class="btn btn-primary">Edit</button>
-                            <button class="btn btn-danger">Delete</button>
+                            <!-- <button class="btn btn-primary">Edit</button>
+                            <button class="btn btn-danger">Delete</button> -->
                             <% if (user.isActive) { %>
                                 <button class="btn btn-danger list-toggle" data-id="<%= user._id %>" data-action="unlist">Block</button>
                             <% } else { %>

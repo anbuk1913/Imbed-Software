@@ -1,4 +1,6 @@
 const bcrypt = require('bcrypt')
+const product = require("../model/productModel")
+const category = require("../model/categoryModel");
 const usercollection = require("../model/userModel");
 const sendotp = require('../helper/sendOtp')
 const passport = require('passport');
@@ -15,23 +17,29 @@ async function comparePassword(enteredPassword, storedPassword) {
 }
 
 const homePage = async (req,res)=>{
-    let name=""
-    if(req.session.loginSession || req.session.signupSession){
-        const userEmail = req.session.user.email
-        userVer = await usercollection.findOne({ email: userEmail });
-        if(userVer){
-            if(userVer.isActive == false){
-                req.session.block = true
-                return res.redirect("/blocked")
+    try{
+        let name = ""
+        const products = await product.find({}).limit(4)
+        const categories = await category.find({}).limit(5)
+        if(req.session.loginSession || req.session.signupSession){
+            const userEmail = req.session.user.email
+            const userVer = await usercollection.findOne({ email: userEmail });
+            if(userVer){
+                if(userVer.isActive == false){
+                    req.session.block = true
+                    return res.redirect("/blocked")
+                } else {
+                    name = userVer.name
+                    return res.render("user/home",{name,products,categories})
+                }
             } else {
-                name = userVer.name
-                return res.render("user/home",{name})
+                return res.render("user/home",{name,products,categories})
             }
         } else {
-            return res.render("user/home",{name})
+            return res.render("user/home",{name,products,categories})
         }
-    } else {
-        return res.render("user/home",{name})
+    }catch(error) {
+        console.log(error)
     }
 }
 
@@ -106,17 +114,17 @@ const otpPost = async(req,res)=>{
 
 const signUpPost = async(req,res)=>{
     const hashedPassword = await encryptPassword(req.body.password)
-    const user = new usercollection({
-        name: req.body.username,
-        email: req.body.email,
-        phone: req.body.phone,
-        password: hashedPassword
-    });
     const userExists = await usercollection.findOne({ email: req.body.email });
     if (userExists) {
         req.session.signError = "Email already Exits!";
         res.redirect("/signup");
     } else {
+        const user = new usercollection({
+            name: req.body.username,
+            email: req.body.email,
+            phone: req.body.phone,
+            password: hashedPassword
+        });
         req.session.user=user
         req.session.signup = true;
         res.redirect("/otpsend");
