@@ -19,7 +19,7 @@ const addProduct = async(req,res)=>{
 
 const addProductPost = async (req, res) => {
     try {
-        const { productName, productDescription, productPrice, productStock, productCategory } = req.body;
+        const { productName, productDescription, productPrice, productOfferPrice, productStock, productCategory } = req.body;
 
         if (!productName || !productDescription || !productPrice || !productStock || !productCategory) {
             return res.status(400).send('All fields are required.');
@@ -45,6 +45,7 @@ const addProductPost = async (req, res) => {
             productName,
             productDescription,
             productPrice,
+            productOfferPrice,
             productStock, // Correct field name (was 'productStack' in your schema)
             productCategory,
             productImage1: productImages.productImage1 || '',

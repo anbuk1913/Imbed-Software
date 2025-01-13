@@ -47,13 +47,14 @@ const listCategory = async(req,res)=>{
 
 const editCategory = async(req,res)=>{
     try{
-    const editedCategory = {
-            _id : req.body.id,
-            categoryName: req.body.name,
-            categoryDescription : req.body.description
+        const categoryCheck = await category.find({categoryName:{$regex: new RegExp('^'+req.body.categoryName +'$','i') }});
+        if((categoryCheck.length == 1 && req.body._id == categoryCheck[0]._id) || categoryCheck.length == 0){
+            const ress=await category.updateOne({ _id: req.body._id }, { $set: { categoryName: req.body.categoryName, categoryDescription: req.body.categoryDescription } });
+            console.log(ress)
+            res.json({ success: true, message: 'Category Edited successfully.'});
+        } else {
+            res.json({ success: false, message: 'Category already exits!'});
         }
-        await category.updateOne({ _id:editedCategory._id}, { categoryName:editedCategory.categoryName, categoryDescription:editedCategory.categoryDescription})
-        res.redirect("/admin/category")
     } catch(error) {
         console.log(error)
     }

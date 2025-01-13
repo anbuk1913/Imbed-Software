@@ -137,7 +137,7 @@
                             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                         </div>
                         <div class="modal-body">
-                            <form id="editForm" action="/categories/edit?_method=PUT" method="post">
+                            <form id="editForm">
                                 <input type="hidden" id="categoryId" name="id"> <!-- Hidden field for category ID -->
                                 <div class="mb-3">
                                     <label for="editCategoryName" class="form-label">Category Name</label>
@@ -369,28 +369,9 @@
             </script>
 
             <script>
-                // JavaScript for search functionality
-                document.querySelector("input[placeholder='Search Category']").addEventListener("input", function (event) {
-                    const query = event.target.value.toLowerCase(); // Get the search query and convert it to lowercase
-                    const rows = document.querySelectorAll("table tbody tr"); // Get all rows in the table
-
-                    rows.forEach(row => {
-                        const categoryName = row.children[0].textContent.toLowerCase(); // Get Category Name (1st column)
-                        const categoryDescription = row.children[1].textContent.toLowerCase(); // Get Category Description (2nd column)
-
-                        // Check if the query matches either Category Name (1st priority) or Category Description (2nd priority)
-                        if (categoryName.includes(query) || categoryDescription.includes(query)) {
-                            row.style.display = ""; // Show the row if it matches
-                        } else {
-                            row.style.display = "none"; // Hide the row if it doesn't match
-                        }
-                    });
-                });
-            </script>
-
-            <script>
-                // Edit Validation
-                document.getElementById('editForm').addEventListener('submit', function (event) {
+                // Edit Form Submission and Validation
+                document.getElementById('editForm').addEventListener('submit', async function (event) {
+                    event.preventDefault();
                     let isValid = true;
 
                     // Validate Category Name
@@ -413,24 +394,97 @@
                         categoryDescriptionError.classList.add('d-none');
                     }
 
-                    // Prevent form submission if validation fails
-                    if (!isValid) {
-                        event.preventDefault();
+                    if (!isValid) return;
+
+                    // Prepare Form Data
+                    const formData = {
+                        _id: document.getElementById('categoryId').value,
+                        categoryName: categoryName.value,
+                        categoryDescription: categoryDescription.value
+                    };
+
+                    // Submit Data to Server
+                    try {
+                        let response = await fetch('/categories/edit', {
+                            method: 'put',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify(formData)
+                        });
+
+                        const result = await response.json();
+                        const toastContainer = document.querySelector(".toast-container");
+                        const toast = document.createElement("div");
+                        toast.className = "toast";
+
+                        if (!result.success) {
+                            toast.textContent = result.message;
+                            toast.style.backgroundColor = "#dc3545"; // Red color
+                            toastContainer.appendChild(toast);
+                                setTimeout(() => {
+                                    toast.style.display = "block";
+                                }, 100);
+
+                                setTimeout(() => {
+                                    toast.style.animation = "slideOutToRight 0.8s ease-out forwards";
+                                }, 2000);
+
+                                setTimeout(() => {
+                                    toast.style.display = "none";
+                                    toast.remove(); // Remove toast from DOM
+                                }, 2800);
+                        } else if (result.success) {
+                            toast.textContent = result.message;
+                            toast.style.backgroundColor = "#28a745"; // Green color
+                            toastContainer.appendChild(toast);
+                            setTimeout(() => {
+                                    toast.style.display = "block";
+                                }, 100);
+
+                                setTimeout(() => {
+                                    toast.style.animation = "slideOutToRight 0.8s ease-out forwards";
+                                }, 2000);
+
+                                setTimeout(() => {
+                                    toast.style.display = "none";
+                                    toast.remove(); // Remove toast from DOM
+                                    window.location.reload()
+                                }, 2800);
+                        } else {
+                            throw new Error("Something went wrong");
+                        }
+
+                        toastContainer.appendChild(toast);
+                        setTimeout(() => toast.style.display = "block", 100);
+                        setTimeout(() => toast.style.animation = "slideOutToRight 0.8s ease-out forwards", 3000);
+                        setTimeout(() => {
+                            toast.style.display = "none";
+                            toast.remove();
+                            if (result.success) window.location.reload();
+                        }, 3800);
+
+                    } catch (error) {
+                        await Swal.fire({
+                            icon: "error",
+                            title: "Something went wrong",
+                            text: "Please try again later."
+                        });
                     }
                 });
-                // EDIT Category
+
+                // Edit Modal Fill Data
                 const editCategoryModal = document.getElementById('editCategoryModal');
                 editCategoryModal.addEventListener('show.bs.modal', function (event) {
-                    const button = event.relatedTarget; // Button that triggered the modal
-                    const id = button.getAttribute('data-id'); // Extract data-id attribute
-                    const name = button.getAttribute('data-name'); // Extract data-name attribute
-                    const description = button.getAttribute('data-description'); // Extract data-description attribute
+                    const button = event.relatedTarget;
+                    const id = button.getAttribute('data-id');
+                    const name = button.getAttribute('data-name');
+                    const description = button.getAttribute('data-description');
 
-                    // Fill the form fields 
                     document.getElementById('categoryId').value = id;
                     document.getElementById('editCategoryName').value = name;
                     document.getElementById('editCategoryDescription').value = description;
                 });
+
+                
             </script>
 
 </body>

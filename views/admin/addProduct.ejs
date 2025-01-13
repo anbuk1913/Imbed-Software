@@ -88,7 +88,7 @@
                     <!-- Image 1 -->
                     <div class="mb-3">
                         <label for="productImage1" class="form-label">Choose Product Image 1</label>
-                        <input type="file" class="form-control" id="productImage1" name="productImage1" required>
+                        <input type="file" class="form-control" id="productImage1" name="productImage1" accept=".jpg, .jpeg, .png, .gif, .webp" required>
                     </div>
                     <div class="preview-container">
                         <h5 id="previewLabel1"></h5>
@@ -107,7 +107,7 @@
                     <!-- Image 2 -->
                     <div class="mb-3">
                         <label for="productImage2" class="form-label">Choose Product Image 2</label>
-                        <input type="file" class="form-control" id="productImage2" name="productImage2" required>
+                        <input type="file" class="form-control" id="productImage2" name="productImage2" accept=".jpg, .jpeg, .png, .gif, .webp" required>
                     </div>
                     <div class="preview-container">
                         <h5 id="previewLabel2"></h5>
@@ -126,7 +126,7 @@
                     <!-- Image 3 -->
                     <div class="mb-3">
                         <label for="productImage3" class="form-label">Choose Product Image 3</label>
-                        <input type="file" class="form-control" id="productImage3" name="productImage3" required>
+                        <input type="file" class="form-control" id="productImage3" name="productImage3" accept=".jpg, .jpeg, .png, .gif, .webp" required>
                     </div>
                     <div class="preview-container">
                         <h5 id="previewLabel3"></h5>
@@ -147,6 +147,13 @@
                         <label for="productPrice" class="form-label">Product Price</label>
                         <input type="number" class="form-control" id="productPrice" name="productPrice"
                             placeholder="Product Price" required>
+                    </div>
+
+                    <!-- Offer Price -->
+                    <div class="mb-3">
+                        <label for="productOfferPrice" class="form-label">Offer Price</label>
+                        <input type="number" class="form-control" id="productOfferPrice" name="productOfferPrice"
+                            placeholder="Offer Price">
                     </div>
 
                     <!-- Product Stock -->
@@ -252,7 +259,7 @@
 
                     // Final validation on form submission
                     $("#productForm").submit(function (e) {
-                        $("#productName, #productImage1, #productPrice, #productStock, #productDescription").blur();
+                        $("#productName, #productImage1, #productPrice, #productOfferPrice, #productStock, #productDescription").blur();
                         if ($(".is-invalid").length > 0) {
                             e.preventDefault();
                         }
@@ -442,37 +449,51 @@
             </script>
 
 <script>
-    document.getElementById("productForm").addEventListener("submit", function(event) {
-        event.preventDefault(); // Prevent the default form submission
+        document.getElementById("productForm").addEventListener("submit", function(event) {
+            event.preventDefault(); // Prevent the default form submission
 
-        // Create a FormData object and append the form data, including files
-        const formData = new FormData();
-        formData.append("productName", document.getElementById("productName").value);
-        formData.append("productCategory", document.getElementById("parentCategory").value);
-        formData.append("productImage1", document.getElementById("productImage1").files[0]);
-        formData.append("productImage2", document.getElementById("productImage2").files[0]);
-        formData.append("productImage3", document.getElementById("productImage3").files[0]);
-        formData.append("productPrice", document.getElementById("productPrice").value);
-        formData.append("productStock", document.getElementById("productStock").value);
-        formData.append("productDescription", document.getElementById("productDescription").value);
+            const productPrice = parseFloat($("#productPrice").val());
+            const offerPrice = parseFloat($("#productOfferPrice").val());
 
-        // Use Fetch API to send the form data to the server
-        fetch("/addProduct", {
-            method: "POST",
-            body: formData
-        })
-        .then(response => response.json())  // Assuming server responds with JSON
-        .then(data => {
-            console.log(data);  // You can log the server's response here
-            // Optionally, reset the form
-            document.getElementById("productForm").reset();
-            window.location.href = "/admin/product";
-        })
-        .catch(error => {
-            console.error("Error:", error);
-            alert("An error occurred while adding the product.",error);
+            // Remove previous error messages
+            $("#productOfferPrice").removeClass("is-invalid").next(".invalid-feedback").remove();
+
+            // Validation: Offer Price must be less than Product Price
+            if (isNaN(offerPrice) || offerPrice >= productPrice) {
+                $("#productOfferPrice").addClass("is-invalid");
+                $("#productOfferPrice").after('<div class="invalid-feedback">Offer Price must be less than Product Price.</div>');
+                return;  // Stop form submission if validation fails
+            }
+
+            // Create a FormData object and append the form data, including files
+            const formData = new FormData();
+            formData.append("productName", document.getElementById("productName").value);
+            formData.append("productCategory", document.getElementById("parentCategory").value);
+            formData.append("productImage1", document.getElementById("productImage1").files[0]);
+            formData.append("productImage2", document.getElementById("productImage2").files[0]);
+            formData.append("productImage3", document.getElementById("productImage3").files[0]);
+            formData.append("productPrice", document.getElementById("productPrice").value);
+            formData.append("productOfferPrice", document.getElementById("productOfferPrice").value);
+            formData.append("productStock", document.getElementById("productStock").value);
+            formData.append("productDescription", document.getElementById("productDescription").value);
+
+            // Use Fetch API to send the form data to the server
+            fetch("/addProduct", {
+                method: "POST",
+                body: formData
+            })
+            .then(response => response.json())  // Assuming server responds with JSON
+            .then(data => {
+                console.log(data);  // You can log the server's response here
+                // Optionally, reset the form
+                document.getElementById("productForm").reset();
+                window.location.href = "/admin/product";
+            })
+            .catch(error => {
+                console.error("Error:", error);
+                alert("An error occurred while adding the product.");
+            });
         });
-    });
 </script>
 
 

@@ -69,6 +69,7 @@
             <div class="container-box">
                 <h2>Edit Product</h2>
                 <form id="productForm" enctype="multipart/form-data">
+                    <input type="text" name="productId" id="productId" value="<%=products?._id%>" style="display: none;">
                     <div class="mb-3">
                         <label for="productName" class="form-label">Product Name</label>
                         <input type="text" class="form-control" id="productName" name="productName"
@@ -147,6 +148,13 @@
                         <label for="productPrice" class="form-label" >Product Price</label>
                         <input type="number" class="form-control" id="productPrice" name="productPrice"
                             placeholder="Product Price" required value="<%=products?.productPrice %>">
+                    </div>
+
+                    <!-- Offer Price -->
+                    <div class="mb-3">
+                        <label for="productOfferPrice" class="form-label">Offer Price</label>
+                        <input type="number" class="form-control" id="productOfferPrice" name="productOfferPrice"
+                            placeholder="Offer Price" value="<%=products?.productOfferPrice %>">
                     </div>
 
                     <!-- Product Stock -->
@@ -252,7 +260,7 @@
 
                     // Final validation on form submission
                     $("#productForm").submit(function (e) {
-                        $("#productName, #productImage1, #productPrice, #productStock, #productDescription").blur();
+                        $("#productName, #productImage1, #productPrice, #productOfferPrice ,#productStock, #productDescription").blur();
                         if ($(".is-invalid").length > 0) {
                             e.preventDefault();
                         }
@@ -444,15 +452,28 @@
 <script>
     document.getElementById("productForm").addEventListener("submit", function(event) {
         event.preventDefault(); // Prevent the default form submission
+        const productPrice = parseFloat($("#productPrice").val());
+        const offerPrice = parseFloat($("#productOfferPrice").val());
 
+        // Remove previous error messages
+        $("#productOfferPrice").removeClass("is-invalid").next(".invalid-feedback").remove();
+
+        // Validation: Offer Price must be less than Product Price
+        if (isNaN(offerPrice) || offerPrice >= productPrice) {
+            event.preventDefault();  // Prevent form submission
+            $("#productOfferPrice").addClass("is-invalid");
+            $("#productOfferPrice").after('<div class="invalid-feedback">Offer Price must be less than Product Price.</div>');
+        }
         // Create a FormData object and append the form data, including files
         const formData = new FormData();
+        formData.append("productId", document.getElementById("productId").value);
         formData.append("productName", document.getElementById("productName").value);
         formData.append("parentCategory", document.getElementById("parentCategory").value);
         formData.append("productImage1", document.getElementById("productImage1").files[0]);
         formData.append("productImage2", document.getElementById("productImage2").files[0]);
         formData.append("productImage3", document.getElementById("productImage3").files[0]);
         formData.append("productPrice", document.getElementById("productPrice").value);
+        formData.append("productOfferPrice", document.getElementById("productOfferPrice").value);
         formData.append("productStock", document.getElementById("productStock").value);
         formData.append("productDescription", document.getElementById("productDescription").value);
 
