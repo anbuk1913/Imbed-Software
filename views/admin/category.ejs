@@ -83,7 +83,7 @@
                     Add New Category
                 </button>
             </div>
-            <input type="text" class="form-control mb-3" placeholder="Search Category">
+            <input type="text" class="form-control w-25" style="margin-bottom: 10px;" placeholder="Search Category">
 
             <!-- Table -->
             <table class="table table-bordered">
@@ -420,35 +420,35 @@
                             toast.textContent = result.message;
                             toast.style.backgroundColor = "#dc3545"; // Red color
                             toastContainer.appendChild(toast);
-                                setTimeout(() => {
-                                    toast.style.display = "block";
-                                }, 100);
+                            setTimeout(() => {
+                                toast.style.display = "block";
+                            }, 100);
 
-                                setTimeout(() => {
-                                    toast.style.animation = "slideOutToRight 0.8s ease-out forwards";
-                                }, 2000);
+                            setTimeout(() => {
+                                toast.style.animation = "slideOutToRight 0.8s ease-out forwards";
+                            }, 2000);
 
-                                setTimeout(() => {
-                                    toast.style.display = "none";
-                                    toast.remove(); // Remove toast from DOM
-                                }, 2800);
+                            setTimeout(() => {
+                                toast.style.display = "none";
+                                toast.remove(); // Remove toast from DOM
+                            }, 2800);
                         } else if (result.success) {
                             toast.textContent = result.message;
                             toast.style.backgroundColor = "#28a745"; // Green color
                             toastContainer.appendChild(toast);
                             setTimeout(() => {
-                                    toast.style.display = "block";
-                                }, 100);
+                                toast.style.display = "block";
+                            }, 100);
 
-                                setTimeout(() => {
-                                    toast.style.animation = "slideOutToRight 0.8s ease-out forwards";
-                                }, 2000);
+                            setTimeout(() => {
+                                toast.style.animation = "slideOutToRight 0.8s ease-out forwards";
+                            }, 2000);
 
-                                setTimeout(() => {
-                                    toast.style.display = "none";
-                                    toast.remove(); // Remove toast from DOM
-                                    window.location.reload()
-                                }, 2800);
+                            setTimeout(() => {
+                                toast.style.display = "none";
+                                toast.remove(); // Remove toast from DOM
+                                window.location.reload()
+                            }, 2800);
                         } else {
                             throw new Error("Something went wrong");
                         }
@@ -483,10 +483,26 @@
                     document.getElementById('editCategoryName').value = name;
                     document.getElementById('editCategoryDescription').value = description;
                 });
-
-                
             </script>
-
+            <script>
+                // JavaScript for search functionality
+                document.querySelector("input[placeholder='Search Category']").addEventListener("input", function (event) {
+                    const query = event.target.value.toLowerCase(); // Get the search query and convert it to lowercase
+                    const rows = document.querySelectorAll("table tbody tr"); // Get all rows in the table
+            
+                    rows.forEach(row => {
+                        const categoryName = row.children[0].textContent.toLowerCase(); // Get Category Name (1st column)
+                        const categoryDescription = row.children[1].textContent.toLowerCase(); // Get Category Description (2nd column)
+            
+                        // Check if the query matches either Category Name (1st priority) or Category Description (2nd priority)
+                        if (categoryName.includes(query) || categoryDescription.includes(query)) {
+                            row.style.display = ""; // Show the row if it matches
+                        } else {
+                            row.style.display = "none"; // Hide the row if it doesn't match
+                        }
+                    });
+                });
+            </script>
 </body>
 
 </html>

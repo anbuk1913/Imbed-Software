@@ -26,6 +26,8 @@ router.get("/admin/product",adminAuth,productController.productPage)
 router.get("/admin/addproduct",adminAuth,productController.addProduct)
 router.post('/addProduct', upload.fields([{ name: 'productImage1', maxCount: 1 }, { name: 'productImage2', maxCount: 1 }, { name: 'productImage3', maxCount: 1 }]), productController.addProductPost);
 router.get("/product/edit/:id",adminAuth,productController.productEdit)
+router.put("product/edit")
+router.delete("/deleteproduct",productController.deleteProduct)
 router.post("/product/list/:id",productController.listProduct)
 router.post("/product/unlist/:id",productController.unListProduct)
 

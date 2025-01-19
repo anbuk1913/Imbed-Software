@@ -17,7 +17,7 @@
         }
 
         .container {
-            width: 400px;
+            width: 300px;
             height: auto;
             background: rgba(255, 255, 255, 0.8);
             box-shadow: 0 15px 25px rgba(0, 0, 0, 0.5);
@@ -90,6 +90,17 @@
 
         button:hover {
             background-color: #062e8b;
+        }
+        @media (max-width: 480px) {
+            .container {
+                padding: 20px;
+            }
+            .login-box h2 {
+                font-size: 20px;
+            }
+            button {
+                font-size: 14px;
+            }
         }
     </style>
     <script>

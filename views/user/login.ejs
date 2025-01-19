@@ -19,17 +19,16 @@
             font-family: 'Source Sans 3', sans-serif;
             margin: 0;
             padding: 0;
-            background-color: #f5f5f5;
+            background-image: url('/images/lo.jpg');
+            background-repeat: no-repeat;
             color: #333;
+            background-size: cover;
+            background-position: center;
         }
 
         a {
             text-decoration: none;
             color: inherit;
-        }
-
-        a:hover {
-            text-decoration: underline;
         }
 
         .toast-container {
@@ -92,6 +91,7 @@
         }
 
         .nav-link:hover {
+            text-decoration: none;
             color: #8CBF3A;
         }
 
@@ -107,10 +107,7 @@
             border: none;
             border-radius: 10px;
             position: relative;
-            background-image: url('/images/log.jpg');
-            /* Background image */
-            background-size: cover;
-            background-position: center;
+            background-color: #ffffff13;
         }
 
         .col-md-4 {
@@ -238,13 +235,13 @@
 
         /* Transparent Input Fields */
         .form-control {
-            background-color: rgba(255, 255, 255, 0.5);
+            background-color: rgba(0, 0, 0, 0.267);
             /* Transparent background */
             border: 1px solid #8CBF3A;
             /* Green border */
             border-radius: 5px;
             /* Rounded corners */
-            color: #333;
+            color: white;
             /* Text color */
             padding: 0.75rem;
             font-size: 1rem;
@@ -267,7 +264,7 @@
     <!-- Navbar -->
     <nav class="navbar navbar-expand-lg navbar-light bg-white">
         <div class="container">
-            <a class="navbar-brand" href="#">
+            <a class="navbar-brand" href="/">
                 <img src="/images/logo.png" alt="Logo" style="width: 30px;">
             </a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
@@ -277,13 +274,13 @@
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav ms-auto">
                     <li class="nav-item">
-                        <a class="nav-link" href="#">Home</a>
+                        <a class="nav-link" href="/">Home</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="#">Shop</a>
+                        <a class="nav-link" href="/shop">Shop</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="#"><i class="bi bi-person"></i></a>
+                        <a class="nav-link" href=""><i class="bi bi-person"></i></a>
                     </li>
                 </ul>
             </div>
@@ -291,7 +288,7 @@
     </nav>
 
     <!-- Login Section -->
-    <div class="login-section py-5" style="background-color: #f5f5f5;">
+    <div class="login-section py-5">
         <div class="container">
             <div class="toast-container"></div>
             <div class="row justify-content-center">

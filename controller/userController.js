@@ -2,6 +2,7 @@ const bcrypt = require('bcrypt')
 const product = require("../model/productModel")
 const category = require("../model/categoryModel");
 const usercollection = require("../model/userModel");
+const otpCollection = require("../model/otp");
 const sendotp = require('../helper/sendOtp')
 const passport = require('passport');
 
@@ -73,30 +74,29 @@ const otpSend = async(req,res)=>{
     const generatedOtp = Math.floor(100000 + Math.random() * 900000).toString()
     req.session.otp = generatedOtp
     req.session.otpError = null
-    if (!req.session.otpTime) {  // Check if otpTime is not set
-        req.session.otpTime = 75;  // Set it only if it's not already set
-    }
+    req.session.otpTime = 75;  // Set it only if it's not already set
     sendotp(generatedOtp,req.session.user.email,req.session.user.name)
+    const hashedOtp = await encryptPassword(generatedOtp)
+    await otpCollection.updateOne({email:req.session.user.email},{$set:{otp:hashedOtp}},{upsert:true})
+    req.session.otpStartTime = null
     res.redirect("/otp")
 }
 
 const otpPage = async(req,res)=>{
     const otpError = req.session.otpError
-    const countdown = setInterval(() => {
-        if (req.session.otpTime > 0) {
-            req.session.otpTime-=1;
-        } else {
-            req.session.otpTime = 0
-            clearInterval(countdown)
-        }
-    }, 1000);
-    const time = req.session.otpTime
-    res.render("user/otp",{otpError:otpError,time:time})
+    // If OTP time isn't set, set it
+    if (!req.session.otpStartTime) {
+        req.session.otpStartTime = Date.now();
+    }
+    const elapsedTime = Math.floor((Date.now() - req.session.otpStartTime) / 1000);
+    const remainingTime = Math.max(req.session.otpTime - elapsedTime, 0);
+    res.render("user/otp",{otpError:otpError,time:remainingTime})
 }
 
 
 const otpPost = async(req,res)=>{
-    if(req.body.otp==req.session.otp){
+    const findOtp = await otpCollection.findOne({email:req.session.user.email})
+    if(await comparePassword(req.body.otp,findOtp.otp)){
         const user = new usercollection({
             name: req.session.user.name,
             email: req.session.user.email,
@@ -106,7 +106,18 @@ const otpPost = async(req,res)=>{
         await user.save();
         req.session.signupSession = true
         res.redirect("/")
-    } else {
+    }
+    // if(req.body.otp==req.session.otp){
+    //     const user = new usercollection({
+    //         name: req.session.user.name,
+    //         email: req.session.user.email,
+    //         phone: req.session.user.phone,
+    //         password: req.session.user.password
+    //     });
+    //     await user.save();
+    //     req.session.signupSession = true
+    //     res.redirect("/")
+     else {
         req.session.otpError = "Incorrect OTP"
         res.redirect("/otp")
     }

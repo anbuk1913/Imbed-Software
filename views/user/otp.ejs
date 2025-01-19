@@ -235,7 +235,7 @@
             <% } %>
             <button type="submit">Confirm</button>
             <p>Time Left: <span id="timer"><%= time %></span></p>
-            <a href="/otpsend"><div class="resend">Resend OTP</div></a>
+            <a href="/otpsend" style="text-decoration: none;"><div class="resend">Resend OTP</div></a>
         </form>
     </div>
 
@@ -285,9 +285,9 @@
 
     <script>
         // Ensure 'time' is correctly injected from EJS into JavaScript
-        let time = <%= time %>;  // 'time' is injected here from the server
+        let time = Number(document.getElementById('timer').innerText);  // 'time' is injected here from the server
         
-        const timerElement = document.getElementById('timer');
+        const timerElement = document.getElementById('timer')
         const submitButton = document.querySelector('button[type="submit"]');
         const resendButton = document.querySelector('.resend');
         
@@ -296,22 +296,38 @@
             if (time > 0) {
                 time--;
                 timerElement.textContent = time;  // Update the displayed time
+                if(time<45){
+                    resendButton.classList.remove('disabled');
+                    resendButton.style.pointerEvents = 'auto';  // Re-enable click
+                    resendButton.style.cursor = 'pointer';
+                }
             } else {
+                if(time<45){
+                    resendButton.classList.remove('disabled');
+                    resendButton.style.pointerEvents = 'auto';  // Re-enable click
+                    resendButton.style.cursor = 'pointer';
+                }
                 clearInterval(countdown);  // Stop the countdown when time is up
                 submitButton.disabled = true;  // Disable the "Confirm" button
                 submitButton.style.backgroundColor = '#ccc';  // Change button appearance
                 submitButton.style.cursor = 'not-allowed';  // Show the "disabled" cursor
             }
         }, 1000);
+        
     
         // Disable Resend OTP button for 15 seconds after page load
         resendButton.classList.add('disabled');
         resendButton.style.cursor = 'not-allowed';
-        setTimeout(() => {
-            resendButton.classList.remove('disabled');
-            resendButton.style.pointerEvents = 'auto';
-            resendButton.style.cursor = 'pointer';
-        }, 15000);
+        resendButton.style.pointerEvents = 'disabled';  // Fully disables click
+
+
+        // Prevent click on the <a> tag when disabled
+        resendButton.parentElement.addEventListener('click', function (e) {
+            if (resendButton.classList.contains('disabled')) {
+                e.preventDefault();  // Block the link navigation
+            }
+        });
+
     </script>
     
     

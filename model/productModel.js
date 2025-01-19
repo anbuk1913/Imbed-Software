@@ -28,15 +28,20 @@ const productSchema = new mongoose.Schema({
      productImage3: {
           type: String,
      },
-     productCategory: {
-          type: String,
+     productCategoryId: {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: "category",
           required: true,
      },
      isListed: {
           type: Boolean,
           default: true,
      },
-});
+},
+{
+     timestamps:true
+}
+);
 
 const product = mongoose.model("product", productSchema);
 module.exports = product;

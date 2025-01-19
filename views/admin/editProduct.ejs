@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Add Products</title>
+    <title>Edit Products</title>
     <link rel="icon" href="/images/logo.png">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css">
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
@@ -69,7 +69,6 @@
             <div class="container-box">
                 <h2>Edit Product</h2>
                 <form id="productForm" enctype="multipart/form-data">
-                    <input type="text" name="productId" id="productId" value="<%=products?._id%>" style="display: none;">
                     <div class="mb-3">
                         <label for="productName" class="form-label">Product Name</label>
                         <input type="text" class="form-control" id="productName" name="productName"
@@ -77,23 +76,24 @@
                     </div>
                     <div class="mb-3">
                         <label for="parentCategory" class="form-label">Select Parent Category</label>
-                        <select class="form-select" id="parentCategory" name="parentCategory">
+                        <select class="form-select" id="parentCategory" name="productCategoryId">
                             <% categories.forEach(category=> { %>
-                                <option value="<%= category.categoryName %>">
+                                <option value="<%= category._id %>" 
+                                    <%= category.categoryName === products.productCategoryId.categoryName ? 'selected' : '' %>>
                                     <%= category.categoryName %>
                                 </option>
-                                <% }); %>
+                            <% }); %>
                         </select>
                     </div>
 
                     <!-- Image 1 -->
                     <div class="mb-3">
                         <label for="productImage1" class="form-label">Choose Product Image 1</label>
-                        <input type="file" class="form-control" id="productImage1" name="productImage1" required>
+                        <input type="file" class="form-control" id="productImage1" src="<%= products.productImage1 %>" name="productImage1" value="<%= products.productImage1 %>"disabled required>
                     </div>
                     <div class="preview-container">
                         <h5 id="previewLabel1"></h5>
-                        <img id="cropPreview1" src="<%= products.productImage1 %>" alt="Image Preview"
+                        <img id="cropPreview1"  alt="Image Preview"
                             style="display:none; max-width: 100%; max-height: 300px; border: 1px solid #ccc;">
                     </div>
                     <button type="button" class="btn btn-primary mt-2" id="cropImage1" style="display:none;">Set
@@ -104,11 +104,12 @@
                     </div>
                     <button type="button" class="btn btn-danger mt-2" id="removeImage1" >Remove
                         Image</button>
+                    <hr>
 
                     <!-- Image 2 -->
                     <div class="mb-3">
                         <label for="productImage2" class="form-label">Choose Product Image 2</label>
-                        <input type="file" class="form-control" id="productImage2" name="productImage2" required>
+                        <input type="file" class="form-control" id="productImage2" name="productImage2" src="<%= products.productImage2 %>" value="<%= products.productImage2 %>" disabled required>
                     </div>
                     <div class="preview-container">
                         <h5 id="previewLabel2"></h5>
@@ -123,11 +124,11 @@
                     </div>
                     <button type="button" class="btn btn-danger mt-2" id="removeImage2" >Remove
                         Image</button>
-
+                    <hr>
                     <!-- Image 3 -->
                     <div class="mb-3">
                         <label for="productImage3" class="form-label">Choose Product Image 3</label>
-                        <input type="file" class="form-control" id="productImage3" name="productImage3" required>
+                        <input type="file" class="form-control" id="productImage3" name="productImage3" src="<%= products.productImage3 %>" value="<%= products.productImage3 %>" disabled required>
                     </div>
                     <div class="preview-container">
                         <h5 id="previewLabel3"></h5>
@@ -142,7 +143,8 @@
                     </div>
                     <button type="button" class="btn btn-danger mt-2" id="removeImage3" >Remove
                         Image</button>
-
+                    <hr>
+                    
                     <!-- Product Price -->
                     <div class="mb-3">
                         <label for="productPrice" class="form-label" >Product Price</label>
@@ -260,7 +262,15 @@
 
                     // Final validation on form submission
                     $("#productForm").submit(function (e) {
-                        $("#productName, #productImage1, #productPrice, #productOfferPrice ,#productStock, #productDescription").blur();
+                        $("#productName, #parentCategory, #productImage1, #productImage2, #productImage3, #productPrice, #productOfferPrice, #productStock, #productDescription").blur();
+                        if ($(".is-invalid").length > 0) {
+                            e.preventDefault();
+                        }
+                    });
+
+                    // Final validation on form submission
+                    $("#productForm").submit(function (e) {
+                        $("#productName, #productImage1, #productPrice, #productStock, #productDescription").blur();
                         if ($(".is-invalid").length > 0) {
                             e.preventDefault();
                         }
@@ -342,7 +352,7 @@
                             croppedPreview.style.display = "none";
                             removeButton.style.display = "none";
                             label.style.display = "none";
-
+                            
                             if (cropper) {
                                 cropper.destroy();
                                 cropper = null;
@@ -428,6 +438,7 @@
                         // When remove button is clicked
                         removeButton.addEventListener("click", function () {
                             input.value = ""; // Clear file input
+                            inputId.display = "none";
                             preview.style.display = "none";
                             cropButton.style.display = "none";
                             croppedPreview.style.display = "none";
@@ -452,6 +463,7 @@
 <script>
     document.getElementById("productForm").addEventListener("submit", function(event) {
         event.preventDefault(); // Prevent the default form submission
+
         const productPrice = parseFloat($("#productPrice").val());
         const offerPrice = parseFloat($("#productOfferPrice").val());
 
@@ -459,16 +471,16 @@
         $("#productOfferPrice").removeClass("is-invalid").next(".invalid-feedback").remove();
 
         // Validation: Offer Price must be less than Product Price
-        if (isNaN(offerPrice) || offerPrice >= productPrice) {
-            event.preventDefault();  // Prevent form submission
+        if ( offerPrice >= productPrice || offerPrice <= 0) {
             $("#productOfferPrice").addClass("is-invalid");
             $("#productOfferPrice").after('<div class="invalid-feedback">Offer Price must be less than Product Price.</div>');
+            return;  // Stop form submission if validation fails
         }
+
         // Create a FormData object and append the form data, including files
         const formData = new FormData();
-        formData.append("productId", document.getElementById("productId").value);
         formData.append("productName", document.getElementById("productName").value);
-        formData.append("parentCategory", document.getElementById("parentCategory").value);
+        formData.append("productCategoryId", document.getElementById("parentCategory").value);
         formData.append("productImage1", document.getElementById("productImage1").files[0]);
         formData.append("productImage2", document.getElementById("productImage2").files[0]);
         formData.append("productImage3", document.getElementById("productImage3").files[0]);
@@ -495,6 +507,8 @@
         });
     });
 </script>
+
+
 
 </body>
 

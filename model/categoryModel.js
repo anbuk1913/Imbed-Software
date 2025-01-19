@@ -13,6 +13,9 @@ const categorySchema=new mongoose.Schema({
     type:Boolean,
     default:true,
    }
+},
+{
+     timestamps:true
 })
 
 const category = mongoose.model('category',categorySchema)

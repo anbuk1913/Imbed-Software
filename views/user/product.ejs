@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= products.productName %> - Shop</title>
+    <link rel="icon" href="/images/logo.png">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Source+Sans+3:ital,wght@0,200..900;1,200..900&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Source Sans 3', sans-serif;
+            background-color: #f9f9f9;
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        a {
+            text-decoration: none;
+            color: inherit;
+        }
+        /* Navbar */
+        .nav-container{
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+        }
+        .navbar {
+            width: 100%;
+            padding: 15px 0;
+            box-shadow: 10px 10px 15px rgba(0, 0, 0, 0.5);
+        }
+
+        .navbar-brand {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #8CBF3A;
+        }
+
+        .navbar-nav .nav-link {
+            font-weight: 500;
+            color: #555;
+            font-size: 1rem;
+            margin: 0 10px;
+        }
+
+        .navbar-nav .nav-link:hover {
+            color: #8CBF3A;
+        }
+        .container {
+            padding: 50px;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+        }
+        .product-image, .product-details {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            margin: 10px;
+        }
+        .product-image img {
+            width: 300px;
+            height: auto;
+        }
+        .thumbnail {
+            display: flex;
+            margin-top: 10px;
+        }
+        .thumbnail img {
+            width: 40px;
+            height: 40px;
+            margin-right: 5px;
+            cursor: pointer;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        .product-details h2 {
+            font-size: 20px;
+        }
+        .price {
+            color: #2ecc71;
+            font-size: 18px;
+            margin-top: 5px;
+        }
+        .old-price {
+            text-decoration: line-through;
+            color: #888;
+            margin-left: 10px;
+        }
+        .quantity {
+            display: flex;
+            align-items: center;
+            margin-top: 15px;
+        }
+        .quantity button {
+            width: 30px;
+            height: 30px;
+        }
+        .quantity input {
+            width: 40px;
+            text-align: center;
+        }
+        .btn {
+            background-color: #3498db;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 15px;
+        }
+        .description {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            margin: 20px 10px;
+        }
+        .zoom-container {
+            position: relative;
+            width: 400px;
+            height: 400px;
+            overflow: hidden;
+            border: 1px solid #ccc;
+        }
+        .zoom-container img {
+            width: 100%;
+            transition: transform 0.3s ease;
+        }
+        .zoom-container:hover img {
+            transform: scale(1.5);
+        }
+        /* Footer */
+        footer {
+            background-color: #8CBF3A; /* Updated background color */
+            color: white; /* Ensures text remains readable */
+        }
+
+        footer a {
+            color: white; /* Ensures links in the footer are readable */
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+
+        footer a:hover {
+            color: #f0f0f0; /* Slightly lighter color on hover */
+        }
+
+        footer .input-group button {
+            background-color: #6A9F2E; /* Matches footer tone */
+            color: white;
+            border: none;
+        }
+
+        footer .input-group button:hover {
+            background-color: #5A8A27; /* Darker hover effect */
+        }
+    </style>
+</head>
+<body>
+    <!-- Header Section -->
+    <header>
+        <nav class="navbar navbar-expand-lg navbar-light bg-light">
+            <div class="nav-container">
+                <a class="navbar-brand" href="#">
+                    <img src="/images/logo.png" style="width: 30px;">
+                </a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarNav">
+                    <ul class="navbar-nav ms-auto">
+                        <li class="nav-item"><a class="nav-link" href="/">Home</a></li>
+                        <li class="nav-item"><a class="nav-link" href="/shop">Shop</a></li>
+                        <li class="nav-item"><a class="nav-link" href="/cart">Cart</a></li>
+                        <li class="nav-item"><a class="nav-link" href="/wishlist">Wishlist</a></li>
+                    </ul>
+                    <!-- User Profile Section -->
+                    <div class="dropdown ms-3">
+                        <a href="#" class="d-flex align-items-center text-decoration-none dropdown-toggle" id="userProfileDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                            <% if(name){ %>
+                                <img src="/images/userProfile.jpg" style="width: 30px; height: 30px; border-radius: 50%;">
+                            <span class="ms-2"><%= name %></span>
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userProfileDropdown">
+                            <li><a class="dropdown-item" href="/login">My Profile</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" href="" onclick="document.getElementById('logoutForm').submit(); return false;">Logout</a></li>
+                        </ul>
+                            <% } else {%>
+                            <img src="/images/userProfile.jpg" style="width: 30px; height: 30px; border-radius: 50%;">
+                            <span class="ms-2"><%= name %></span>
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userProfileDropdown">
+                            <li><a class="dropdown-item" href="/login">Log In</a></li>
+                        </ul>
+                        <% } %>
+                    </div>
+                    <!-- End of User Profile Section -->
+                </div>
+            </div>
+        </nav>
+    </header>
+    
+    <div class="container">
+        <div class="product-image">
+            <div class="zoom-container">
+                <a href="<%= products.productImage1 %>" style="cursor: auto;"><img src="<%= products.productImage1 %>" alt="<%= products.productName %>"></a>
+            </div>
+            <div class="thumbnail">
+                <img src="<%= products.productImage1 %>" alt="Thumbnail 1">
+                <img src="<%= products.productImage2 %>" alt="Thumbnail 2">
+                <img src="<%= products.productImage3 %>" alt="Thumbnail 3">
+            </div>
+        </div>
+        <div class="product-details">
+            <h2><%= products.productName %></h2>
+            <p><%= products?.productCategoryId?.categoryName %></p>
+            <div class="price">
+                <% if(products.productOfferPrice){ %>
+                    <strong>₹<%= products.productOfferPrice %></strong>
+                    <del>₹<%= products.productPrice %></del>
+                <% } else { %>
+                    <strong>₹<%= products.productPrice %></strong>
+                <% } %>
+            </div>
+            <div class="quantity">
+                <button>-</button>
+                <input type="text" value="1">
+                <button>+</button>
+            </div>
+            <button class="btn">Add to Cart</button>
+        </div>
+    </div>
+
+    <div class="description">
+        <h3>Description</h3>
+        <p><%= products.productDescription %></p>
+    </div>
+    <!-- Footer Section -->
+    <footer class="py-5">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-3">
+                    <h5>Contact Us</h5>
+                    <p>No 11, bharathiyar street</p>
+                    <p>Near Gandhi Street,</p>
+                    <p>Karaikudi Tamilnadu.</p>
+                    <p>Phone: +91 8148413021</p>
+                    <p>Email: <a href="https://mail.google.com/mail/?view=cm&fs=1&to=imbedsoftwareteam@gmail.com">imbedsoftwareteam@gmail.com</a></p>
+                </div>
+                <div class="col-md-3">
+                    <h5>Information</h5>
+                    <ul class="list-unstyled">
+                        <li><a href="#">Your Account</a></li>
+                        <li><a href="#">Free Shipping Policy</a></li>
+                        <li><a href="#">Return Policy</a></li>
+                    </ul>
+                </div>
+                <div class="col-md-3">
+                    <h5>Support</h5>
+                    <ul class="list-unstyled">
+                        <li><a href="#">Payment Method</a></li>
+                        <li><a href="#">Product Support</a></li>
+                    </ul>
+                </div>
+                <div class="col-md-3">
+                    <h5>Join Our Mailing List</h5>
+                    <form>
+                        <div class="input-group">
+                            <input type="email" class="form-control" placeholder="Your Email Address">
+                            <button class="btn btn-dark">→</button>
+                        </div>
+                    </form>
+                    <h5 class="mt-3">Download Our Mobile Apps</h5>
+                    <a href=""><img src="/images/playstore.webp" alt="App Stores" style="max-width: 100px;"></a>
+                    <a href=""><img src="/images/appstore.png" alt="App Stores" style="max-width: 110px;margin-left: 20px;"></a>
+                </div>
+            </div>
+        </div>
+    </footer>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        const zoomContainer = document.querySelector('.zoom-container');
+        const zoomImage = zoomContainer.querySelector('img');
+    
+        zoomContainer.addEventListener('mousemove', (e) => {
+          const { left, top, width, height } = zoomContainer.getBoundingClientRect();
+          const x = ((e.pageX - left) / width) * 100;
+          const y = ((e.pageY - top) / height) * 100;
+          zoomImage.style.transformOrigin = `${x}% ${y}%`;
+        });
+    
+        zoomContainer.addEventListener('mouseleave', () => {
+          zoomImage.style.transformOrigin = 'center center';
+        });
+      </script>
+</body>
+</html>

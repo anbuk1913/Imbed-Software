@@ -49,8 +49,7 @@ const editCategory = async(req,res)=>{
     try{
         const categoryCheck = await category.find({categoryName:{$regex: new RegExp('^'+req.body.categoryName +'$','i') }});
         if((categoryCheck.length == 1 && req.body._id == categoryCheck[0]._id) || categoryCheck.length == 0){
-            const ress=await category.updateOne({ _id: req.body._id }, { $set: { categoryName: req.body.categoryName, categoryDescription: req.body.categoryDescription } });
-            console.log(ress)
+            await category.updateOne({ _id: req.body._id }, { $set: { categoryName: req.body.categoryName, categoryDescription: req.body.categoryDescription } });
             res.json({ success: true, message: 'Category Edited successfully.'});
         } else {
             res.json({ success: false, message: 'Category already exits!'});
