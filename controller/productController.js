@@ -50,7 +50,7 @@ const addProductPost = async (req, res) => {
                 productDescription,
                 productPrice,
                 productOfferPrice,
-                productStock, // Correct field name (was 'productStack' in your schema)
+                productStock,
                 productCategoryId,
                 productImage1: productImages.productImage1 || '',
                 productImage2: productImages.productImage2 || '',
@@ -75,7 +75,6 @@ const productEdit = async(req,res)=>{
         path: "productCategoryId",
         select: "categoryName -_id"
     });
-    console.log(products)
     const categories = await category.find({})
     if(products){
         return res.render("admin/editProduct",{products,categories})
@@ -84,10 +83,44 @@ const productEdit = async(req,res)=>{
     }
 }
 
-const productEditPut = async(req,res)=>{
-    const productCheck = await product.find({productName:{$regex: new RegExp('^'+req.body.productName +'$','i') }});
-    if((productCheck.length == 1 && req.body._id == productCheck[0]._id) || productCheck.length == 0){
-        
+const productEditPost = async(req,res)=>{
+    try{
+        const productCheck = await product.find({productName:{$regex: new RegExp('^'+req.body.productName +'$','i') }});
+        if((productCheck.length == 1 && req.body._id == productCheck[0]._id) || productCheck.length == 0){
+            const images = req.files;
+            const productImages = {};
+            await product.updateOne({_id:req.body._id},{$set:{
+                productName : req.body.productName,
+                productCategoryId : req.body.productCategoryId,
+                productPrice : req.body.productPrice,
+                productOfferPrice : req.body.productOfferPrice,
+                productStock : req.body.productStock,
+                productDescription : req.body.productDescription
+            }})
+            if (images['productImage1']) {
+                productImages.productImage1 = `/uploads/${images['productImage1'][0].filename}`;
+                await product.updateOne({_id:req.body._id},{$set:{
+                    productImage1: productImages.productImage1 || '',
+                }})
+            }
+            if (images['productImage2']) {
+                productImages.productImage2 = `/uploads/${images['productImage2'][0].filename}`;
+                await product.updateOne({_id:req.body._id},{$set:{
+                    productImage2: productImages.productImage2 || '',
+                }})
+            }
+            if (images['productImage3']) {
+                productImages.productImage3 = `/uploads/${images['productImage3'][0].filename}`;
+                await product.updateOne({_id:req.body._id},{$set:{
+                    productImage3: productImages.productImage3 || '',
+                }})
+            }
+            return res.json({ success: true, message: 'Product Edited successfully!'});
+        } else {
+            return res.status(208).send({ productExits: true, message: 'Product Already Exits!' })
+        }
+    } catch(error){
+        console.log(error)
     }
 }
 
@@ -152,4 +185,4 @@ const deleteProduct = async(req,res)=>{
 }
 
 
-module.exports = {productPage,addProduct,addProductPost,productEdit,productEditPut,unListProduct,listProduct,singleProductView,deleteProduct}
+module.exports = {productPage,addProduct,addProductPost,productEdit,productEditPost,unListProduct,listProduct,singleProductView,deleteProduct}

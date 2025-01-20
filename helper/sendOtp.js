@@ -1,30 +1,3 @@
-// const transpoter = require('../services/otpSender')
-// const fs = require("fs")
-
-// // Read HTML template
-// const emailTemplate = fs.readFileSync('./views/admin/otp.html', 'utf8');
-
-// // Replace placeholders with dynamic content
-
-
-
-
-// let sendotp = async (otp,email) => {
-    
-//     const personalizedHtml = emailTemplate.replace('{{OTP}}', otp);
-//     try {
-//         await transpoter.sendMail({
-//             from: "imbediot@gmail.com",
-//             to: email,
-//             subject: 'Testing',
-//             html: personalizedHtml
-//         })
-//     } catch (err) {
-//         console.log(err);
-//     }
-// }
-
-// module.exports=sendotp
 
 const transporter = require('../services/otpSender');
 const fs = require("fs");

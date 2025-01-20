@@ -72,7 +72,6 @@ const signUpPage = async(req,res)=>{
 
 const otpSend = async(req,res)=>{
     const generatedOtp = Math.floor(100000 + Math.random() * 900000).toString()
-    req.session.otp = generatedOtp
     req.session.otpError = null
     req.session.otpTime = 75;  // Set it only if it's not already set
     sendotp(generatedOtp,req.session.user.email,req.session.user.name)

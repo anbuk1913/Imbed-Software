@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profile Page</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+        .sidebar {
+            background-color: #f8f9fa;
+            padding: 20px;
+            height: 100%;
+        }
+        .profile-section {
+            padding: 30px;
+        }
+        .profile-section input {
+            width: 100%;
+            margin-bottom: 15px;
+        }
+        .footer {
+            background-color: #8dc63f;
+            color: white;
+            padding: 20px;
+        }
+        .footer a {
+            color: white;
+            text-decoration: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container-fluid">
+        <div class="row">
+            <!-- Sidebar -->
+            <div class="col-md-2 sidebar">
+                <div class="text-center">
+                    <img src="logo.png" alt="Logo" style="max-width: 100%; height: auto;">
+                </div>
+                <nav class="mt-4">
+                    <ul class="nav flex-column">
+                        <li class="nav-item">
+                            <a class="nav-link" href="#">Dashboard</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#">Orders</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#">Wallet</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#">Addresses</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#">Logout</a>
+                        </li>
+                    </ul>
+                </nav>
+            </div>
+
+            <!-- Main Content -->
+            <div class="col-md-10">
+                <!-- Navbar -->
+                <nav class="navbar navbar-expand-lg navbar-light bg-white">
+                    <div class="container-fluid">
+                        <a class="navbar-brand" href="#">Home</a>
+                        <div class="collapse navbar-collapse justify-content-end">
+                            <ul class="navbar-nav">
+                                <li class="nav-item">
+                                    <a class="nav-link" href="#">Shop</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" href="#">
+                                        <i class="bi bi-heart"></i>
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" href="#">
+                                        <i class="bi bi-cart"></i>
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" href="#">
+                                        <img src="profile-pic.png" alt="Profile" class="rounded-circle" style="width: 30px; height: 30px;">
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </nav>
+
+                <!-- Profile Section -->
+                <div class="profile-section">
+                    <h3>Profile</h3>
+                    <div class="card p-4">
+                        <form>
+                            <div class="mb-3">
+                                <label for="fullName" class="form-label">Full Name</label>
+                                <input type="text" class="form-control" id="fullName" value="Adam">
+                            </div>
+                            <div class="mb-3">
+                                <label for="phoneNumber" class="form-label">Phone Number</label>
+                                <input type="text" class="form-control" id="phoneNumber" value="+884 5452 6432">
+                            </div>
+                            <div class="mb-3">
+                                <label for="emailAddress" class="form-label">Email Address</label>
+                                <input type="email" class="form-control" id="emailAddress" value="adamsmith@bigbag.com">
+                            </div>
+                            <div class="mb-3">
+                                <label for="dob" class="form-label">Date of Birth</label>
+                                <input type="date" class="form-control" id="dob">
+                            </div>
+                            <p>Wallet Balance: <strong>₹100</strong></p>
+                            <button type="button" class="btn btn-primary">Change Password</button>
+                            <button type="submit" class="btn btn-success">Save Info</button>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Footer -->
+                <div class="footer mt-4">
+                    <div class="row">
+                        <div class="col-md-3">
+                            <h6>Contact Us</h6>
+                            <p>Address: Leeds, London, UK - 1290</p>
+                            <p>Phone: 002 52695 24542</p>
+                            <p>Fax: 002 78985 369552</p>
+                            <p>Email: support@example.com</p>
+                        </div>
+                        <div class="col-md-3">
+                            <h6>Information</h6>
+                            <ul>
+                                <li><a href="#">Your Account</a></li>
+                                <li><a href="#">Free Shipping Policy</a></li>
+                                <li><a href="#">Your Cart</a></li>
+                                <li><a href="#">Return Policy</a></li>
+                                <li><a href="#">Delivery Info</a></li>
+                            </ul>
+                        </div>
+                        <div class="col-md-3">
+                            <h6>Support</h6>
+                            <ul>
+                                <li><a href="#">Payment Method</a></li>
+                                <li><a href="#">Help</a></li>
+                                <li><a href="#">Privacy Policy</a></li>
+                            </ul>
+                        </div>
+                        <div class="col-md-3">
+                            <h6>Join Our Mailing List</h6>
+                            <form>
+                                <input type="email" class="form-control" placeholder="Your Email Address">
+                                <button class="btn btn-dark mt-2">Subscribe</button>
+                            </form>
+                            <p>Download Our Mobile Apps:</p>
+                            <img src="google-play.png" alt="Google Play" style="max-width: 100px;">
+                            <img src="app-store.png" alt="App Store" style="max-width: 100px;">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
