@@ -26,8 +26,8 @@ const homePage = async (req,res)=>{
             const userEmail = req.session.user.email
             const userVer = await usercollection.findOne({ email: userEmail });
             if(userVer){
-                if(userVer.isActive == false){
-                    req.session.block = true
+                req.session.otpSession = false
+                if(!userVer.isActive){
                     return res.redirect("/blocked")
                 } else {
                     name = userVer.name
@@ -71,6 +71,7 @@ const signUpPage = async(req,res)=>{
 }
 
 const otpSend = async(req,res)=>{
+    req.session.otpSession = true
     const generatedOtp = Math.floor(100000 + Math.random() * 900000).toString()
     req.session.otpError = null
     req.session.otpTime = 75;  // Set it only if it's not already set
@@ -82,15 +83,19 @@ const otpSend = async(req,res)=>{
 }
 
 const otpPage = async(req,res)=>{
-    const otpError = req.session.otpError
-    // If OTP time isn't set, set it
-    if (!req.session.otpStartTime) {
-        req.session.otpStartTime = Date.now();
+    if(req.session.otpSession){
+        const otpError = req.session.otpError
+        // If OTP time isn't set, set it
+        if (!req.session.otpStartTime) {
+            req.session.otpStartTime = Date.now();
+        }
+        const elapsedTime = Math.floor((Date.now() - req.session.otpStartTime) / 1000);
+        const remainingTime = Math.max(req.session.otpTime - elapsedTime, 0);
+        return res.render("user/otp",{otpError:otpError,time:remainingTime})
+    } else {
+        return res.redirect("/")
     }
-    const elapsedTime = Math.floor((Date.now() - req.session.otpStartTime) / 1000);
-    const remainingTime = Math.max(req.session.otpTime - elapsedTime, 0);
-    res.render("user/otp",{otpError:otpError,time:remainingTime})
-}
+} 
 
 
 const otpPost = async(req,res)=>{
@@ -105,18 +110,7 @@ const otpPost = async(req,res)=>{
         await user.save();
         req.session.signupSession = true
         res.redirect("/")
-    }
-    // if(req.body.otp==req.session.otp){
-    //     const user = new usercollection({
-    //         name: req.session.user.name,
-    //         email: req.session.user.email,
-    //         phone: req.session.user.phone,
-    //         password: req.session.user.password
-    //     });
-    //     await user.save();
-    //     req.session.signupSession = true
-    //     res.redirect("/")
-     else {
+    } else {
         req.session.otpError = "Incorrect OTP"
         res.redirect("/otp")
     }
@@ -168,7 +162,7 @@ const loginPost = async(req,res)=>{
 const googleCallback=async (req, res) => {
     try {
       const user = await usercollection.findOneAndUpdate(
-        { email: req.user._json.email},
+        // { email: req.user._json.email},
         { $set: { name: req.user.displayName} },
         { upsert: true,new :true }
       );
@@ -196,11 +190,20 @@ const blockedUser = async(req,res)=>{
     }
 }
 
+const profile = async(req,res)=>{
+    const userEmail = req.session.user.email
+    const userVer = await usercollection.findOne({ email: userEmail });
+    if(!userVer.isActive){
+        return res.redirect("/blocked")
+    } else {
+        return res.render("user/profile",{userVer})
+    }
+}
+
 const logout = async(req,res)=>{
     req.session.loginSession = null
     req.session.signupSession = null
     req.session.user = null
-    req.session.block = null
     req.session.logError = null
     req.session.signError = null
     req.session.otp = null
@@ -208,4 +211,18 @@ const logout = async(req,res)=>{
     return res.redirect('/')
 }
 
-module.exports = {homePage,loginPage,signUpPage,otpPage,signUpPost,otpPost,otpSend,loginPost,googleCallback,blockedUser,logout}
+
+module.exports = {
+    homePage,
+    loginPage,
+    signUpPage,
+    otpPage,
+    signUpPost,
+    otpPost,
+    otpSend,
+    loginPost,
+    googleCallback,
+    blockedUser,
+    logout,
+    profile,
+}

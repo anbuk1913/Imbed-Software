@@ -296,13 +296,13 @@
             if (time > 0) {
                 time--;
                 timerElement.textContent = time;  // Update the displayed time
-                if(time<45){
+                if(time<60){
                     resendButton.classList.remove('disabled');
                     resendButton.style.pointerEvents = 'auto';  // Re-enable click
                     resendButton.style.cursor = 'pointer';
                 }
             } else {
-                if(time<45){
+                if(time<60){
                     resendButton.classList.remove('disabled');
                     resendButton.style.pointerEvents = 'auto';  // Re-enable click
                     resendButton.style.cursor = 'pointer';

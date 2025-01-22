@@ -148,6 +148,7 @@ const listProduct = async(req,res)=>{
 
 const singleProductView = async(req,res)=>{
     let name = ""
+    let userId = ""
     products = await product.findOne({_id:req.params.id}).populate({
         path: "productCategoryId",
         select: "categoryName -_id"
@@ -162,13 +163,14 @@ const singleProductView = async(req,res)=>{
                     return res.redirect("/blocked")
                 } else {
                     name = userVer.name
-                    return res.render("user/product",{name,products})
+                    userId = userVer._id
+                    return res.render("user/product",{name,products,userId})
                 }
             } else {
-                return res.render("user/product",{name,products})
+                return res.render("user/product",{name,products,userId})
             }
         } else {
-            return res.render("user/product",{name,products})
+            return res.render("user/product",{name,products,userId})
         }
     } else {
         return res.redirect("/shop")
