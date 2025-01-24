@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Address</title>
+    <link rel="icon" href="/images/logo.png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Source+Sans+3:ital,wght@0,200..900;1,200..900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css">
+    <style>
+        body {
+            font-family: 'Source Sans 3', sans-serif;
+            background-color: #aeacac;
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        /* Navbar */
+        .navbar {
+            width: 100%;
+            padding: 15px 0;
+            box-shadow: 10px 10px 15px rgba(0, 0, 0, 0.5);
+        }
+
+        .navbar-brand {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #8CBF3A;
+        }
+
+        .navbar-nav .nav-link {
+            font-weight: 500;
+            color: #555;
+            font-size: 1rem;
+            margin: 0 10px;
+        }
+
+        .navbar-nav .nav-link:hover {
+            color: #8CBF3A;
+        }
+
+        a {
+            text-decoration: none;
+            color: inherit;
+        }
+
+        .sidebar {
+            background-color: #f8f9fa;
+            height: 100vh;
+            position: fixed;
+        }
+
+        .content {
+            margin-left: 220px;
+            padding: 20px;
+        }
+
+        .address-card {
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 15px;
+            background-color: #fff;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .button {
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            padding: 10px 20px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .button:hover {
+            background-color: #0056b3;
+        }
+
+        .button-danger {
+            background-color: #dc3545;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            padding: 8px 15px;
+        }
+
+        .button-danger:hover {
+            background-color: #c82333;
+        }
+
+        .button-primary {
+            background-color: #8CBF3A;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            padding: 8px 15px;
+        }
+
+        .button-primary:hover {
+            background-color: #669023;
+        }
+
+        @media (max-width: 768px) {
+            .sidebar {
+                height: auto;
+                position: relative;
+                width: 100%;
+            }
+
+            .content {
+                margin-left: 0;
+            }
+
+            .address-card {
+                text-align: center;
+            }
+
+            .button-group button {
+                margin: 5px 0;
+            }
+        }
+
+        .content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background-color: #fefefe;
+            padding: 20px;
+        }
+
+        .button {
+            background-color: #61a22b;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-bottom: 20px;
+        }
+
+        .button:hover {
+            background-color: #54b300;
+        }
+
+        .address-card {
+            background-color: #f8f9fa;
+            border-radius: 10px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            width: 300px;
+            text-align: left;
+        }
+
+        .address-card p {
+            margin: 5px 0;
+        }
+
+        .address-card .button-group {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 10px;
+        }
+
+        .button-danger {
+            background-color: #dc3545;
+            color: white;
+        }
+
+        .button-danger:hover {
+            background-color: #a71d2a;
+        }
+
+        /* Footer Improvements */
+        .footer {
+            background-color: #8dc63f;
+            color: white;
+            padding: 30px 20px;
+            text-align: left;
+        }
+
+        .footer a {
+            color: white;
+            text-decoration: none;
+        }
+        .button-group {
+        display: flex;
+        gap: 10px; /* Add spacing between buttons */
+        justify-content: flex-start; /* Align buttons to the left */
+    }
+
+    .footer h6 {
+        font-size: 1.1rem;
+        margin-bottom: 15px;
+    }
+
+    .footer p,
+    .footer ul {
+        font-size: 0.9rem;
+        margin: 5px 0;
+    }
+
+    .footer ul {
+        list-style: none;
+        padding: 0;
+    }
+
+    .footer ul li {
+        margin-bottom: 5px;
+    }
+
+    .footer ul li a {
+        text-decoration: none;
+        color: white;
+        transition: color 0.3s;
+    }
+
+    .footer ul li a:hover {
+        color: #d9ffbf;
+    }
+
+    .footer form {
+        margin-top: 10px;
+    }
+
+    .footer img {
+        margin-top: 10px;
+        max-width: 100px;
+        display: inline-block;
+        margin-right: 10px;
+    }
+
+    .footer .row {
+        row-gap: 20px; /* Add space between rows on smaller screens */
+    }
+    </style>
+</head>
+
+<body>
+    <!-- Header Section -->
+    <header>
+        <nav class="navbar navbar-expand-lg navbar-light bg-light">
+            <div class="container">
+                <a class="navbar-brand" href="#">
+                    <img src="/images/logo.png" style="width: 30px;">
+                </a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+                    aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarNav">
+                    <ul class="navbar-nav ms-auto">
+                        <li class="nav-item"><a class="nav-link" href="/">Home</a></li>
+                        <li class="nav-item"><a class="nav-link" href="/shop">Shop</a></li>
+                        <li class="nav-item"><a class="nav-link" href="/cart">Cart</a></li>
+                        <li class="nav-item"><a class="nav-link" href="/wishlist">Wishlist</a></li>
+                    </ul>
+                    <!-- User Profile Section -->
+                    <div class="dropdown ms-3">
+                        <a href="#" class="d-flex align-items-center text-decoration-none " id="userProfileDropdown"
+                            aria-expanded="false">
+                            <img src="/images/profile.png" style="width: 30px; height: 30px; border-radius: 50%;">
+                            <span class="ms-2">
+                                <%= userVer?.name %>
+                            </span>
+                        </a>
+                    </div>
+                    <!-- End of User Profile Section -->
+                </div>
+            </div>
+        </nav>
+    </header>
+    <div class="container-fluid">
+        <div class="row">
+            <!-- Sidebar -->
+            <div class="col-md-2 sidebar">
+                <nav class="mt-4">
+                    <ul class="nav flex-column">
+                        <li class="nav-item">
+                            <a class="nav-link" href="/profile">Dashboard</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#">Orders</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#">Wallet</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#">Addresses</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#">Logout</a>
+                        </li>
+                    </ul>
+                </nav>
+            </div>
+    
+            <!-- Content -->
+            <div class="col-md-10 offset-md-2 content">
+                <div class="d-flex justify-content-between align-items-center mb-4" >
+                    <div><h2>Your Addresses</h2></div>
+                    <div><a href="/addaddress"><button class="button">Add Address</button></a></div>
+                </div>
+    
+                <!-- Address Cards -->
+                <div class="row"style="justify-content: space-around;">
+                    <% userAddress.forEach(address=> { %>
+                        <div class="col-md-6 col-lg-4">
+                            <div class="address-card">
+                                <p><strong>Address <span><%= address.addressCount %></span></strong></p>
+                                <p class="door-no">Door no: <%= address.doorNo %></p>
+                                <p class="street"><%= address.street %></p>
+                                <p class="city"><%= address.city %></p>
+                                <p class="dist"><%= address.district %> - <%= address.pinCode %></p>
+                                <div class="button-group d-flex justify-content-between mt-3">
+                                    <button class="button-danger">Delete</button>
+                                    <button class="button-primary">Edit</button>
+                                </div>
+                            </div>
+                        </div>
+                    <% }) %>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Footer -->
+    <div class="footer mt-4">
+        <div class="row">
+            <div class="col-md-3">
+                <h6>Contact Us</h6>
+                <p>Address: Leeds, London, UK - 1290</p>
+                <p>Phone: 002 52695 24542</p>
+                <p>Fax: 002 78985 369552</p>
+                <p>Email: support@example.com</p>
+            </div>
+            <div class="col-md-3">
+                <h6>Information</h6>
+                <ul>
+                    <li><a href="#">Your Account</a></li>
+                    <li><a href="#">Free Shipping Policy</a></li>
+                    <li><a href="#">Your Cart</a></li>
+                    <li><a href="#">Return Policy</a></li>
+                    <li><a href="#">Delivery Info</a></li>
+                </ul>
+            </div>
+            <div class="col-md-3">
+                <h6>Support</h6>
+                <ul>
+                    <li><a href="#">Payment Method</a></li>
+                    <li><a href="#">Help</a></li>
+                    <li><a href="#">Privacy Policy</a></li>
+                </ul>
+            </div>
+            <div class="col-md-3">
+                <h6>Join Our Mailing List</h6>
+                <form>
+                    <input type="email" class="form-control" placeholder="Your Email Address">
+                    <button class="btn btn-dark mt-2">Subscribe</button>
+                </form>
+                <p>Download Our Mobile Apps:</p>
+                <img src="google-play.png" alt="Google Play" style="max-width: 100px;">
+                <img src="app-store.png" alt="App Store" style="max-width: 100px;">
+            </div>
+        </div>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+
+</html>

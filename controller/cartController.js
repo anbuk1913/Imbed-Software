@@ -8,9 +8,8 @@ const cartView = async (req,res) => {
         const name = userVer.name
         const cartItems = await cart.find({userId:userVer._id}).populate({
             path: "productId",
-            select: "productName productPrice productOfferPrice productImage1 isListed -_id"
+            select: "productName productPrice productOfferPrice productImage1 isListed productStock -_id"
        });
-       console.log(cartItems)
         res.render("user/cart",{name,cartItems})
     } catch (error) {
         console.log("cartView",error)
@@ -27,4 +26,18 @@ const addtoCart = async(req,res)=>{
     
 }
 
-module.exports = {cartView,addtoCart}
+const removeItem = async(req,res)=>{
+    try {
+        const id = req.query.id
+        const data = await cart.findByIdAndDelete({_id:id})
+        if(data){
+            res.json({success: true, message: 'Product removed'});
+        } else {
+            res.json({success: false, message: 'Somthing Wrong!'});
+        }
+    } catch (error) {
+        console.log(error)
+    }
+}
+
+module.exports = {cartView,addtoCart,removeItem}

@@ -196,19 +196,19 @@
                 <nav class="mt-4">
                     <ul class="nav flex-column">
                         <li class="nav-item">
-                            <a class="nav-link" href="#">Dashboard</a>
+                            <a class="nav-link" href="">Dashboard</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="#">Orders</a>
+                            <a class="nav-link" href="">Orders</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="#">Wallet</a>
+                            <a class="nav-link" href="">Wallet</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="#">Addresses</a>
+                            <a class="nav-link" href="/address">Addresses</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="#">Logout</a>
+                            <a class="nav-link" href="">Logout</a>
                         </li>
                     </ul>
                 </nav>
@@ -252,20 +252,17 @@
                                     aria-label="Close"></button>
                             </div>
                             <div class="modal-body">
-                                <form>
+                                <form id>
                                     <div class="mb-3">
                                         <label for="modalFullName" class="form-label">Full Name</label>
                                         <input type="text" class="form-control" id="modalFullName" value="<%= userVer.name %>">
+                                        <p class="name-error"></p>
                                     </div>
                                     <div class="mb-3">
                                         <label for="modalPhoneNumber" class="form-label">Phone Number</label>
                                         <input type="text" class="form-control" id="modalPhoneNumber"
                                             value="<%= userVer.phone %>">
-                                    </div>
-                                    <div class="mb-3">
-                                        <label for="modalEmailAddress" class="form-label">Email Address</label>
-                                        <input type="email" class="form-control" id="modalEmailAddress"
-                                            value="<%= userVer.email %>">
+                                        <p class="phonenumber-error"></p>
                                     </div>
                                     <button type="submit" class="btn btn-success">Save Changes</button>
                                 </form>

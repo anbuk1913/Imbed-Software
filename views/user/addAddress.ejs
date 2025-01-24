@@ -1,0 +1,452 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add Address</title>
+    <link rel="icon" href="/images/logo.png">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Source+Sans+3:ital,wght@0,200..900;1,200..900&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Source Sans 3', sans-serif;
+            height: 100vh;
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            background-image: url('/images/lo.jpg');
+            background-repeat: no-repeat;
+        }
+
+        /* Navbar */
+        .navbar {
+            width: 100%;
+            padding: 15px 0;
+            box-shadow: 10px 10px 15px rgba(0, 0, 0, 0.5);
+        }
+
+        .navbar-brand {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #8CBF3A;
+        }
+
+        .navbar-nav .nav-link {
+            font-weight: 500;
+            color: #555;
+            font-size: 1rem;
+            margin: 0 10px;
+        }
+
+        .navbar-nav .nav-link:hover {
+            color: #8CBF3A;
+        }
+
+        a {
+            text-decoration: none;
+            color: inherit;
+        }
+
+        .main-container {
+            margin: 20px 0px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        form {
+            background-color: #00000050;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 10px 10px 15px rgba(0, 0, 0, 0.5);
+            width: 100%;
+            max-width: 400px;
+        }
+
+        h2 {
+            text-align: center;
+            margin-bottom: 20px;
+            color: white;
+        }
+
+        label {
+            display: block;
+            margin: 10px 0px;
+            margin-bottom: 0px;
+            color: white;
+        }
+
+        .data-input {
+            color: white;
+            width: 95%;
+            padding: 10px;
+            margin: 5px 0px;
+            background-color: #0000007b;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+
+        .data-input[type=number]::-webkit-inner-spin-button, 
+        .data-input[type=number]::-webkit-outer-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+
+        .data-input:focus {
+            outline: none;
+            border-color: #8dc63f;
+            box-shadow: #68ad07d2;
+        }
+
+        .error {
+            color: red;
+            font-size: 0.85em;
+        }
+
+        .input-button {
+            margin-top: 20px;
+            width: 95%;
+            padding: 5px;
+            background-color: #699c19;
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-color 0.3s ease, border-radius 0.3s ease;
+        }
+
+        .input-button:hover {
+            color: black;
+            background-color: #94f000;
+            border-radius: 20px;
+        }
+
+        /* Footer Improvements */
+        .footer {
+            background-color: #8dc63f;
+            color: white;
+            padding: 30px 20px;
+            text-align: left;
+        }
+
+        .footer a {
+            color: white;
+            text-decoration: none;
+        }
+        .button-group {
+        display: flex;
+        gap: 10px; /* Add spacing between buttons */
+        justify-content: flex-start; /* Align buttons to the left */
+        }
+
+        .footer h6 {
+            font-size: 1.1rem;
+            margin-bottom: 15px;
+        }
+
+        .footer p,
+        .footer ul {
+            font-size: 0.9rem;
+            margin: 5px 0;
+        }
+
+        .footer ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .footer ul li {
+            margin-bottom: 5px;
+        }
+
+        .footer ul li a {
+            text-decoration: none;
+            color: white;
+            transition: color 0.3s;
+        }
+
+        .footer ul li a:hover {
+            color: #d9ffbf;
+        }
+
+        .footer form {
+            margin-top: 10px;
+        }
+
+        .footer img {
+            margin-top: 10px;
+            max-width: 100px;
+            display: inline-block;
+            margin-right: 10px;
+        }
+
+        .footer .row {
+            row-gap: 20px; /* Add space between rows on smaller screens */
+        }
+
+        @media (max-width: 600px) {
+            form {
+                padding: 15px;
+            }
+
+            h2 {
+                font-size: 1.5em;
+            }
+
+            button {
+                font-size: 14px;
+            }
+        }
+
+        .toast-container {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 9999;
+        }
+
+        .toast {
+            display: none;
+            background-color: #ff6600;
+            color: white;
+            padding: 15px 30px;
+            border-radius: 12px;
+            font-size: 16px;
+            text-align: center;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+            opacity: 0;
+            transform: translateX(100%);
+            animation: slideInFromRight 0.8s ease-out forwards;
+        }
+
+        @keyframes slideInFromRight {
+            0% {
+                opacity: 0;
+                transform: translateX(100%);
+            }
+
+            100% {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        @keyframes slideOutToRight {
+            0% {
+                opacity: 1;
+                transform: translateX(0);
+            }
+
+            100% {
+                opacity: 0;
+                transform: translateX(100%);
+            }
+        }
+
+    </style>
+</head>
+<body>
+    <!-- Header Section -->
+    <header>
+        <nav class="navbar navbar-expand-lg navbar-light bg-light">
+            <div class="container">
+                <a class="navbar-brand" href="#">
+                    <img src="/images/logo.png" style="width: 30px;">
+                </a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+                    aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarNav">
+                    <ul class="navbar-nav ms-auto">
+                        <li class="nav-item"><a class="nav-link" href="/">Home</a></li>
+                        <li class="nav-item"><a class="nav-link" href="/shop">Shop</a></li>
+                        <li class="nav-item"><a class="nav-link" href="/cart">Cart</a></li>
+                        <li class="nav-item"><a class="nav-link" href="/wishlist">Wishlist</a></li>
+                    </ul>
+                    <!-- User Profile Section -->
+                    <div class="dropdown ms-3">
+                        <a href="#" class="d-flex align-items-center text-decoration-none " id="userProfileDropdown"
+                            aria-expanded="false">
+                            <img src="/images/profile.png" style="width: 30px; height: 30px; border-radius: 50%;">
+                            <span class="ms-2">
+                                <%= userVer?.name %>
+                            </span>
+                        </a>
+                    </div>
+                    <!-- End of User Profile Section -->
+                </div>
+            </div>
+        </nav>
+    </header>
+    <div class="main-container">
+        <div class="toast-container"></div>
+        <form id="addressForm" >
+            <h2>Address Form</h2>
+            <input type="text" value="<%= userVer?._id %>" id="userid" name="userid" hidden>
+            <label for="doorNo">Door No:</label>
+            <input type="text" class="data-input" id="doorNo" name="doorNo">
+            <span class="error" id="doorNoError"></span>
+
+            <label for="street">Street:</label>
+            <input type="text" class="data-input" id="street" name="street">
+            <span class="error" id="streetError"></span>
+
+            <label for="city">City:</label>
+            <input type="text" class="data-input" id="city" name="city">
+            <span class="error" id="cityError"></span>
+
+            <label for="district">District:</label>
+            <input type="text" class="data-input" id="district" name="district">
+            <span class="error" id="districtError"></span>
+
+            <label for="postcode">Postcode:</label>
+            <input type="number" class="data-input" id="postcode" name="postcode">
+            <span class="error" id="postcodeError"></span>
+
+            <button type="submit" class="input-button">Submit</button>
+        </form>
+    </div>
+
+    <!-- Footer -->
+    <div class="footer mt-4">
+        <div class="row">
+            <div class="col-md-3">
+                <h6>Contact Us</h6>
+                <p>Address: Leeds, London, UK - 1290</p>
+                <p>Phone: 002 52695 24542</p>
+                <p>Fax: 002 78985 369552</p>
+                <p>Email: support@example.com</p>
+            </div>
+            <div class="col-md-3">
+                <h6>Information</h6>
+                <ul>
+                    <li><a href="#">Your Account</a></li>
+                    <li><a href="#">Free Shipping Policy</a></li>
+                    <li><a href="#">Your Cart</a></li>
+                    <li><a href="#">Return Policy</a></li>
+                    <li><a href="#">Delivery Info</a></li>
+                </ul>
+            </div>
+            <div class="col-md-3">
+                <h6>Support</h6>
+                <ul>
+                    <li><a href="#">Payment Method</a></li>
+                    <li><a href="#">Help</a></li>
+                    <li><a href="#">Privacy Policy</a></li>
+                </ul>
+            </div>
+            <div class="col-md-3">
+                <h6>Join Our Mailing List</h6>
+                <form>
+                    <input type="email" class="form-control" placeholder="Your Email Address">
+                    <button class="btn btn-dark mt-2">Subscribe</button>
+                </form>
+                <p>Download Our Mobile Apps:</p>
+                <img src="/images/playstore.webp" alt="Google Play" style="max-width: 100px;">
+                <img src="/images/appstore.png" alt="App Store" style="max-width: 100px;">
+            </div>
+        </div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        document.getElementById('addressForm').addEventListener('submit', async function (e) {
+            e.preventDefault();
+
+            let isValid = true;
+
+            // Clear all error messages
+            document.querySelectorAll('.error').forEach(error => error.textContent = '');
+
+            // Validate Door No
+            const doorNo = document.getElementById('doorNo');
+            if (!doorNo.value.trim()) {
+                document.getElementById('doorNoError').textContent = 'Door No is required';
+                isValid = false;
+            }
+
+            // Validate Street
+            const street = document.getElementById('street');
+            if (!street.value.trim()) {
+                document.getElementById('streetError').textContent = 'Street is required';
+                isValid = false;
+            }
+
+            // Validate City
+            const city = document.getElementById('city');
+            if (!city.value.trim()) {
+                document.getElementById('cityError').textContent = 'City is required';
+                isValid = false;
+            }
+
+            // Validate District
+            const district = document.getElementById('district');
+            if (!district.value.trim()) {
+                document.getElementById('districtError').textContent = 'District is required';
+                isValid = false;
+            }
+
+            // Validate Postcode
+            const postcode = document.getElementById('postcode');
+            const postcodeValue = postcode.value.trim();
+            if (!postcodeValue) {
+                document.getElementById('postcodeError').textContent = 'Postcode is required';
+                isValid = false;
+            } else if (!/^[0-9]{6}$/.test(postcodeValue)) {
+                document.getElementById('postcodeError').textContent = 'Postcode must be a 6-digit number without spaces';
+                isValid = false;
+            }
+
+            if (isValid) {
+                let formData = {
+                    doorNo: $('#doorNo').val().trim(),
+                    street: $('#street').val(),
+                    city: $('#city').val(),
+                    district: $('#district').val(),
+                    pinCode: $('#postcode').val(),
+                    userId: $('#userid').val(),
+                };
+                try {
+                    const response = await fetch('/addaddress',{
+                        method:'post',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(formData)
+                    })
+                    const result = await response.json();
+                    const toastContainer = document.querySelector(".toast-container");
+                    const toast = document.createElement("div");
+                    toast.className = "toast";
+
+                    if (result.success) {
+                        toast.textContent = result.message;
+                        toast.style.backgroundColor = "#28a745"; // Green color
+                        toastContainer.appendChild(toast);
+                        setTimeout(() => {
+                            toast.style.display = "block";
+                        }, 100);
+
+                        setTimeout(() => {
+                            toast.style.animation = "slideOutToRight 0.8s ease-out forwards";
+                        }, 2000);
+
+                        setTimeout(() => {
+                            toast.style.display = "none";
+                            toast.remove(); // Remove toast from DOM
+                            window.location.href = "/address"
+                        }, 2800);
+                    } else {
+
+                    }
+                } catch (error) {
+                    console.log(error)
+                }
+            }
+        });
+    </script>
+</body>
+</html>

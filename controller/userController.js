@@ -162,7 +162,7 @@ const loginPost = async(req,res)=>{
 const googleCallback=async (req, res) => {
     try {
       const user = await usercollection.findOneAndUpdate(
-        // { email: req.user._json.email},
+        { email: req.user._json.email},
         { $set: { name: req.user.displayName} },
         { upsert: true,new :true }
       );
@@ -190,15 +190,6 @@ const blockedUser = async(req,res)=>{
     }
 }
 
-const profile = async(req,res)=>{
-    const userEmail = req.session.user.email
-    const userVer = await usercollection.findOne({ email: userEmail });
-    if(!userVer.isActive){
-        return res.redirect("/blocked")
-    } else {
-        return res.render("user/profile",{userVer})
-    }
-}
 
 const logout = async(req,res)=>{
     req.session.loginSession = null
@@ -224,5 +215,4 @@ module.exports = {
     googleCallback,
     blockedUser,
     logout,
-    profile,
 }
