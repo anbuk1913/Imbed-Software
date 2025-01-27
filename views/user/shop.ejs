@@ -259,7 +259,7 @@
          <main>
             <div class="product-grid">
                 <% products.forEach(product=> { %>
-                <a href="/product/<%= product._id %>" target="_blank" style="text-decoration: none;"><div class="product-item">
+                <a href="/product/<%= product._id %>" style="text-decoration: none;"><div class="product-item">
                     <img src="<%= product.productImage1 %>" alt="<%= product.productName %>">
                     <h5 class="product-name"><%= product.productName %></h5>
                     <p style="font-size: 0.8rem;color: black;"><%= product.productCategory %></p>

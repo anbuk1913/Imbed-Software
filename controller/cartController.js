@@ -6,10 +6,15 @@ const cartView = async (req,res) => {
         const userEmail = req.session.user.email
         const userVer = await usercollection.findOne({ email: userEmail });
         const name = userVer.name
-        const cartItems = await cart.find({userId:userVer._id}).populate({
+        let cartItems = await cart.find({userId:userVer._id}).populate({
             path: "productId",
             select: "productName productPrice productOfferPrice productImage1 isListed productStock -_id"
        });
+       cartItems = cartItems.map((item) => {
+            const productStock = item.productId.productStock || 100; // Default stock if undefined
+            item.productQuantity = Math.min(item.productQuantity, productStock); // Adjust quantity to stock
+            return item;
+        });
         res.render("user/cart",{name,cartItems})
     } catch (error) {
         console.log("cartView",error)

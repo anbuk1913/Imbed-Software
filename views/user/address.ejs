@@ -240,6 +240,52 @@
     .footer .row {
         row-gap: 20px; /* Add space between rows on smaller screens */
     }
+
+    .toast-container {
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        z-index: 9999;
+    }
+
+    .toast {
+        display: none;
+        background-color: #ff6600;
+        color: white;
+        padding: 15px 30px;
+        border-radius: 12px;
+        font-size: 16px;
+        text-align: center;
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+        opacity: 0;
+        transform: translateX(100%);
+        animation: slideInFromRight 0.8s ease-out forwards;
+    }
+
+    @keyframes slideInFromRight {
+        0% {
+            opacity: 0;
+            transform: translateX(100%);
+        }
+
+        100% {
+            opacity: 1;
+            transform: translateX(0);
+        }
+    }
+
+    @keyframes slideOutToRight {
+        0% {
+            opacity: 1;
+            transform: translateX(0);
+        }
+
+        100% {
+            opacity: 0;
+            transform: translateX(100%);
+        }
+    }
+
     </style>
 </head>
 
@@ -303,12 +349,13 @@
             </div>
     
             <!-- Content -->
+            <div class="toast-container"></div>
             <div class="col-md-10 offset-md-2 content">
                 <div class="d-flex justify-content-between align-items-center mb-4" >
                     <div><h2>Your Addresses</h2></div>
-                    <div><a href="/addaddress"><button class="button">Add Address</button></a></div>
+                    <div><a href="/addaddress"><button class="button" style="position: absolute;right: 20px;">Add Address</button></a></div>
                 </div>
-    
+
                 <!-- Address Cards -->
                 <div class="row"style="justify-content: space-around;">
                     <% userAddress.forEach(address=> { %>
@@ -320,7 +367,7 @@
                                 <p class="city"><%= address.city %></p>
                                 <p class="dist"><%= address.district %> - <%= address.pinCode %></p>
                                 <div class="button-group d-flex justify-content-between mt-3">
-                                    <button class="button-danger">Delete</button>
+                                    <button class="button-danger button-delete" data-id="<%= address._id %>">Delete</button>
                                     <button class="button-primary">Edit</button>
                                 </div>
                             </div>
@@ -366,12 +413,67 @@
                     <button class="btn btn-dark mt-2">Subscribe</button>
                 </form>
                 <p>Download Our Mobile Apps:</p>
-                <img src="google-play.png" alt="Google Play" style="max-width: 100px;">
-                <img src="app-store.png" alt="App Store" style="max-width: 100px;">
+                <img src="/images/playstore.webp" alt="Google Play" style="max-width: 100px;">
+                <img src="/images/appstore.png" alt="App Store" style="max-width: 100px;">
             </div>
         </div>
     </div>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        //delete Address
+        document.querySelectorAll('.button-delete').forEach(button => {
+            button.addEventListener('click', async function () {
+                const addressId = this.dataset.id; // Get the category ID
+                try {
+                    const response = await fetch(`/deleteaddress/${addressId}`,{method: 'DELETE',})
+                    const result = await response.json();
+                    
+                    const toastContainer = document.querySelector(".toast-container");
+                    const toast = document.createElement("div");
+                    toast.className = "toast";
+
+                    if(result.success){
+                        toast.textContent = result.message;
+                        toast.style.backgroundColor = "#28a745"; // Green color for success
+                        toastContainer.appendChild(toast);
+
+                        setTimeout(() => {
+                            toast.style.display = "block";
+                        }, 100);
+
+                        setTimeout(() => {
+                            toast.style.animation = "slideOutToRight 0.8s ease-out forwards";
+                        }, 2000);
+
+                        setTimeout(() => {
+                            toast.style.display = "none";
+                            toast.remove(); // Remove toast from DOM
+                            window.location.reload()
+                        }, 2800);
+                    } else {
+                        toast.textContent = result.message;
+                        toast.style.backgroundColor = "#dc3545"; // Red color for error
+                        toastContainer.appendChild(toast);
+                        setTimeout(() => {
+                            toast.style.display = "block";
+                        }, 100);
+
+                        setTimeout(() => {
+                            toast.style.animation = "slideOutToRight 0.8s ease-out forwards";
+                        }, 2000);
+
+                        setTimeout(() => {
+                            toast.style.display = "none";
+                            toast.remove(); // Remove toast from DOM
+                            window.location.reload()
+                        }, 2800);
+                    }
+                } catch (error) {
+                    console.log(error)
+                }
+            })
+        })
+    </script>
 </body>
 
 </html>

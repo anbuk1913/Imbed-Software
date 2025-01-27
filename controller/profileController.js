@@ -9,7 +9,7 @@ const profile = async(req,res)=>{
     } else {
         return res.render("user/profile",{userVer})
     }
-}
+} 
 
 const addressPage = async(req,res)=>{
     const userEmail = req.session.user.email
@@ -39,10 +39,22 @@ const addAddressPost = async(req,res)=>{
         newaddress.save();
         return res.status(200).send({ success: true,message: "Address Added Successfully!"})
     } catch (error) {
-        console.log("add",error)
+        console.log(error)
     }
 }
 
+const deleteAddress = async(req,res)=>{
+    try {
+        const addressId = req.params.id;
+        const data = await address.findByIdAndDelete({_id:addressId})
+        if(data){
+            return res.json({success:true, message:"Address deleted Successfully!"})
+        } else {
+            return res.json({success:false, message:"Somthing Wrong!"})
+        }
+    } catch (error) {
+        console.log(error)
+    }
+}
 
-
-module.exports = {profile,addressPage,addAddress,addAddressPost}
+module.exports = {profile,addressPage,addAddress,addAddressPost,deleteAddress}

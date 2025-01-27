@@ -262,6 +262,7 @@
             </div>
             <div class="quantity">
                 <button class="crl-button decrease-btn">-</button>
+                <% if(products.productStock) %>
                 <input type="text" value="1" id="quantityinput" data-max="<%= products.productStock  %> || 100">
                 <button class="crl-button increase-btn">+</button>
                 <input type="text" hidden value="<%= userId %>" id="userId">

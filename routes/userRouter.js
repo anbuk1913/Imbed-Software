@@ -34,5 +34,6 @@ router.get("/profile",userAuth,profileController.profile)
 router.get("/address",userAuth,profileController.addressPage)
 router.get("/addaddress",userAuth,profileController.addAddress)
 router.post("/addaddress",userAuth,profileController.addAddressPost)
+router.delete("/deleteaddress/:id",userAuth,profileController.deleteAddress)
 
 module.exports = router
