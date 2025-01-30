@@ -118,11 +118,11 @@ const otpPost = async(req,res)=>{
 
 const signUpPost = async(req,res)=>{
     try{
-        const hashedPassword = await encryptPassword(req.body.password)
         const userExists = await usercollection.findOne({ email: req.body.email });
         if (userExists) {
             return res.status(409).send({ success: false });
         } else {
+            const hashedPassword = await encryptPassword(req.body.password)
             const user = new usercollection({
                 name: req.body.username,
                 email: req.body.email,
@@ -199,6 +199,7 @@ const logout = async(req,res)=>{
     req.session.signError = null
     req.session.otp = null
     req.session.otpError = null
+    req.session.checkOne = null
     return res.redirect('/')
 }
 

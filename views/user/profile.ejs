@@ -152,6 +152,52 @@
             color: white;
             text-decoration: none;
         }
+
+        .toast-container {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 9999;
+        }
+
+        .toast {
+            display: none;
+            background-color: #ff6600;
+            color: white;
+            padding: 15px 30px;
+            border-radius: 12px;
+            font-size: 16px;
+            text-align: center;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+            opacity: 0;
+            transform: translateX(100%);
+            animation: slideInFromRight 0.8s ease-out forwards;
+        }
+
+        @keyframes slideInFromRight {
+            0% {
+                opacity: 0;
+                transform: translateX(100%);
+            }
+
+            100% {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        @keyframes slideOutToRight {
+            0% {
+                opacity: 1;
+                transform: translateX(0);
+            }
+
+            100% {
+                opacity: 0;
+                transform: translateX(100%);
+            }
+        }
+
     </style>
 </head>
 
@@ -189,6 +235,7 @@
             </div>
         </nav>
     </header>
+    <div class="toast-container"></div>
     <div class="container-fluid">
         <div class="row">
             <!-- Sidebar -->
@@ -208,7 +255,7 @@
                             <a class="nav-link" href="/address">Addresses</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="">Logout</a>
+                            <a class="nav-link" href="" onclick="document.getElementById('logoutForm').submit(); return false;">Logout</a>
                         </li>
                     </ul>
                 </nav>
@@ -237,9 +284,12 @@
                             </table>
                         </div>                        
                         <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#profileModal">Edit Profile</button>
-                        <button class="btn btn-primary" data-bs-toggle="modal">Change Password</button>
+                        <% if(userVer.password) { %>
+                            <a href="/changepassword"><button class="btn btn-primary" data-bs-toggle="modal">Change Password</button></a>
+                        <% } %>
                     </div>
                 </div>
+                <form id="logoutForm" action="/logout" method="post" style="display: none;"></form>
 
                 <!-- Profile Modal -->
                 <div class="modal fade" id="profileModal" tabindex="-1" aria-labelledby="profileModalLabel"
@@ -252,17 +302,17 @@
                                     aria-label="Close"></button>
                             </div>
                             <div class="modal-body">
-                                <form id>
+                                <form id="user-details">
                                     <div class="mb-3">
                                         <label for="modalFullName" class="form-label">Full Name</label>
                                         <input type="text" class="form-control" id="modalFullName" value="<%= userVer.name %>">
-                                        <p class="name-error"></p>
+                                        <p class="name-error" style="color: red;"></p>
                                     </div>
                                     <div class="mb-3">
                                         <label for="modalPhoneNumber" class="form-label">Phone Number</label>
                                         <input type="text" class="form-control" id="modalPhoneNumber"
                                             value="<%= userVer.phone %>">
-                                        <p class="phonenumber-error"></p>
+                                        <p class="phonenumber-error" style="color: red;"></p>
                                     </div>
                                     <button type="submit" class="btn btn-success">Save Changes</button>
                                 </form>
@@ -284,11 +334,11 @@
                         <div class="col-md-3">
                             <h6>Information</h6>
                             <ul>
-                                <li><a href="#">Your Account</a></li>
-                                <li><a href="#">Free Shipping Policy</a></li>
-                                <li><a href="#">Your Cart</a></li>
-                                <li><a href="#">Return Policy</a></li>
-                                <li><a href="#">Delivery Info</a></li>
+                                <li><a href="">Your Account</a></li>
+                                <li><a href="">Free Shipping Policy</a></li>
+                                <li><a href="">Your Cart</a></li>
+                                <li><a href="">Return Policy</a></li>
+                                <li><a href="">Delivery Info</a></li>
                             </ul>
                         </div>
                         <div class="col-md-3">
@@ -306,16 +356,110 @@
                                 <button class="btn btn-dark mt-2">Subscribe</button>
                             </form>
                             <p>Download Our Mobile Apps:</p>
-                            <img src="google-play.png" alt="Google Play" style="max-width: 100px;">
-                            <img src="app-store.png" alt="App Store" style="max-width: 100px;">
+                            <img src="/images/logo.png" alt="Google Play" style="max-width: 100px;">
+                            <img src="/images/logofont.png" alt="App Store" style="max-width: 100px;">
                         </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
-
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Select the input fields and error messages
+        const nameInput = document.getElementById('modalFullName');
+        const phoneInput = document.getElementById('modalPhoneNumber');
+        const nameError = document.querySelector('.name-error');
+        const phoneError = document.querySelector('.phonenumber-error');
+
+        // Validate Name on Blur
+        nameInput.addEventListener('blur', () => {
+            const nameValue = nameInput.value.trim();
+            const nameRegex = /^[a-zA-Z\s]+$/; // Allows alphabets and spaces
+            if (!nameValue) {
+                nameError.textContent = 'Name is required.';
+            } else if (!nameRegex.test(nameValue)) {
+                nameError.textContent = 'Name must contain only alphabets.';
+            } else {
+                nameError.textContent = ''; // Clear error
+            }
+        });
+
+        // Validate Phone Number on Blur
+        phoneInput.addEventListener('blur', () => {
+            const phoneValue = phoneInput.value.trim();
+            const phoneRegex = /^[0-9]{10}$/; // Allows exactly 10 digits
+            if (!phoneValue) {
+                phoneError.textContent = 'Phone number is required.';
+            } else if (!phoneRegex.test(phoneValue)) {
+                phoneError.textContent = 'Phone number must be exactly 10 digits.';
+            } else {
+                phoneError.textContent = ''; // Clear error
+            }
+        });
+
+        // Prevent form submission if there are validation errors
+        document.getElementById('user-details').addEventListener('submit', async (event) => {
+            if (nameError.textContent || phoneError.textContent) {
+                event.preventDefault();
+            } else {
+                event.preventDefault();
+                const newData = {
+                    name: $('#modalFullName').val(),
+                    phone: $('#modalPhoneNumber').val(),
+                };
+                try {
+                    let response = await fetch('/edituserdata', {
+                        method: 'PATCH',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(newData)
+                    });
+                    const result = await response.json();
+                    const toastContainer = document.querySelector(".toast-container");
+                    const toast = document.createElement("div");
+                    toast.className = "toast";
+                    if (result.success) {
+                        toast.textContent = result.message;
+                        toast.style.backgroundColor = "#28a745"; // Green color
+                        toastContainer.appendChild(toast);
+                        setTimeout(() => {
+                            toast.style.display = "block";
+                        }, 100);
+
+                        setTimeout(() => {
+                            toast.style.animation = "slideOutToRight 0.8s ease-out forwards";
+                        }, 2000);
+
+                        setTimeout(() => {
+                            toast.style.display = "none";
+                            toast.remove(); // Remove toast from DOM
+                            window.location.href = "/profile"
+                        }, 2800);
+                    } else {
+                        toast.textContent = result.message;
+                        toast.style.backgroundColor = "#dc3545"; // Red color for error
+                        toastContainer.appendChild(toast);
+                        setTimeout(() => {
+                            toast.style.display = "block";
+                        }, 100);
+
+                        setTimeout(() => {
+                            toast.style.animation = "slideOutToRight 0.8s ease-out forwards";
+                        }, 2000);
+
+                        setTimeout(() => {
+                            toast.style.display = "none";
+                            toast.remove(); // Remove toast from DOM
+                        }, 2800);
+                    }
+                } catch (error) {
+                    console.log(error)
+                    return;
+                }
+            }
+        });
+    </script>
 </body>
 
 </html>

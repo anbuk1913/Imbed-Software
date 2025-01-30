@@ -213,6 +213,7 @@
                             <li><a class="dropdown-item" href=""
                                     onclick="document.getElementById('logoutForm').submit(); return false;">Logout</a>
                             </li>
+                            <form id="logoutForm" action="/logout" method="post" style="display: none;"></form>
                         </ul>
                         <% } else {%>
                             <img src="/images/profile.png" style="width: 30px; height: 30px; border-radius: 50%;">
@@ -263,12 +264,19 @@
                     <img src="<%= product.productImage1 %>" alt="<%= product.productName %>">
                     <h5 class="product-name"><%= product.productName %></h5>
                     <p style="font-size: 0.8rem;color: black;"><%= product.productCategory %></p>
-                        <% if(product.productOfferPrice){ %>
-                            <strong>₹<%= product.productOfferPrice %></strong>
-                            <del>₹<%= product.productPrice %></del>
-                        <% } else { %>
-                            <strong>₹<%= product.productPrice %></strong>
-                        <% } %>
+                    <% if(product.productOfferPrice){ %>
+                        <strong>₹<%= product.productOfferPrice %></strong>
+                        <del>₹<%= product.productPrice %></del>
+                    <% } else { %>
+                        <strong>₹<%= product.productPrice %></strong>
+                    <% } %>
+                    <% if(product.productStock==0) { %>
+                        <p style="color: red;">Out of stack</p>
+                    <% } else if(product.productStock<=10) { %>
+                        <p style="color: red;">Only <%= product.productStock %> Stocks left</p>
+                    <% } else { %>
+                        <p style="color: red;"></p>
+                    <% } %>
                 </div></a>
                 <% }) %>
             </div>

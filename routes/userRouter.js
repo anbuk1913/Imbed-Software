@@ -5,6 +5,7 @@ const shopController = require('../controller/shopController')
 const productController = require("../controller/productController")
 const cartController = require("../controller/cartController")
 const profileController = require("../controller/profileController")
+const checkoutController = require("../controller/checkoutController")
 const router = express.Router()
 const passport = require('passport');
 
@@ -28,12 +29,23 @@ router.get('/product/:id',productController.singleProductView)
 router.get("/cart",userAuth,cartController.cartView)
 router.post("/addcart",userAuth,cartController.addtoCart)
 router.delete("/removeitem",userAuth,cartController.removeItem)
+router.patch("/updatecart",userAuth,cartController.updateCartItems)
 
 //Profile
 router.get("/profile",userAuth,profileController.profile)
 router.get("/address",userAuth,profileController.addressPage)
 router.get("/addaddress",userAuth,profileController.addAddress)
 router.post("/addaddress",userAuth,profileController.addAddressPost)
+router.get("/editaddress/:id",userAuth,profileController.editAddress)
+router.put("/editaddress",userAuth,profileController.editAddressPut)
 router.delete("/deleteaddress/:id",userAuth,profileController.deleteAddress)
+router.get("/changepassword",userAuth,profileController.changePassword)
+router.patch("/changepassword",userAuth,profileController.changePasswordPatch)
+router.patch("/edituserdata",userAuth,profileController.editUserData)
+
+// Checkout Pages
+router.get("/checkoutaddress",userAuth,checkoutController.checkoutPageOne)
+router.post("/checkouttwo",userAuth,checkoutController.checkoutTwoPost)
+router.get("/billing",userAuth,checkoutController.billingPage)
 
 module.exports = router

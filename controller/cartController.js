@@ -8,10 +8,10 @@ const cartView = async (req,res) => {
         const name = userVer.name
         let cartItems = await cart.find({userId:userVer._id}).populate({
             path: "productId",
-            select: "productName productPrice productOfferPrice productImage1 isListed productStock -_id"
+            select: "productName productPrice productOfferPrice productImage1 isListed productStock _id"
        });
        cartItems = cartItems.map((item) => {
-            const productStock = item.productId.productStock || 100; // Default stock if undefined
+            const productStock = item.productId?.productStock || 100; // Default stock if undefined
             item.productQuantity = Math.min(item.productQuantity, productStock); // Adjust quantity to stock
             return item;
         });
@@ -45,4 +45,17 @@ const removeItem = async(req,res)=>{
     }
 }
 
-module.exports = {cartView,addtoCart,removeItem}
+const updateCartItems = async (req, res) => {
+    try {
+        for (const data of req.body.arr) {
+            await cart.updateOne({ _id: data.productId }, { $set: { productQuantity: data.value } });
+        }
+        req.session.checkOne = true
+        res.json({success: true});
+    } catch (error) {
+        console.log(error);
+        res.json({success: false, message: 'Somthing Wrong!'});
+    }
+};
+
+module.exports = {cartView,addtoCart,removeItem,updateCartItems}

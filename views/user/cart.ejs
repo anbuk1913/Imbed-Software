@@ -350,6 +350,7 @@
                         <li><a class="dropdown-item" href=""
                                 onclick="document.getElementById('logoutForm').submit(); return false;">Logout</a>
                         </li>
+                        <form id="logoutForm" action="/logout" method="post" style="display: none;"></form>
                     </ul>
                     <% } else {%>
                         <img src="/images/profile.png" style="width: 30px; height: 30px; border-radius: 50%;">
@@ -382,21 +383,21 @@
             </thead>
             <tbody>
                 <% cartItems.forEach(item => { %>
-                  <% if(item.productId.isListed) { %>
+                  <% if(item?.productId?.isListed) { %>
                     <tr>
                       <td><button class="remove-product" onclick="removeItem('<%= item._id %>')">⛔</button></td>
-                      <td><img src="<%= item.productId.productImage1 %>" alt="<%= item.product %>" class="cart-image"></td>
-                      <td><%= item.productId.productName %></td>
-                      <% if(item.productId.productOfferPrice) { %>
+                      <td><img src="<%= item?.productId?.productImage1 %>" alt="<%= item.productId?.productName %>" class="cart-image"></td>
+                      <td><%= item?.productId?.productName %></td>
+                      <% if(item?.productId?.productOfferPrice) { %>
                           <td><%= item.productId.productOfferPrice %></td>
                        <% } else { %>
                           <td><%= item.productId.productPrice %></td>
                        <% } %>
                       <td>
                         <div class="quantity">
-                            <button class="crl-button decrease-btn">-</button>
-                            <input type="number" value="<%= item.productQuantity %>" min="1" data-max="<%= item.productId.productStock  %> || 100" class="quantity-input">
-                            <button class="crl-button increase-btn">+</button>
+                            <button class="crl-button decrease-btn" id="dec-button" onclick="decr('<%= item._id %>')">-</button>
+                            <input type="number" id="quantity-input-<%= item._id %>" value="<%= item.productQuantity %>" min="1" data-limit="<%= item.productId.productStock  %>" data-max="<%= item.productId.productStock  %> || 100" class="quantity-input">
+                            <button class="crl-button increase-btn" id="inc-button" onclick="incr('<%= item._id %>')">+</button>
                         </div>
                       </td>
                       <% if(item.productId.productOfferPrice) { %>
@@ -411,13 +412,6 @@
         </table>
 
         <div class="cart-totals">
-            <div class="totals-box apply-coupon">
-                <h3>Have a Coupon?</h3>
-                <form action="/apply-coupon" method="POST">
-                    <input type="text" name="couponCode" placeholder="Enter Your Coupon Code">
-                    <button type="submit">Apply Coupon</button>
-                </form>
-            </div>
             <div class="totals-box">
                 <h3>Cart Totals</h3>
                 <table class="totals-table">
@@ -438,7 +432,7 @@
                         <td id="total"><strong>₹0.00</strong></td>
                     </tr>
                 </table>
-                <button class="checkout-btn">Proceed to Checkout</button>
+                <button class="checkout-btn" onclick="checkout()">Proceed to Checkout</button>
             </div>
             
         </div>
@@ -554,12 +548,12 @@
                 const maxStock = parseInt(quantityInput.dataset.max, 10);
 
                 if (target.classList.contains("increase-btn")) {
-                    if (currentQuantity < maxStock) {
+                    if (currentQuantity < maxStock && currentQuantity < 100) {
                         currentQuantity++;
                     } else {
                         Swal.fire({
                             title: 'Limit Reached!',
-                            text: `Only ${maxStock} stocks left.`,
+                            text: `Only ${maxStock} stocks left or You reached Maximum quantity 100`,
                             icon: 'info',
                             timer: 2000,
                             showConfirmButton: false,
@@ -613,6 +607,7 @@
                 }, 2000);
 
                 setTimeout(() => {
+                    localStorage.removeItem(id);
                     toast.style.display = "none";
                     toast.remove(); // Remove toast from DOM
                     window.location.reload()
@@ -635,7 +630,56 @@
                 }, 3800);
             }
         }
-    </script>
 
+    </script>
+    <script>
+        function decr(id){
+            const quantityInput = document.getElementById(`quantity-input-${id}`);
+            let currentQuantity = parseInt(quantityInput.value, 10) || 1;
+            const limit = Number(quantityInput.dataset.limit)
+            if(currentQuantity-1!=0){
+                localStorage.setItem(id, currentQuantity-1);
+            }else{
+                localStorage.setItem(id, currentQuantity);
+            }
+        }
+        function incr(id){
+            const quantityInput = document.getElementById(`quantity-input-${id}`);
+            let currentQuantity = parseInt(quantityInput.value, 10) || 1;
+            const limit = Number(quantityInput.dataset.limit)
+            if(currentQuantity+1<=limit && currentQuantity+1 <=100){
+                localStorage.setItem(id, currentQuantity+1);
+            } else {
+                localStorage.setItem(id, currentQuantity);
+            }
+        }
+    </script>
+    <script>
+        async function checkout(){
+            let arr=[]
+            Object.entries(localStorage).forEach(([key, value]) => {
+                console.log(key,value)
+                const productId = key
+                const products = {productId, value}
+                arr.push(products)
+            });
+            bodyData = {arr}
+            try {
+                const response = await fetch('/updatecart',{
+                    method:"PATCH",
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(bodyData)
+                })
+                const result = await response.json();
+                if(result.success){
+                    window.location.href = "/checkoutaddress"
+                } else {
+                    throw new Error("Something went wrong");
+                }
+            } catch (error) {
+                console.log(error)
+            }
+        }
+    </script>
 </body>
 </html>
