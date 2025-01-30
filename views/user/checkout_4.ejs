@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cart</title>
+    <title>Final Review</title>
     <link rel="icon" href="/images/logo.png">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.7.0/dist/sweetalert2.all.min.js"></script>
@@ -51,13 +51,52 @@
         .navbar-nav .nav-link:hover {
             color: #8CBF3A;
         }
+
+        .checkout-steps div{
+            margin: 0px 3px;
+        }
+
+        .step {
+            flex: 1;
+            text-align: center;
+            padding: 10px;
+            border-radius: 5px;
+            background: #eee;
+            color: #333;
+        }
+
+        .step.completed {
+            background: #60862e;
+            color: white;
+        }
+
+        .step.active {
+            background: #77cb08;
+            color: white;
+        }
+
+        .step.incomplete {
+            color: white;
+            background-color: #676966;
+        }
+
+        .checkout-steps {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
+
+        .checkout-steps div{
+            margin: 0px 3px;
+        }
+
         .cart-container {
             width: 90%;
             margin: 100px auto;
             background: #fff;
             border-radius: 8px;
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-            padding: 2.8rem 2rem;
+            padding: 2rem 2rem;
         }
         table {
             background-color: white;
@@ -266,50 +305,7 @@
                 text-align: center;
             }
         }
-        .toast-container {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            z-index: 9999;
-        }
         
-        .toast {
-            display: none;
-            background-color: #ff6600;
-            color: white;
-            padding: 15px 30px;
-            border-radius: 12px;
-            font-size: 16px;
-            text-align: center;
-            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
-            opacity: 0;
-            transform: translateX(100%);
-            animation: slideInFromRight 0.8s ease-out forwards;
-        }
-
-        @keyframes slideInFromRight {
-            0% {
-                opacity: 0;
-                transform: translateX(100%);
-            }
-
-            100% {
-                opacity: 1;
-                transform: translateX(0);
-            }
-        }
-
-        @keyframes slideOutToRight {
-            0% {
-                opacity: 1;
-                transform: translateX(0);
-            }
-
-            100% {
-                opacity: 0;
-                transform: translateX(100%);
-            }
-        }
     </style>
 </head>
 <body>
@@ -370,6 +366,12 @@
   </header>
   <div class="toast-container"></div>
     <div class="cart-container">
+        <nav class="checkout-steps" >
+            <div class="step completed">Billing</div>
+            <div class="step completed">Shipping</div>
+            <div class="step completed">Payment</div>
+            <div class="step active">Review</div>
+        </nav>
         <table>
             <thead>
                 <tr>
@@ -395,9 +397,7 @@
                        <% } %>
                       <td>
                         <div class="quantity">
-                            <button class="crl-button decrease-btn" id="dec-button" onclick="decr('<%= item._id %>')">-</button>
-                            <input type="number" id="quantity-input-<%= item._id %>" value="<%= item.productQuantity %>" min="1" data-limit="<%= item.productId.productStock  %>" data-max="<%= item.productId.productStock  %> || 100" class="quantity-input">
-                            <button class="crl-button increase-btn" id="inc-button" onclick="incr('<%= item._id %>')">+</button>
+                            <input type="number" id="quantity-input-<%= item._id %>" value="<%= item.productQuantity %>" min="1" data-limit="<%= item.productId.productStock  %>" data-max="<%= item.productId.productStock  %> || 100" class="quantity-input" disabled>
                         </div>
                       </td>
                       <% if(item.productId.productOfferPrice) { %>
@@ -428,7 +428,7 @@
                     </tr>
                     <tr>
                         <td>Delivery:</td>
-                        <td>Free</td>
+                        <td id="delivery" data-val="<%= deliveryFee.datas %>">₹0.00</td>
                     </tr>
                     <tr>
                         <td>GST (18%):</td>
@@ -439,7 +439,7 @@
                         <td id="total"><strong>₹0.00</strong></td>
                     </tr>
                 </table>
-                <button class="checkout-btn" onclick="checkout()">Proceed to Checkout</button>
+                <button class="checkout-btn" onclick="placeOrder()">Order</button>
             </div>
             
         </div>
@@ -491,13 +491,15 @@
         document.addEventListener("DOMContentLoaded", () => {
         const cartTable = document.querySelector("table tbody");
         const subTotalElement = document.getElementById("sub-total");
+        const deliveryElement = document.getElementById("delivery");
         const gstElement = document.getElementById("gst");
         const totalElement = document.getElementById("total");
+        
 
         // Function to calculate and update totals
         function calculateTotals() {
             let subTotal = 0;
-
+            
             // Loop through each row in the cart table
             cartTable.querySelectorAll("tr").forEach(row => {
                 const totalCell = row.querySelector("td:nth-child(6)");
@@ -506,10 +508,12 @@
                 }
             });
 
+            const value = Number(deliveryElement.dataset.val)
             const gst = subTotal * 0.18; // Calculate GST (18%)
-            const total = subTotal + gst; // Calculate final total
+            const total = subTotal + gst + value; // Calculate final total
 
             // Update totals in the table
+            deliveryElement.innerText = `₹${value}`;
             subTotalElement.innerText = `₹${subTotal.toFixed(2)}`;
             gstElement.innerText = `₹${gst.toFixed(2)}`;
             totalElement.innerHTML = `<strong>₹${total.toFixed(2)}</strong>`;
@@ -637,51 +641,34 @@
                 }, 3800);
             }
         }
-
     </script>
     <script>
-        function decr(id){
-            const quantityInput = document.getElementById(`quantity-input-${id}`);
-            let currentQuantity = parseInt(quantityInput.value, 10) || 1;
-            const limit = Number(quantityInput.dataset.limit)
-            if(currentQuantity-1!=0){
-                localStorage.setItem(id, currentQuantity-1);
-            }else{
-                localStorage.setItem(id, currentQuantity);
+        async function placeOrder(){
+            let subTotal = document.getElementById("sub-total").innerText;
+            let delivery = document.getElementById("delivery").innerText;
+            let gst = document.getElementById("gst").innerText;
+            let total = document.getElementById("total").innerText;
+            subTotal=Number(subTotal.slice(1,subTotal.length))
+            delivery=Number(delivery.slice(1,delivery.length))
+            gst=Number(gst.slice(1,gst.length))
+            total=Number(total.slice(1,total.length))
+            const orderPrice = {
+                subTotal:subTotal,
+                delivery:delivery,
+                gst:gst,
+                total:total
             }
-        }
-        function incr(id){
-            const quantityInput = document.getElementById(`quantity-input-${id}`);
-            let currentQuantity = parseInt(quantityInput.value, 10) || 1;
-            const limit = Number(quantityInput.dataset.limit)
-            if(currentQuantity+1<=limit && currentQuantity+1 <=100){
-                localStorage.setItem(id, currentQuantity+1);
-            } else {
-                localStorage.setItem(id, currentQuantity);
-            }
-        }
-    </script>
-    <script>
-        async function checkout(){
-            let arr=[]
-            Object.entries(localStorage).forEach(([key, value]) => {
-                console.log(key,value)
-                const productId = key
-                const products = {productId, value}
-                arr.push(products)
-            });
-            bodyData = {arr}
             try {
-                const response = await fetch('/updatecart',{
-                    method:"PATCH",
+                const response = await fetch('/orderproduct',{
+                    method:'post',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(bodyData)
+                    body: JSON.stringify(orderPrice)
                 })
                 const result = await response.json();
-                if(result.success){
-                    window.location.href = "/checkoutaddress"
+                if (result.success){
+                    window.location.href = "/confirm"
                 } else {
-                    throw new Error("Something went wrong");
+                    alert("Somthing wrong!")
                 }
             } catch (error) {
                 console.log(error)
@@ -690,3 +677,5 @@
     </script>
 </body>
 </html>
+
+

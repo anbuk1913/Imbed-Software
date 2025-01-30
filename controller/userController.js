@@ -200,6 +200,16 @@ const logout = async(req,res)=>{
     req.session.otp = null
     req.session.otpError = null
     req.session.checkOne = null
+    req.session.firstName = null
+    req.session.lastName = null
+    req.session.phone = null
+    req.session.email = null
+    req.session.addressId = null
+    req.session.doorNums = null
+    req.session.street = null
+    req.session.city = null
+    req.session.district = null
+    req.session.postcode = null
     return res.redirect('/')
 }
 

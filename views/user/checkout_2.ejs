@@ -56,6 +56,10 @@
             border-radius: 10px;
         }
 
+        .checkout-steps div{
+            margin: 0px 3px;
+        }
+
         /* Checkout Steps */
         .checkout-steps {
             display: flex;
@@ -260,7 +264,7 @@
             </nav>
 
             <h2>Shipping Method</h2>
-            <form action="/" method="POST">
+            <form action="/billing" method="POST">
                 <table class="shipping-methods">
                     <thead>
                         <tr>
@@ -275,19 +279,19 @@
                             <td>Courier</td>
                             <td>1-2 Business Day</td>
                             <td>₹79</td>
-                            <td><input type="radio" name="shipping" value="courier" required /></td>
+                            <td><input type="radio" name="shipping" value='79' required /></td>
                         </tr>
                         <tr>
                             <td>Flat Rate</td>
                             <td>3-4 Day</td>
                             <td>₹39</td>
-                            <td><input type="radio" name="shipping" value="flat-rate" required /></td>
+                            <td><input type="radio" name="shipping" value='39' required /></td>
                         </tr>
                         <tr>
                             <td>Free Shipping</td>
                             <td>1 Week</td>
                             <td>Free</td>
-                            <td><input type="radio" name="shipping" value="free" required checked /></td>
+                            <td><input type="radio" name="shipping" value='0' required checked /></td>
                         </tr>
                     </tbody>
                 </table>

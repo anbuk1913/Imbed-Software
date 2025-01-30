@@ -79,6 +79,10 @@
       justify-content: space-between;
       margin-bottom: 20px;
     }
+    
+    .checkout-steps div{
+       margin: 0px 3px;
+    }
 
     .step {
       flex: 1;
@@ -95,7 +99,7 @@
     }
 
     .step.active {
-      background: #60862e;
+      background: #77cb08;
       color: white;
     }
 
@@ -339,7 +343,7 @@
       </div>
 
       <div class="form-actions">
-        <button type="button" class="btn btn-secondary">Go Back</button>
+        <button type="button" class="btn btn-secondary" onclick="window.history.back();">Go Back</button>
         <button type="submit" class="btn btn-primary">Continue</button>
       </div>
     </form>

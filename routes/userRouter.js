@@ -47,5 +47,10 @@ router.patch("/edituserdata",userAuth,profileController.editUserData)
 router.get("/checkoutaddress",userAuth,checkoutController.checkoutPageOne)
 router.post("/checkouttwo",userAuth,checkoutController.checkoutTwoPost)
 router.get("/billing",userAuth,checkoutController.billingPage)
+router.post("/billing",userAuth,checkoutController.billingMethodPost)
+router.get("/payment",userAuth,checkoutController.paymentPage)
+router.post("/paymethod",userAuth,checkoutController.paymentMethod)
+router.get("/review",userAuth,checkoutController.finalReview)
+router.post("/orderproduct",userAuth,checkoutController.orderPost)
 
 module.exports = router
