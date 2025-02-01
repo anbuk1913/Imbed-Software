@@ -4,8 +4,11 @@ const usercollection = require("../model/userModel");
 
 const shopPage = async (req,res)=>{
     let name = ""
-    const products = await product.find({});
     const categories = await category.find({});
+    const products = await product.find({}).populate({
+        path: "productCategoryId",
+        select: "categoryName isListed -_id"
+   });
     if(req.session.loginSession || req.session.signupSession){
         const userEmail = req.session.user.email
         const userVer = await usercollection.findOne({ email: userEmail });

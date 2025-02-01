@@ -63,6 +63,15 @@
             /* Adjust according to the aside width */
         }
 
+        .search-product{
+            margin: 15px 0px;
+            height: 28px;
+            width: 150px;
+        }
+
+        .sort-item{
+            margin: 5px 0px;
+        }
 
         main {
             width: 75%;
@@ -237,47 +246,61 @@
         <!-- Filters -->
         <aside>
             <h3>Product Categories</h3>
-            <ul>
-                <% categories.forEach(category=> { %>
-                    <li><input type="checkbox"><%= category.categoryName %></li>    
-                <% }); %>
-            </ul>
+            <input type="text" class="search-product" id="product-search" placeholder="Search products...">
+            <br>
+            <select id="sort-options" class="sort-item" >
+                <option value="default">Sort By</option>
+                <option value="low-high">Price: Low to High</option>
+                <option value="high-low">Price: High to Low</option>
+                <option value="new-arrivals">New Arrivals</option>
+                <option value="a-z">A - Z</option>
+                <option value="z-a">Z - A</option>
+            </select>
 
-            <h3>Price Range</h3>
-            <ul>
-                <li><input type="radio" name="price"> Below ₹250</li>
-                <li><input type="radio" name="price"> ₹250 - ₹500</li>
-                <li><input type="radio" name="price"> ₹500 - ₹1000</li>
-                <li><input type="radio" name="price"> ₹1000 - ₹2000</li>
-                <li><input type="radio" name="price"> Above ₹2000</li>
-            </ul>
+            <form id="filter">
+                <ul>
+                    <% categories.forEach(category=> { %>
+                        <li><input type="checkbox"><%= category.categoryName %></li>    
+                    <% }); %>
+                </ul>
+                <h3>Price Range</h3>
+                <ul>
+                    <li><input type="radio" name="price"> Below ₹250</li>
+                    <li><input type="radio" name="price"> ₹250 - ₹500</li>
+                    <li><input type="radio" name="price"> ₹500 - ₹1000</li>
+                    <li><input type="radio" name="price"> ₹1000 - ₹2000</li>
+                    <li><input type="radio" name="price"> Above ₹2000</li>
+                </ul>
 
-            <button class="reset-button">RESET</button>
-            <button class="continue-button">CONTINUE</button>
+                <button class="reset-button">RESET</button>
+                <!-- <button class="continue-button">CONTINUE</button> -->
+            </form>
         </aside>
 
          <!-- Product Grid -->
          <main>
             <div class="product-grid">
                 <% products.forEach(product=> { %>
-                <a href="/product/<%= product._id %>" style="text-decoration: none;"><div class="product-item">
-                    <img src="<%= product.productImage1 %>" alt="<%= product.productName %>">
-                    <h5 class="product-name"><%= product.productName %></h5>
-                    <p style="font-size: 0.8rem;color: black;"><%= product.productCategory %></p>
-                    <% if(product.productOfferPrice){ %>
-                        <strong>₹<%= product.productOfferPrice %></strong>
-                        <del>₹<%= product.productPrice %></del>
-                    <% } else { %>
-                        <strong>₹<%= product.productPrice %></strong>
+                    <% if(product?.isListed && product?.productCategoryId?.isListed){ %>
+                        <a href="/product/<%= product._id %>" style="text-decoration: none;"><div class="product-item">
+                            <img src="<%= product.productImage1 %>" alt="<%= product.productName %>">
+                            <h5 class="product-name"><%= product.productName %></h5>
+                            <p style="font-size: 0.8rem;color: black;"><%= product.productCategoryId.categoryName %></p>
+                            <% if(product.productOfferPrice){ %>
+                                <strong>₹<%= product.productOfferPrice %></strong>
+                                <del>₹<%= product.productPrice %></del>
+                            <% } else { %>
+                                <strong>₹<%= product.productPrice %></strong>
+                            <% } %>
+                            <% if(product.productStock==0) { %>
+                                <p style="color: red;">Out of stack</p>
+                            <% } else if(product.productStock<=10) { %>
+                                <p style="color: red;">Only <%= product.productStock %> Stocks left</p>
+                            <% } else { %>
+                                <p style="color: red;"></p>
+                            <% } %>
+                        </div></a>
                     <% } %>
-                    <% if(product.productStock==0) { %>
-                        <p style="color: red;">Out of stack</p>
-                    <% } else if(product.productStock<=10) { %>
-                        <p style="color: red;">Only <%= product.productStock %> Stocks left</p>
-                    <% } else { %>
-                        <p style="color: red;"></p>
-                    <% } %>
-                </div></a>
                 <% }) %>
             </div>
         </main>
@@ -307,6 +330,104 @@
             <a href=""><img src="/images/appstore.png" alt="App Stores" style="max-width: 110px;margin-left: 20px;"></a>
         </div>
     </footer>
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+    const filterForm = document.getElementById("filter");
+    const productGrid = document.querySelector(".product-grid");
+    const searchInput = document.getElementById("product-search");
+    const sortSelect = document.getElementById("sort-options");
+
+    filterForm.addEventListener("change", applyFilters);
+    searchInput.addEventListener("input", applyFilters);
+    sortSelect.addEventListener("change", applyFilters);
+    
+    filterForm.querySelector(".reset-button").addEventListener("click", (e) => {
+        e.preventDefault();
+        filterForm.reset();
+        searchInput.value = "";
+        sortSelect.value = "default";
+        applyFilters();
+    });
+
+    function applyFilters() {
+        const searchText = searchInput.value.toLowerCase();
+        const selectedCategories = Array.from(filterForm.querySelectorAll("input[type=checkbox]:checked"))
+            .map(input => input.parentElement.textContent.trim());
+        const selectedPrice = filterForm.querySelector("input[name=price]:checked")?.nextSibling.textContent.trim();
+        const sortBy = sortSelect.value;
+
+        let products = Array.from(document.querySelectorAll(".product-item"));
+
+        products.forEach(product => {
+            const productCategory = product.querySelector(".product-name").nextElementSibling.textContent.trim();
+            const productPrice = parseInt(product.querySelector("strong").textContent.replace("₹", ""));
+            const productName = product.querySelector(".product-name").textContent.trim().toLowerCase();
+            const productLink = product.closest("a"); // Get the closest <a> tag
+
+            let categoryMatch = selectedCategories.length === 0 || selectedCategories.includes(productCategory);
+            let priceMatch = checkPriceRange(productPrice, selectedPrice);
+            let searchMatch = searchText === "" || productName.includes(searchText);
+
+            if (categoryMatch && priceMatch && searchMatch) {
+                productLink.style.visibility = "visible";
+                productLink.style.position = "relative";
+                productLink.style.display = "inline-block"; // Ensure the link remains active
+            } else {
+                productLink.style.visibility = "hidden";
+                productLink.style.position = "absolute";
+                productLink.style.display = "none";
+            }
+        });
+
+        sortProducts(products, sortBy);
+    }
+
+    function checkPriceRange(price, selectedPrice) {
+        if (!selectedPrice) return true;
+        if (selectedPrice.includes("Below ₹250")) return price < 250;
+        if (selectedPrice.includes("₹250 - ₹500")) return price >= 250 && price <= 500;
+        if (selectedPrice.includes("₹500 - ₹1000")) return price >= 500 && price <= 1000;
+        if (selectedPrice.includes("₹1000 - ₹2000")) return price >= 1000 && price <= 2000;
+        if (selectedPrice.includes("Above ₹2000")) return price > 2000;
+        return true;
+    }
+
+    function sortProducts(products, sortBy) {
+        let sortedProducts = [...products];
+
+        if (sortBy === "low-high") {
+            sortedProducts.sort((a, b) => 
+                parseInt(a.querySelector("strong").textContent.replace("₹", "")) - 
+                parseInt(b.querySelector("strong").textContent.replace("₹", ""))
+            );
+        } else if (sortBy === "high-low") {
+            sortedProducts.sort((a, b) => 
+                parseInt(b.querySelector("strong").textContent.replace("₹", "")) - 
+                parseInt(a.querySelector("strong").textContent.replace("₹", ""))
+            );
+        } else if (sortBy === "a-z") {
+            sortedProducts.sort((a, b) => 
+                a.querySelector(".product-name").textContent.trim()
+                .localeCompare(b.querySelector(".product-name").textContent.trim())
+            );
+        } else if (sortBy === "z-a") {
+            sortedProducts.sort((a, b) => 
+                b.querySelector(".product-name").textContent.trim()
+                .localeCompare(a.querySelector(".product-name").textContent.trim())
+            );
+        } else if (sortBy === "new-arrivals") {
+            sortedProducts.sort((a, b) => 
+                new Date(b.getAttribute("data-created")) - 
+                new Date(a.getAttribute("data-created"))
+            );
+        }
+
+        productGrid.innerHTML = "";
+        sortedProducts.forEach(product => productGrid.appendChild(product.closest("a")));
+    }
+});
+
+    </script>
 </body>
 
 </html>

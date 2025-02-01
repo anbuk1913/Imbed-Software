@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= userVer.name %> - Profile</title>
+    <link rel="icon" href="/images/logo.png">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Source+Sans+3:ital,wght@0,200..900;1,200..900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css">
+    <style>
+        /* Navbar */
+        .navbar {
+            width: 100%;
+            padding: 15px 0;
+            box-shadow: 10px 10px 15px rgba(0, 0, 0, 0.5);
+        }
+
+        .navbar-brand {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #8CBF3A;
+        }
+
+        .navbar-nav .nav-link {
+            font-weight: 500;
+            color: #555;
+            font-size: 1rem;
+            margin: 0 10px;
+        }
+
+        .navbar-nav .nav-link:hover {
+            color: #8CBF3A;
+        }
+
+        a {
+            text-decoration: none;
+            color: inherit;
+        }
+
+        img {
+            max-width: 100%;
+            height: auto;
+        }
+
+        body {
+            font-family: 'Source Sans 3', sans-serif;
+        }
+
+        .sidebar {
+            background-color: #f8f9fa;
+            padding: 20px;
+            height: 100%;
+        }
+        .table-container {
+            flex-grow: 1;
+            padding: 20px;
+        }
+        .btn-view {
+            background-color: #28a745;
+            color: white;
+        }
+        .btn-cancel, .btn-return {
+            background-color: #dc3545;
+            color: white;
+        }
+
+
+        .footer {
+            background-color: #8dc63f;
+            color: white;
+            padding: 20px;
+        }
+
+        .footer a {
+            color: white;
+            text-decoration: none;
+        }
+
+        .toast-container {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 9999;
+        }
+
+        .toast {
+            display: none;
+            background-color: #ff6600;
+            color: white;
+            padding: 15px 30px;
+            border-radius: 12px;
+            font-size: 16px;
+            text-align: center;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+            opacity: 0;
+            transform: translateX(100%);
+            animation: slideInFromRight 0.8s ease-out forwards;
+        }
+
+        @keyframes slideInFromRight {
+            0% {
+                opacity: 0;
+                transform: translateX(100%);
+            }
+
+            100% {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        @keyframes slideOutToRight {
+            0% {
+                opacity: 1;
+                transform: translateX(0);
+            }
+
+            100% {
+                opacity: 0;
+                transform: translateX(100%);
+            }
+        }
+
+    </style>
+</head>
+
+<body>
+    <!-- Header Section -->
+    <header>
+        <nav class="navbar navbar-expand-lg navbar-light bg-light">
+            <div class="container">
+                <a class="navbar-brand" href="#">
+                    <img src="/images/logo.png" style="width: 30px;">
+                </a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+                    aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarNav">
+                    <ul class="navbar-nav ms-auto">
+                        <li class="nav-item"><a class="nav-link" href="/">Home</a></li>
+                        <li class="nav-item"><a class="nav-link" href="/shop">Shop</a></li>
+                        <li class="nav-item"><a class="nav-link" href="/cart">Cart</a></li>
+                        <li class="nav-item"><a class="nav-link" href="/wishlist">Wishlist</a></li>
+                    </ul>
+                    <!-- User Profile Section -->
+                    <div class="dropdown ms-3">
+                        <a href="#" class="d-flex align-items-center text-decoration-none "
+                            id="userProfileDropdown"  aria-expanded="false">
+                            <img src="/images/profile.png" style="width: 30px; height: 30px; border-radius: 50%;">
+                            <span class="ms-2">
+                                <%= userVer.name %>
+                            </span>
+                        </a>
+                    </div>
+                    <!-- End of User Profile Section -->
+                </div>
+            </div>
+        </nav>
+    </header>
+    <div class="toast-container"></div>
+    <div class="container-fluid">
+        <div class="row">
+            <!-- Sidebar -->
+            <div class="col-md-2 sidebar">
+                <nav class="mt-4">
+                    <ul class="nav flex-column">
+                        <li class="nav-item">
+                            <a class="nav-link" href="">Dashboard</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="/orders">Orders</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="">Wallet</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="/address">Addresses</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="" onclick="document.getElementById('logoutForm').submit(); return false;">Logout</a>
+                        </li>
+                    </ul>
+                </nav>
+            </div>
+
+            <!-- Main Content -->
+            <div class="col-md-10">
+                
+            <!-- Table Content -->
+            <div class="table-container">
+                <table class="table table-bordered text-center">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Order ID</th>
+                            <th>Date</th>
+                            <th>Status</th>
+                            <th>Total</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <% orders.forEach(order => { %>
+                            <tr>
+                                <td>#<%= order.id %></td>
+                                <td><%= order.createdAt.toISOString().split('T')[0]; %></td>
+                                <td><%= order.status %></td>
+                                <td>₹<%= order.priceDetails.total %></td>
+                                <td>
+                                    <a href="/orderview/<%= order.id %>"><button class="btn btn-view">VIEW</button></a>
+                                    <% if (order.status === 'Pending' || order.status === 'Shipping') { %>
+                                        <button onclick="cancelOrder('<%= order.id %>')" class="btn btn-cancel">CANCEL</button>
+                                    <% } else if (order.status === 'Delivered') { %>
+                                        <button onclick="returnOrder('<%= order.id %>')" class="btn btn-return">RETURN</button>
+                                    <% } %>
+                                </td>
+                            </tr>
+                        <% }) %>
+                    </tbody>
+                </table>
+            </div>
+                <form id="logoutForm" action="/logout" method="post" style="display: none;"></form>
+
+                <!-- Footer -->
+                <div class="footer mt-4">
+                    <div class="row">
+                        <div class="col-md-3">
+                            <h6>Contact Us</h6>
+                            <p>Address: Leeds, London, UK - 1290</p>
+                            <p>Phone: 002 52695 24542</p>
+                            <p>Fax: 002 78985 369552</p>
+                            <p>Email: support@example.com</p>
+                        </div>
+                        <div class="col-md-3">
+                            <h6>Information</h6>
+                            <ul>
+                                <li><a href="">Your Account</a></li>
+                                <li><a href="">Free Shipping Policy</a></li>
+                                <li><a href="">Your Cart</a></li>
+                                <li><a href="">Return Policy</a></li>
+                                <li><a href="">Delivery Info</a></li>
+                            </ul>
+                        </div>
+                        <div class="col-md-3">
+                            <h6>Support</h6>
+                            <ul>
+                                <li><a href="#">Payment Method</a></li>
+                                <li><a href="#">Help</a></li>
+                                <li><a href="#">Privacy Policy</a></li>
+                            </ul>
+                        </div>
+                        <div class="col-md-3">
+                            <h6>Join Our Mailing List</h6>
+                            <form>
+                                <input type="email" class="form-control" placeholder="Your Email Address">
+                                <button class="btn btn-dark mt-2">Subscribe</button>
+                            </form>
+                            <p>Download Our Mobile Apps:</p>
+                            <img src="/images/playstore.webp" alt="Google Play" style="max-width: 100px;">
+                            <img src="/images/appstore.png" alt="App Store" style="max-width: 100px;">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Cancel Order
+        async function cancelOrder(id){
+            try {
+                Swal.fire({
+                title: "Are you sure?",
+                text: "Are you want cancel this order?",
+                icon: "warning",
+                showCancelButton: true,
+                confirmButtonColor: "#d33",
+                cancelButtonColor:  "#3085d6",
+                confirmButtonText: "Yes, cancel it!"
+            }).then(async (result) => {
+                if (result.isConfirmed) {
+                    const respose = await fetch(`/cancelorder?orderId=${id}`, { method: 'PATCH' })
+                    const result = await respose.json()
+                    console.log(result);
+                    if (result.success) {
+                        Swal.fire({
+                            title: "Cancelled!",
+                            text: "Your order has been cancelled.",
+                            icon: "success"
+                        }).then(() => window.location.reload())
+
+                    }
+
+                }
+            });
+            } catch (error) {
+                console.log(error)
+            }
+        }
+    </script>
+    <script>
+        async function returnOrder(id){
+            try {
+                Swal.fire({
+                title: "Are you sure?",
+                text: "Are you want return this order?",
+                icon: "warning",
+                showCancelButton: true,
+                confirmButtonColor: "#d33",
+                cancelButtonColor:  "#3085d6",
+                confirmButtonText: "Yes, cancel it!"
+            }).then(async (result) => {
+                if (result.isConfirmed) {
+                    const respose = await fetch(`/returnorder?orderId=${id}`, { method: 'PATCH' })
+                    const result = await respose.json()
+                    console.log(result);
+                    if (result.success) {
+                        Swal.fire({
+                            title: "Return processing!",
+                            text: "Your order has been return processing!.",
+                            icon: "success"
+                        }).then(() => window.location.reload())
+
+                    }
+
+                }
+            });
+            } catch (error) {
+                console.log(error)
+            }
+        }
+    </script>
+</body>
+
+</html>

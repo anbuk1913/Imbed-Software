@@ -83,7 +83,11 @@ const editAddress = async(req,res)=>{
         const userEmail = req.session.user.email
         const userVer = await usercollection.findOne({ email: userEmail });
         const addressData = await address.findById({_id:addressId})
-        return res.render('user/editAddress',{addressData,userVer})
+        if(addressData){
+            return res.render('user/editAddress',{addressData,userVer})
+        } else {
+            return res.redirect('/address')
+        }
     } catch (error) {
         console.log(error)
     }

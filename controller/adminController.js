@@ -50,4 +50,13 @@ const listUser = async(req,res)=>{
     }
 }
 
-module.exports = {adminLog,adminHome,adminUser,adminLogPost,unListUser,listUser}
+const logoutAdmin = async(req,res)=>{
+    try {
+        req.session.adminVer = false
+        res.redirect("/admin")
+    } catch (error) {
+        console.log(error)
+    }
+}
+
+module.exports = {adminLog,adminHome,adminUser,adminLogPost,unListUser,listUser,logoutAdmin}

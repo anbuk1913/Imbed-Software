@@ -643,32 +643,74 @@
         }
     </script>
     <script>
-        async function placeOrder(){
-            let subTotal = document.getElementById("sub-total").innerText;
-            let delivery = document.getElementById("delivery").innerText;
-            let gst = document.getElementById("gst").innerText;
-            let total = document.getElementById("total").innerText;
-            subTotal=Number(subTotal.slice(1,subTotal.length))
-            delivery=Number(delivery.slice(1,delivery.length))
-            gst=Number(gst.slice(1,gst.length))
-            total=Number(total.slice(1,total.length))
-            const orderPrice = {
-                subTotal:subTotal,
-                delivery:delivery,
-                gst:gst,
-                total:total
+        async function placeOrder() {
+            try {    
+                const response1 = await fetch('/finalstockcheck', {method: 'PATCH'});
+                const result1 = await response1.json();
+                console.log(result1);
+    
+                if (result1.success) {
+                    orderItem();
+                } else {
+                    if (typeof Swal !== "undefined") {
+                        Swal.fire({
+                            title: 'Stock Check!',
+                            text: result1.message,
+                            icon: 'info',
+                            timer: 2000,
+                            showConfirmButton: false,
+                            timerProgressBar: true
+                        });
+                    } else {
+                        alert(result1.message);
+                    }
+                }
+            } catch (error) {
+                console.error('Error placing order:', error);
+                if (typeof Swal !== "undefined") {
+                    Swal.fire({
+                        title: 'Error!',
+                        text: 'An unexpected error occurred. Please try again.',
+                        icon: 'error',
+                        confirmButtonText: 'OK'
+                    });
+                } else {
+                    alert('An unexpected error occurred. Please try again.');
+                }
             }
+        }
+    </script>
+    <script>
+        async function orderItem() {
+            let subTotal = parseFloat(document.getElementById("sub-total").innerText.slice(1));
+            let delivery = parseFloat(document.getElementById("delivery").innerText.slice(1));
+            let gst = parseFloat(document.getElementById("gst").innerText.slice(1));
+            let total = parseFloat(document.getElementById("total").innerText.slice(1));
+
+            const orderPrice = { subTotal, delivery, gst, total };
             try {
-                const response = await fetch('/orderproduct',{
-                    method:'post',
+                console.log("Hiiii")
+                const response = await fetch('/orderproduct', {
+                    method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(orderPrice)
-                })
+                });
+
                 const result = await response.json();
-                if (result.success){
-                    window.location.href = "/confirm"
+                console.log(result);
+
+                if (result.success) {
+                    Swal.fire({
+                        title: 'Success!',
+                        text: 'Your order has been placed successfully.',
+                        icon: 'success',
+                        confirmButtonText: 'OK'
+                    }).then(() => {
+                        window.location.href = "/confirm";  // Redirect after clicking OK
+                    });
                 } else {
-                    alert("Somthing wrong!")
+                    alert("Something went wrong!");
+                    window.location.href = "/";
                 }
             } catch (error) {
                 console.log(error)

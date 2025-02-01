@@ -149,7 +149,7 @@ const listProduct = async(req,res)=>{
 const singleProductView = async(req,res)=>{
     let name = ""
     let userId = ""
-    products = await product.findOne({_id:req.params.id}).populate({
+    const products = await product.findOne({_id:req.params.id}).populate({
         path: "productCategoryId",
         select: "categoryName -_id"
    });

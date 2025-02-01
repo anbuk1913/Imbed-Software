@@ -36,9 +36,9 @@ const removeItem = async(req,res)=>{
         const id = req.query.id
         const data = await cart.findByIdAndDelete({_id:id})
         if(data){
-            res.json({success: true, message: 'Product removed'});
+            return res.json({success: true, message: 'Product removed'});
         } else {
-            res.json({success: false, message: 'Somthing Wrong!'});
+            return res.json({success: false, message: 'Somthing Wrong!'});
         }
     } catch (error) {
         console.log(error)

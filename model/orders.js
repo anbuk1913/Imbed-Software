@@ -31,13 +31,20 @@ const ordersSchema = new mongoose.Schema({
         type:Object,
         required:true,
     },
-    paymentMethode:{
+    paymentMethod:{
         type:String,
         required:true,
     },
     orderNotes:{
         type:String,
-    }
+    },
+    status:{
+        type:String,
+        default:"Pending",
+    },
+    deliveryDate:{
+        type:Date,
+    },
 },
 {
     timestamps:true

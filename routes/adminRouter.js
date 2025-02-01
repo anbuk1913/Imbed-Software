@@ -4,6 +4,7 @@ const adminController = require("../controller/adminController")
 const categoryController = require("../controller/categoryController")
 const productController = require("../controller/productController")
 const upload = require("../services/multer")
+const orderController = require("../controller/orderController")
 const router = express.Router()
 
 //Admin
@@ -13,6 +14,7 @@ router.get("/adminusers",adminAuth,adminController.adminUser)
 router.post("/adminVer",adminController.adminLogPost)
 router.post("/user/list/:id",adminController.listUser)
 router.post("/user/unlist/:id",adminController.unListUser)
+router.post("/adminlogout",adminController.logoutAdmin)
 
 //Category
 router.get("/admin/category",adminAuth, categoryController.categoryPage)
@@ -30,5 +32,10 @@ router.post("/product/edit",upload.fields([{ name: 'productImage1', maxCount: 1 
 router.delete("/deleteproduct",productController.deleteProduct)
 router.post("/product/list/:id",productController.listProduct)
 router.post("/product/unlist/:id",productController.unListProduct)
+
+//Order
+router.get("/admin/orders",adminAuth,orderController.adminOrderview)
+router.get("/editorder/:id",adminAuth,orderController.adminEditOrder)
+router.post("/orderupdate",adminAuth,orderController.adminEditOrderPost)
 
 module.exports = router

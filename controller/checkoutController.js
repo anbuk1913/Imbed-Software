@@ -23,12 +23,12 @@ const checkoutTwoPost = async(req,res)=>{
         req.session.firstName = req.body.firstName
         req.session.lastName = req.body.lastName
         req.session.phone = req.body.phone
-        req.session.email = req.body.email
+        req.session.email = req.session.user.email
         req.session.orderNotes = req.body.orderNotes
         if(req.body.address != "new"){
             req.session.addressId = req.body.address
         } else {
-            req.session.doorNums = req.body.doorNums
+            req.session.doorNums = req.body.doorNum
             req.session.street = req.body.street
             req.session.city = req.body.city
             req.session.district = req.body.district
@@ -102,6 +102,25 @@ const finalReview = async(req,res)=>{
     }
 }
 
+const finalQuantityCheck = async(req,res)=>{
+    try {
+        const userEmail = req.session.user.email
+        const userVer = await usercollection.findOne({ email: userEmail });
+        let cartItems = await cart.find({userId:userVer._id}).populate({
+            path: "productId",
+            select: "productName productPrice productOfferPrice productImage1 isListed productStock _id"
+        });
+        for(let i=0;i<cartItems.length;i++){
+            if(cartItems[i]?.productQuantity>cartItems[i]?.productId?.productStock){
+                return res.json({success: false, message: `${cartItems[i].productId?.productName} Only ${cartItems[i].productId?.productStock} left in stock!`});
+            }
+        }
+        return res.json({success: true});
+    } catch (error) {
+       console.log(error) 
+    }
+}
+
 const orderPost = async(req,res)=>{
     try {
         const userEmail = req.session.user.email
@@ -130,6 +149,17 @@ const orderPost = async(req,res)=>{
                 district:req.session.district,
                 pinCode:req.session.postcode,
             }
+            const addressCount = await address.countDocuments({userId:userVer._id});
+            const newaddress = new address({
+                userId: userVer._id ,
+                addressCount: addressCount+1,
+                doorNo: req.session.doorNums,
+                street: req.session.street,
+                city: req.session.city,
+                district: req.session.district,
+                pinCode: req.session.postcode,
+            });
+            newaddress.save();
         }
         
         let cartItems = await cart.find({userId:userVer._id}).populate({
@@ -156,7 +186,7 @@ const orderPost = async(req,res)=>{
             fullName:req.session.firstName+req.session.lastName,
             phone:req.session.phone,
             email:req.session.email,
-            paymentMethode:req.session.paymentMethod,
+            paymentMethod:req.session.paymentMethod,
             orderNotes:req.session.orderNotes,
             priceDetails:priceDetail,
             products:productDetails
@@ -167,12 +197,28 @@ const orderPost = async(req,res)=>{
             await product.updateOne({_id:id},{$inc:{productStock:count}})
         }
         await cart.deleteMany({userId:userVer._id})
-        req.session.orderId=orders._id
-        await orders.save();
-        return res.redirect("/confirm")
+        let newID = await orders.save();
+        req.session.orderId = newID._id
+        return res.status(200).send({ success: true})
     } catch (error) {
         console.log(error)
     }
 }
 
-module.exports = {checkoutPageOne,checkoutTwoPost,billingPage,billingMethodPost,paymentPage,paymentMethod,finalReview,orderPost}
+const confirmPage = async(req,res)=>{
+    try {
+        if(req.session.orderId){
+            const userEmail = req.session.user.email
+            const userVer = await usercollection.findOne({ email: userEmail });
+            const name = userVer.name;
+            const orderId = req.session.orderId
+            return res.render('user/confirmOrder',{userVer,name,orderId})
+        } else {
+            return res.redirect('/shop')
+        }
+    } catch (error) {
+        console.log(error)
+    }
+}
+
+module.exports = {checkoutPageOne,checkoutTwoPost,billingPage,billingMethodPost,paymentPage,paymentMethod,finalReview,finalQuantityCheck,orderPost,confirmPage}

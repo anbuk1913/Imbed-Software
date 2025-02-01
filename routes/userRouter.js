@@ -6,6 +6,7 @@ const productController = require("../controller/productController")
 const cartController = require("../controller/cartController")
 const profileController = require("../controller/profileController")
 const checkoutController = require("../controller/checkoutController")
+const orderController = require('../controller/orderController')
 const router = express.Router()
 const passport = require('passport');
 
@@ -42,6 +43,10 @@ router.delete("/deleteaddress/:id",userAuth,profileController.deleteAddress)
 router.get("/changepassword",userAuth,profileController.changePassword)
 router.patch("/changepassword",userAuth,profileController.changePasswordPatch)
 router.patch("/edituserdata",userAuth,profileController.editUserData)
+router.get("/orders",userAuth,orderController.userOrder)
+router.get('/orderview/:id',userAuth,orderController.userOrderView)
+router.patch('/cancelorder',userAuth,orderController.cancelOrder)
+router.patch('/returnorder',userAuth,orderController.returnOrder)
 
 // Checkout Pages
 router.get("/checkoutaddress",userAuth,checkoutController.checkoutPageOne)
@@ -51,6 +56,9 @@ router.post("/billing",userAuth,checkoutController.billingMethodPost)
 router.get("/payment",userAuth,checkoutController.paymentPage)
 router.post("/paymethod",userAuth,checkoutController.paymentMethod)
 router.get("/review",userAuth,checkoutController.finalReview)
+router.patch("/finalstockcheck",userAuth,checkoutController.finalQuantityCheck)
 router.post("/orderproduct",userAuth,checkoutController.orderPost)
+router.get("/confirm",userAuth,checkoutController.confirmPage)
+
 
 module.exports = router

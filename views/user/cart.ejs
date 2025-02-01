@@ -414,7 +414,7 @@
         <div class="cart-totals">
             <div class="totals-box apply-coupon">
                 <h3>Have a Coupon?</h3>
-                <form action="/apply-coupon" method="POST">
+                <form>
                     <input type="text" name="couponCode" placeholder="Enter Your Coupon Code">
                     <button type="submit">Apply Coupon</button>
                 </form>
@@ -665,7 +665,6 @@
         async function checkout(){
             let arr=[]
             Object.entries(localStorage).forEach(([key, value]) => {
-                console.log(key,value)
                 const productId = key
                 const products = {productId, value}
                 arr.push(products)
