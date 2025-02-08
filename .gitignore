@@ -1,6 +1,8 @@
 # Ignore environment variable files
 .env
 
+orders.json
+
 # Logs
 logs
 *.log

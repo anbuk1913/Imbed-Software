@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Coupon Offer</title>
+    <link rel="icon" href="/images/logo.png">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Afacad+Flux:wght@100..1000&display=swap" rel="stylesheet">
+    <style>
+        *{
+            font-family: "Afacad Flux", serif;
+            font-weight: 700;
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        .toast-container {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 9999;
+        }
+
+        .toast {
+            display: none;
+            background-color: #ff6600;
+            color: white;
+            padding: 15px 30px;
+            border-radius: 12px;
+            font-size: 16px;
+            text-align: center;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+            opacity: 0;
+            transform: translateX(100%);
+            animation: slideInFromRight 0.8s ease-out forwards;
+        }
+
+        @keyframes slideInFromRight {
+            0% {
+                opacity: 0;
+                transform: translateX(100%);
+            }
+
+            100% {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        @keyframes slideOutToRight {
+            0% {
+                opacity: 1;
+                transform: translateX(0);
+            }
+
+            100% {
+                opacity: 0;
+                transform: translateX(100%);
+            }
+        }
+    </style>
+</head>
+<body>
+    <%- include('../adminPartials/header') %>
+    <!-- Admin Dashboard -->
+    <div class="container my-5">
+        <div class="toast-container"></div>
+        <h2 class="text-center">Coupon Offer Page</h2>
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <input type="text" class="form-control w-25"  placeholder="Search Coupon">
+            <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#addCouponModal">Add Coupon</button>
+        </div>
+        <table class="table table-bordered">
+            <thead class="table-dark">
+                <tr>
+                    <th>S.No</th>
+                    <th>Coupon Code</th>
+                    <th>Discount Percentage</th>
+                    <th>Start Date</th>
+                    <th>Expiry Date</th>
+                    <th>Used Count</th>
+                    <th>Minimum Purchase</th>
+                    <th>Total Discount Amount</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                <% for (let i = 0; i < coupons.length; i++) { %>
+                    <tr>
+                        <td><%= i+1 %></td>
+                        <td><%= coupons[i].code %></td>
+                        <td><%= coupons[i].percentage %></td>
+                        <td><%= coupons[i].startDate ? coupons[i].startDate.toISOString().split('T')[0] : 'N/A' %></td>
+                        <td><%= coupons[i].expiryDate ? coupons[i].expiryDate.toISOString().split('T')[0] : 'N/A' %></td>
+                        <td><%= coupons[i].usedCount %></td>
+                        <td><%= coupons[i].minPurchase %></td>
+                        <th><%= coupons[i].totalDiscount %></th>
+                        <td>
+                            <!-- Edit Button -->
+                            <button class="btn btn-primary" data-bs-toggle="modal"
+                            data-bs-target="#editCouponModal" 
+                            data-id="<%= coupons[i]._id %>"
+                            data-code="<%= coupons[i].code %>"
+                            data-percentage="<%= coupons[i].percentage %>"
+                            data-startDate="<%= coupons[i].startDate.toISOString().split('T')[0] %>"
+                            data-expiryDate="<%= coupons[i].expiryDate.toISOString().split('T')[0] %>"
+                            data-minPurchase="<%= coupons[i].minPurchase %>"
+                            data-maxDiscount="<%= coupons[i].maxDiscount %>">
+                                Edit
+                            </button>
+                            <button class="btn btn-danger" onclick="deleteCoupon('<%= coupons[i]._id %>')">Delete</button>
+                        </td>
+                    </tr>
+                <% } %>
+            </tbody>
+        </table>
+    </div>
+    <!-- Add Coupon Modal -->
+    <div class="modal fade" id="addCouponModal" tabindex="-1" aria-labelledby="addCouponModalLabel" aria-hidden="true">
+      <div class="modal-dialog">
+          <div class="modal-content">
+              <div class="modal-header">
+                  <h5 class="modal-title" id="addCouponModalLabel">Add Coupon</h5>
+                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+              </div>
+              <div class="modal-body">
+                  <form id="couponForm">
+                      <div class="mb-3">
+                          <label for="couponCode" class="form-label">Coupon Code</label>
+                          <input type="text" class="form-control" id="couponCode" name="couponCode">
+                          <div class="text-danger error-message"></div>
+                      </div>
+                      <div class="mb-3">
+                          <label for="discount" class="form-label">Discount Percentage</label>
+                          <input type="number" class="form-control" id="discount" min="1" max="100">
+                          <div class="text-danger error-message"></div>
+                      </div>
+                      <div class="mb-3">
+                          <label for="startDate" class="form-label">Start Date</label>
+                          <input type="date" class="form-control" id="startDate">
+                          <div class="text-danger error-message"></div>
+                      </div>
+                      <div class="mb-3">
+                          <label for="expiryDate" class="form-label">Expiry Date</label>
+                          <input type="date" class="form-control" id="expiryDate">
+                          <div class="text-danger error-message"></div>
+                      </div>
+                      <div class="mb-3">
+                          <label for="minPurchase" class="form-label">Minimum Purchase Amount</label>
+                          <input type="number" class="form-control" id="minPurchase">
+                          <div class="text-danger error-message"></div>
+                      </div>
+                      <button type="submit" class="btn btn-primary">Add Coupon</button>
+                  </form>
+              </div>
+          </div>
+      </div>
+    </div>
+    <!-- Edit Coupon Modal -->
+    <div class="modal fade" id="editCouponModal" tabindex="-1" aria-labelledby="editCouponModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="editCouponModalLabel">Edit Coupon</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="editCouponForm">
+                        <input type="text" name="couponId" id="couponId" hidden>
+                        <div class="mb-3">
+                            <label for="couponCode" class="form-label">Coupon Code</label>
+                            <input type="text" class="form-control" id="couponCode-edit" name="couponCode">
+                            <div class="text-danger error-message"></div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="discount" class="form-label">Discount Percentage</label>
+                            <input type="number" class="form-control" id="discount-edit" min="1" max="100">
+                            <div class="text-danger error-message"></div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="startDate" class="form-label">Start Date</label>
+                            <input type="date" class="form-control" id="startDate-edit">
+                            <div class="text-danger error-message"></div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="expiryDate" class="form-label">Expiry Date</label>
+                            <input type="date" class="form-control" id="expiryDate-edit">
+                            <div class="text-danger error-message"></div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="minPurchase" class="form-label">Minimum Purchase Amount</label>
+                            <input type="number" class="form-control" id="minPurchase-edit">
+                            <div class="text-danger error-message"></div>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Edit Coupon</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+      </div>
+    <%- include('../adminPartials/footer') %>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script> 
+
+    <script>
+        // Fill Edit Form
+        const editCouponModal = document.getElementById('editCouponModal');
+        editCouponModal.addEventListener('show.bs.modal', function (event) {
+            const button = event.relatedTarget; // Button that triggered the modal
+
+            // Correct attribute names
+            const id = button.getAttribute('data-id');
+            const code = button.getAttribute('data-code');
+            const percentage = button.getAttribute('data-percentage');
+            const startDate = button.getAttribute('data-startDate');
+            const expiryDate = button.getAttribute('data-expiryDate');
+            const minPurchase = button.getAttribute('data-minPurchase');
+            const maxDiscount = button.getAttribute('data-maxDiscount');
+
+            // Correct input field IDs
+            document.getElementById('couponId').value = id;
+            document.getElementById('couponCode-edit').value = code;
+            document.getElementById('discount-edit').value = percentage;
+            document.getElementById('startDate-edit').value = startDate;
+            document.getElementById('expiryDate-edit').value = expiryDate;
+            document.getElementById('minPurchase-edit').value = minPurchase;
+            document.getElementById('maxDiscount-edit').value = maxDiscount;
+        });
+    </script>
+    <script>
+        // Form validation for Add and Edit Forms
+        $(document).ready(function () {
+            $("#couponForm, #editCouponForm").submit(async function (event) {
+                event.preventDefault();
+                let formId = $(this).attr("id"); // Identify which form is being submitted
+                let isValid = true;
+    
+                // Clear previous errors
+                $("#" + formId + " .error-message").text("");
+    
+                // Get the correct field IDs based on the form
+                let couponCodeField = formId === "couponForm" ? "#couponCode" : "#couponCode-edit";
+                let discountField = formId === "couponForm" ? "#discount" : "#discount-edit";
+                let maxDiscountField = formId === "couponForm" ? "#maxDiscount" : "#maxDiscount-edit";
+                let minPurchaseField = formId === "couponForm" ? "#minPurchase" : "#minPurchase-edit";
+                let startDateField = formId === "couponForm" ? "#startDate" : "#startDate-edit";
+                let expiryDateField = formId === "couponForm" ? "#expiryDate" : "#expiryDate-edit";
+    
+                // Validate Coupon Code
+                let couponCode = $("#" + formId + " " + couponCodeField).val().trim();
+                $("#" + formId + " " + couponCodeField).val(couponCode);
+                if (!couponCode) {
+                    $("#" + formId + " " + couponCodeField).next(".error-message").text("Coupon code is required");
+                    isValid = false;
+                }
+    
+                // Validate Discount Percentage
+                let discount = $("#" + formId + " " + discountField).val();
+                if (discount < 1 || discount > 99) {
+                    $("#" + formId + " " + discountField).next(".error-message").text("Discount percentage must be between 1 and 99");
+                    isValid = false;
+                }
+    
+                // Validate Maximum Discount
+                let maxDiscount = $("#" + formId + " " + maxDiscountField).val();
+                if (maxDiscount && (maxDiscount <= 0 || isNaN(maxDiscount))) {
+                    $("#" + formId + " " + maxDiscountField).next(".error-message").text("Maximum discount amount must be a positive number");
+                    isValid = false;
+                }
+    
+                // Validate Minimum Purchase
+                let minPurchase = $("#" + formId + " " + minPurchaseField).val();
+                if (minPurchase && (minPurchase <= 0 || isNaN(minPurchase))) {
+                    $("#" + formId + " " + minPurchaseField).next(".error-message").text("Minimum purchase amount must be a positive number");
+                    isValid = false;
+                }
+    
+                // Validate Start Date and Expiry Date
+                let startDateValue = $("#" + formId + " " + startDateField).val();
+                let expiryDateValue = $("#" + formId + " " + expiryDateField).val();
+    
+                if (!startDateValue) {
+                    $("#" + formId + " " + startDateField).next(".error-message").text("Start date is required");
+                    isValid = false;
+                }
+    
+                if (!expiryDateValue) {
+                    $("#" + formId + " " + expiryDateField).next(".error-message").text("End date is required");
+                    isValid = false;
+                } else {
+                    let startDate = new Date(startDateValue);
+                    let expiryDate = new Date(expiryDateValue);
+                    if (expiryDate < startDate) {
+                        $("#" + formId + " " + expiryDateField).next(".error-message").text("End date should be the same or after the start date");
+                        isValid = false;
+                    }
+                }
+    
+                if (isValid) {
+                    const formData = {
+                        id: $("#" + formId + " #couponId").val(), // Add coupon ID for edit form
+                        code: $("#" + formId + " " + couponCodeField).val().toUpperCase(),
+                        percentage: $("#" + formId + " " + discountField).val(),
+                        startDate: $("#" + formId + " " + startDateField).val(),
+                        expiryDate: $("#" + formId + " " + expiryDateField).val(),
+                        minPurchase: $("#" + formId + " " + minPurchaseField).val(),
+                        maxDiscount: $("#" + formId + " " + maxDiscountField).val(),
+                    };
+    
+                    let endpoint = formId === "couponForm" ? "/admin/addcoupon" : "/admin/editcoupon";
+                    let method = formId === "couponForm" ? "POST" : "PUT";
+    
+                    let response = await fetch(endpoint, {
+                        method: method,
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify(formData),
+                    });
+    
+                    const result = await response.json();
+    
+                    const toastContainer = document.querySelector(".toast-container");
+                    const toast = document.createElement("div");
+                    toast.className = "toast";
+    
+                    if (result.success) {
+                        toast.textContent = result.message;
+                        toast.style.backgroundColor = "#28a745"; // Green color for success
+                        toastContainer.appendChild(toast);
+    
+                        setTimeout(() => {
+                            toast.style.display = "block";
+                        }, 100);
+    
+                        setTimeout(() => {
+                            toast.style.animation = "slideOutToRight 0.8s ease-out forwards";
+                        }, 2000);
+    
+                        setTimeout(() => {
+                            toast.style.display = "none";
+                            toast.remove(); // Remove toast from DOM
+                            $("#" + formId).closest(".modal").modal("hide");
+                            $("#" + formId)[0].reset();
+                            window.location.reload();
+                        }, 2800);
+                    } else {
+                        toast.textContent = result.message;
+                        toast.style.backgroundColor = "#dc3545"; // Red color for error
+                        toastContainer.appendChild(toast);
+                        setTimeout(() => {
+                            toast.style.display = "block";
+                        }, 100);
+    
+                        setTimeout(() => {
+                            toast.style.animation = "slideOutToRight 0.8s ease-out forwards";
+                        }, 2000);
+    
+                        setTimeout(() => {
+                            toast.style.display = "none";
+                            toast.remove();
+                        }, 2800);
+                    }
+                }
+            });
+        });
+    </script>
+    <script>
+        async function deleteCoupon(id) {
+        Swal.fire({
+            title: "Are you sure?",
+            text: "You won't be able to revert this!",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#d33",
+            cancelButtonColor:  "#3085d6",
+            confirmButtonText: "Yes, delete it!"
+        }).then(async (result) => {
+            if (result.isConfirmed) {
+                const respose = await fetch(`/deleteCoupon?couponid=${id}`, { method: 'DELETE' })
+                const result = await respose.json()
+                console.log(result);
+                if (result.success) {
+                    Swal.fire({
+                        title: "Deleted!",
+                        text: "Your Coupon has been deleted.",
+                        icon: "success"
+                    }).then(() => window.location.reload())
+
+                }
+
+            }
+        });
+    }
+    </script>
+</body>
+</html>

@@ -1,4 +1,6 @@
 const express = require("express")
+const passport = require('passport')
+const bodyParser = require('body-parser')
 const userController = require("../controller/userController")
 const userAuth = require('../middleware/userAuth');
 const shopController = require('../controller/shopController')
@@ -8,7 +10,10 @@ const profileController = require("../controller/profileController")
 const checkoutController = require("../controller/checkoutController")
 const orderController = require('../controller/orderController')
 const router = express.Router()
-const passport = require('passport');
+
+router.use(bodyParser.json());
+router.use(bodyParser.urlencoded({extended:true}));
+
 
 //Landing Page & Authentication
 router.get("/",userController.homePage)
@@ -58,6 +63,10 @@ router.post("/paymethod",userAuth,checkoutController.paymentMethod)
 router.get("/review",userAuth,checkoutController.finalReview)
 router.patch("/finalstockcheck",userAuth,checkoutController.finalQuantityCheck)
 router.post("/orderproduct",userAuth,checkoutController.orderPost)
+router.post("/applycoupon",userAuth,checkoutController.applyCoupon)
+router.patch("/removeCoupon",userAuth,checkoutController.removeCoupon)
+router.post("/onlinepayment",userAuth,checkoutController.onlinePay)
+router.post("/verify-payment",userAuth,checkoutController.verifyPayment)
 router.get("/confirm",userAuth,checkoutController.confirmPage)
 
 

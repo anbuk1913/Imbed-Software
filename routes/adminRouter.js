@@ -5,6 +5,7 @@ const categoryController = require("../controller/categoryController")
 const productController = require("../controller/productController")
 const upload = require("../services/multer")
 const orderController = require("../controller/orderController")
+const couponController = require("../controller/couponController")
 const router = express.Router()
 
 //Admin
@@ -37,5 +38,11 @@ router.post("/product/unlist/:id",productController.unListProduct)
 router.get("/admin/orders",adminAuth,orderController.adminOrderview)
 router.get("/editorder/:id",adminAuth,orderController.adminEditOrder)
 router.post("/orderupdate",adminAuth,orderController.adminEditOrderPost)
+
+//Coupon
+router.get("/admin/coupon",adminAuth,couponController.couponPage)
+router.post("/admin/addcoupon",adminAuth,couponController.addCoupon)
+router.put("/admin/editcoupon",adminAuth,couponController.editCoupon)
+router.delete("/deleteCoupon",adminAuth,couponController.deleteCoupon)
 
 module.exports = router

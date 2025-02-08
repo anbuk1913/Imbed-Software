@@ -232,11 +232,11 @@
                 <div class="step active">Payment</div>
                 <div class="step incomplete">Review</div>
             </nav>
-            <h3>Payment Method</h3>
+            <h3>Select Payment Method</h3>
             <form id="paymentForm" action="/paymethod" method="post" onsubmit="return validatePaymentMethod()">
                 <div class="input-data">
                     <input type="radio" id="upi" name="payment" value="UPI">
-                    <label for="upi">Pay with UPI ID or Scanner</label>
+                    <label for="upi">Online Payment (Razorpay)</label>
                 </div>
                 <div class="input-data">
                     <input type="radio" id="cod" name="payment" value="COD">
@@ -245,10 +245,6 @@
                 <div class="input-data">
                     <input type="radio" id="wallet" name="payment" value="Wallet">
                     <label for="wallet">Wallet</label>
-                </div>
-                <div class="input-data">
-                    <input type="radio" id="credit" name="payment" value="CreditCard">
-                    <label for="credit">Credit Card</label>
                 </div>
                 <div class="error" id="paymentError"></div>
                 <div class="button">

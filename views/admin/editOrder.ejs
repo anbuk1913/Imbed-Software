@@ -202,6 +202,10 @@
                         <td id="gst">₹<%= orderData.priceDetails.gst %></td>
                     </tr>
                     <tr>
+                        <td>Coupon :</td>
+                        <td>₹<%= orderData.priceDetails?.coupon ? orderData.priceDetails?.coupon : 0 %></td>
+                    </tr>
+                    <tr>
                         <td><strong>Total:</strong></td>
                         <td id="total"><strong>₹<%= orderData.priceDetails.total %></strong></td>
                     </tr>

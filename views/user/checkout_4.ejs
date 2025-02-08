@@ -305,6 +305,50 @@
                 text-align: center;
             }
         }
+        .toast-container {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 9999;
+        }
+
+        .toast {
+            display: none;
+            background-color: #ff6600;
+            color: white;
+            padding: 15px 30px;
+            border-radius: 12px;
+            font-size: 16px;
+            text-align: center;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+            opacity: 0;
+            transform: translateX(100%);
+            animation: slideInFromRight 0.8s ease-out forwards;
+        }
+
+        @keyframes slideInFromRight {
+            0% {
+                opacity: 0;
+                transform: translateX(100%);
+            }
+
+            100% {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        @keyframes slideOutToRight {
+            0% {
+                opacity: 1;
+                transform: translateX(0);
+            }
+
+            100% {
+                opacity: 0;
+                transform: translateX(100%);
+            }
+        }
         
     </style>
 </head>
@@ -414,9 +458,15 @@
         <div class="cart-totals">
             <div class="totals-box apply-coupon">
                 <h3>Have a Coupon?</h3>
-                <form action="/apply-coupon" method="POST">
-                    <input type="text" name="couponCode" placeholder="Enter Your Coupon Code">
-                    <button type="submit">Apply Coupon</button>
+                <form id="apply-coupon">
+                    <% if(deliveryFee.coupon){ %>
+                        <input type="text" name="couponCode" id="couponCode" placeholder="Enter Your Coupon Code" value="<%= deliveryFee?.couponCode %>" disabled>
+                        <button style="background-color: red; margin-right: 10px;" onclick="removeCoupon()">Remove Coupon</button>
+                    <% } else { %>
+                        <input type="text" name="couponCode" id="couponCode" placeholder="Enter Your Coupon Code" value="<%= deliveryFee?.couponCode %>" >
+                        <p style="display: none;color: red;font-size: 0.8rem;">Code is required</p>
+                        <button type="submit">Apply Coupon</button>
+                    <% } %>
                 </form>
             </div>
             <div class="totals-box">
@@ -434,14 +484,19 @@
                         <td>GST (18%):</td>
                         <td id="gst">₹0.00</td>
                     </tr>
+                    <% if(deliveryFee.coupon){ %>
+                        <tr>
+                            <td>Coupon (<%= deliveryFee.coupon %>%):</td>
+                            <td id="coupon-value" data-val="<%= deliveryFee.coupon %>"></td>
+                        </tr>
+                    <% } %>
                     <tr>
                         <td><strong>Total:</strong></td>
                         <td id="total"><strong>₹0.00</strong></td>
                     </tr>
                 </table>
-                <button class="checkout-btn" onclick="placeOrder()">Order</button>
+                <button class="checkout-btn" onclick="placeOrder()">Pay & Order</button>
             </div>
-            
         </div>
     </div>
     <!-- Footer Section -->
@@ -486,6 +541,7 @@
           </div>
       </div>
   </footer>
+  <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
         document.addEventListener("DOMContentLoaded", () => {
@@ -493,6 +549,7 @@
         const subTotalElement = document.getElementById("sub-total");
         const deliveryElement = document.getElementById("delivery");
         const gstElement = document.getElementById("gst");
+        const couponElement = document.getElementById("coupon-value");
         const totalElement = document.getElementById("total");
         
 
@@ -510,12 +567,20 @@
 
             const value = Number(deliveryElement.dataset.val)
             const gst = subTotal * 0.18; // Calculate GST (18%)
-            const total = subTotal + gst + value; // Calculate final total
+            let tem = 0
+            if (couponElement){
+                const coupon = Number(couponElement.dataset.val)
+                tem = -((subTotal + gst + value)*coupon/100)
+            }
+            const total = subTotal + gst + value + tem ; // Calculate final total
 
             // Update totals in the table
             deliveryElement.innerText = `₹${value}`;
             subTotalElement.innerText = `₹${subTotal.toFixed(2)}`;
             gstElement.innerText = `₹${gst.toFixed(2)}`;
+            if (couponElement){
+                couponElement.innerText = `₹${tem.toFixed(2)}`
+            }
             totalElement.innerHTML = `<strong>₹${total.toFixed(2)}</strong>`;
         }
 
@@ -647,24 +712,29 @@
             try {    
                 const response1 = await fetch('/finalstockcheck', {method: 'PATCH'});
                 const result1 = await response1.json();
-                console.log(result1);
-    
                 if (result1.success) {
-                    orderItem();
+                    const payMethod = {
+                        paymentMethod: "<%= paymentMethod %>"
+                    }
+                    if(payMethod.paymentMethod == "UPI"){
+                        const ans = await payNow();
+                    } else {
+                        await orderItem();
+                    }
                 } else {
                     if (typeof Swal !== "undefined") {
                         Swal.fire({
-                            title: 'Stock Check!',
+                            title: result1.title,
                             text: result1.message,
                             icon: 'info',
-                            timer: 2000,
-                            showConfirmButton: false,
-                            timerProgressBar: true
+                            confirmButtonText: 'OK'
+                        }).then(() => {
+                            window.location.reload()
                         });
-                    } else {
-                        alert(result1.message);
+                        } else {
+                            alert(result1.message);
+                        }
                     }
-                }
             } catch (error) {
                 console.error('Error placing order:', error);
                 if (typeof Swal !== "undefined") {
@@ -685,11 +755,17 @@
             let subTotal = parseFloat(document.getElementById("sub-total").innerText.slice(1));
             let delivery = parseFloat(document.getElementById("delivery").innerText.slice(1));
             let gst = parseFloat(document.getElementById("gst").innerText.slice(1));
+            let tem = document.getElementById("coupon-value")
             let total = parseFloat(document.getElementById("total").innerText.slice(1));
-
-            const orderPrice = { subTotal, delivery, gst, total };
-            try {
-                console.log("Hiiii")
+            let orderPrice
+            if(tem){
+                let coupon = parseFloat(document.getElementById("coupon-value").innerText.slice(1));
+                orderPrice = { subTotal, delivery, gst, coupon, total };
+            } else {
+                orderPrice = { subTotal, delivery, gst,  total };
+            }
+            console.log(orderPrice)
+            try{
                 const response = await fetch('/orderproduct', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
@@ -697,8 +773,6 @@
                 });
 
                 const result = await response.json();
-                console.log(result);
-
                 if (result.success) {
                     Swal.fire({
                         title: 'Success!',
@@ -706,7 +780,7 @@
                         icon: 'success',
                         confirmButtonText: 'OK'
                     }).then(() => {
-                        window.location.href = "/confirm";  // Redirect after clicking OK
+                        window.location.href = "/confirm";
                     });
                 } else {
                     alert("Something went wrong!");
@@ -715,6 +789,128 @@
             } catch (error) {
                 console.log(error)
             }
+        }
+    </script>
+    <script>
+        document.getElementById("apply-coupon").addEventListener("submit",async function(event) {
+            event.preventDefault(); // Prevent form submission
+            
+            let inputField = this.querySelector('input[name="couponCode"]');
+            let errorMessage = this.querySelector("p");
+
+            if (inputField.value.trim() === "") {
+                errorMessage.style.display = "block"; // Show error message
+            } else {
+                errorMessage.style.display = "none"; // Hide error message
+                const codeData = document.getElementById('couponCode').value;
+                console.log(codeData)
+                const data = {
+                    code:codeData,
+                }
+                const response = await fetch('/applycoupon', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data)
+                });
+                const result = await response.json();
+                if (result.success) {
+                    Swal.fire({
+                        title: result.title,
+                        text: result.message,
+                        icon: 'success',
+                        confirmButtonText: 'OK'
+                    }).then(() => {
+                        window.location.reload()
+                    });
+                } else {
+                    Swal.fire({
+                        title: result.title,
+                        text: result.message,
+                        icon: 'error',
+                        confirmButtonText: 'OK'
+                    });
+                }
+            }
+        });
+    </script>
+    <script>
+        async function removeCoupon() {
+            const response = await fetch('/removecoupon', {method:"PATCH"})
+            const result = await response.json();
+            if (result.success) {
+                Swal.fire({
+                    title: result.title,
+                    text: result.message,
+                    icon: 'success',
+                    confirmButtonText: 'OK'
+                }).then(() => {
+                    window.location.reload()
+                });
+            } else {
+                Swal.fire({
+                    title: result.title,
+                    text: result.message,
+                    icon: 'error',
+                    confirmButtonText: 'OK'
+                });
+            }
+        }
+    </script>
+    <script>
+        async function payNow() {
+            let total = parseFloat(document.getElementById("total").innerText.slice(1));
+            const amount = Math.round(total * 100); 
+            console.log(amount)
+            console.log(typeof(amount))
+            const response = await fetch('/onlinepayment', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({ amount, currency: 'INR', receipt: 'receipt#1', notes: {} })
+            });
+
+            const { order, key } = await response.json(); 
+            
+            const options = {
+                key: key,
+                amount: order.amount,
+                currency: order.currency,
+                name: "IMBED SOFTWARE",
+                description: 'Test Transaction',
+                order_id: order.id,
+                prefill: {
+                    name: "ANBU",
+                    email: "anbukumar1913@gmail.com",
+                    contact: '7397500541',
+                },
+                theme: {
+                    color: "#28a745"
+                },
+                handler: function(response){
+                    fetch('/verify-payment',{
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            razorpay_order_id: response.razorpay_order_id,
+                            razorpay_payment_id: response.razorpay_payment_id,
+                            razorpay_signature: response.razorpay_signature
+                        })
+                    }).then(res => res.json())
+                    .then(data => {
+                        if (data.status === 'ok') {
+                            orderItem();
+                        } else {
+                            alert('Payment verification failed');
+                        }
+                    }).catch(error => {
+                        console.error('Error: ', error);
+                        alert("Error verifying payment");
+                    });
+                }
+            };
+            const rzp = new Razorpay(options);
+            rzp.open();
         }
     </script>
 </body>

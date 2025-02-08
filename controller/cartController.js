@@ -48,6 +48,7 @@ const removeItem = async(req,res)=>{
 const updateCartItems = async (req, res) => {
     try {
         for (const data of req.body.arr) {
+            if(typeof(data.productId)== 'string')continue
             await cart.updateOne({ _id: data.productId }, { $set: { productQuantity: data.value } });
         }
         req.session.checkOne = true
