@@ -1,4 +1,5 @@
 const product = require("../model/productModel")
+const wishlist = require("../model/wishlistModel")
 const category = require("../model/categoryModel");
 const usercollection = require("../model/userModel")
 const path = require('path');
@@ -149,6 +150,7 @@ const listProduct = async(req,res)=>{
 const singleProductView = async(req,res)=>{
     let name = ""
     let userId = ""
+    let wishlistProduct = false
     const products = await product.findOne({_id:req.params.id}).populate({
         path: "productCategoryId",
         select: "categoryName -_id"
@@ -157,6 +159,8 @@ const singleProductView = async(req,res)=>{
         if(req.session.loginSession || req.session.signupSession){
             const userEmail = req.session.user.email
             const userVer = await usercollection.findOne({ email: userEmail });
+            const isWishlist = await wishlist.findOne({userId:userVer._id, productId:products._id})
+            if(isWishlist) wishlistProduct = true
             if(userVer){
                 if(userVer.isActive == false){
                     req.session.block = true
@@ -164,13 +168,13 @@ const singleProductView = async(req,res)=>{
                 } else {
                     name = userVer.name
                     userId = userVer._id
-                    return res.render("user/product",{name,products,userId})
+                    return res.render("user/product",{name,products,userId,wishlistProduct})
                 }
             } else {
-                return res.render("user/product",{name,products,userId})
+                return res.render("user/product",{name,products,userId,wishlistProduct})
             }
         } else {
-            return res.render("user/product",{name,products,userId})
+            return res.render("user/product",{name,products,userId,wishlistProduct})
         }
     } else {
         return res.redirect("/shop")

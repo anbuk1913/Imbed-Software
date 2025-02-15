@@ -189,6 +189,356 @@
                 text-align: center;
             }
         }
+
+        /* Add to cart Button */
+
+        /* From Uiverse.io by JaydipPrajapati1910 */ 
+        .button {
+        --width: 100px;
+        --height: 35px;
+        --tooltip-height: 35px;
+        --tooltip-width: 90px;
+        --gap-between-tooltip-to-button: 18px;
+        --button-color: #222;
+        --tooltip-color: #fff;
+        width: var(--width);
+        height: var(--height);
+        background: var(--button-color);
+        position: relative;
+        text-align: center;
+        border-radius: 0.45em;
+        font-family: "Arial";
+        transition: background 0.3s;
+        }
+
+        .button::before {
+        position: absolute;
+        content: attr(data-tooltip);
+        width: var(--tooltip-width);
+        height: var(--tooltip-height);
+        background-color: #555;
+        font-size: 0.9rem;
+        color: #fff;
+        border-radius: .25em;
+        line-height: var(--tooltip-height);
+        bottom: calc(var(--height) + var(--gap-between-tooltip-to-button) + 10px);
+        left: calc(50% - var(--tooltip-width) / 2);
+        }
+
+        .button::after {
+        position: absolute;
+        content: '';
+        width: 0;
+        height: 0;
+        border: 10px solid transparent;
+        border-top-color: #555;
+        left: calc(50% - 10px);
+        bottom: calc(100% + var(--gap-between-tooltip-to-button) - 10px);
+        }
+
+        .button::after,.button::before {
+        opacity: 0;
+        visibility: hidden;
+        transition: all 0.5s;
+        }
+
+        .text {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        }
+
+        .button-wrapper,.text,.icon {
+        overflow: hidden;
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        left: 0;
+        color: #fff;
+        }
+
+        .text {
+        top: 0
+        }
+
+        .text,.icon {
+        transition: top 0.5s;
+        }
+
+        .icon {
+        color: #fff;
+        top: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        }
+
+        .icon svg {
+        width: 24px;
+        height: 24px;
+        }
+
+        .button:hover {
+        background: #222;
+        }
+
+        .button:hover .text {
+        top: -100%;
+        }
+
+        .button:hover .icon {
+        top: 0;
+        }
+
+        .toast-container {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 9999;
+        }
+
+        .toast {
+            display: none;
+            background-color: #ff6600;
+            color: white;
+            padding: 15px 30px;
+            border-radius: 12px;
+            font-size: 16px;
+            text-align: center;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+            opacity: 0;
+            transform: translateX(100%);
+            animation: slideInFromRight 0.8s ease-out forwards;
+        }
+
+        @keyframes slideInFromRight {
+            0% {
+                opacity: 0;
+                transform: translateX(100%);
+            }
+
+            100% {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        @keyframes slideOutToRight {
+            0% {
+                opacity: 1;
+                transform: translateX(0);
+            }
+
+            100% {
+                opacity: 0;
+                transform: translateX(100%);
+            }
+        }
+
+        /* Wishlist Button */
+
+        /* From Uiverse.io by Yaya12085 */ 
+        .ui-like {
+        --icon-size: 35px;
+        --icon-secondary-color: rgb(138, 136, 136);
+        --icon-hover-color: rgb(211, 205, 205);
+        --icon-primary-color: rgb(230, 26, 26);
+        --icon-circle-border: 1px solid var(--icon-primary-color);
+        --icon-circle-size: 35px;
+        --icon-anmt-duration: 0.3s;
+        }
+
+        .ui-like input {
+        -webkit-appearance: none;
+        -moz-appearance: none;
+        appearance: none;
+        display: none;
+        }
+
+        .ui-like .like {
+        width: var(--icon-size);
+        height: auto;
+        fill: var(--icon-secondary-color);
+        cursor: pointer;
+        -webkit-transition: 0.2s;
+        -o-transition: 0.2s;
+        transition: 0.2s;
+        display: -webkit-box;
+        display: -ms-flexbox;
+        display: flex;
+        -webkit-box-pack: center;
+        -ms-flex-pack: center;
+        justify-content: center;
+        -webkit-box-align: center;
+        -ms-flex-align: center;
+        align-items: center;
+        position: relative;
+        -webkit-transform-origin: top;
+        -ms-transform-origin: top;
+        transform-origin: top;
+        }
+
+        .like::after {
+        content: "";
+        position: absolute;
+        width: 10px;
+        height: 10px;
+        -webkit-box-shadow: 0 30px 0 -4px var(--icon-primary-color),
+            30px 0 0 -4px var(--icon-primary-color),
+            0 -30px 0 -4px var(--icon-primary-color),
+            -30px 0 0 -4px var(--icon-primary-color),
+            -22px 22px 0 -4px var(--icon-primary-color),
+            -22px -22px 0 -4px var(--icon-primary-color),
+            22px -22px 0 -4px var(--icon-primary-color),
+            22px 22px 0 -4px var(--icon-primary-color);
+        box-shadow: 0 30px 0 -4px var(--icon-primary-color),
+            30px 0 0 -4px var(--icon-primary-color),
+            0 -30px 0 -4px var(--icon-primary-color),
+            -30px 0 0 -4px var(--icon-primary-color),
+            -22px 22px 0 -4px var(--icon-primary-color),
+            -22px -22px 0 -4px var(--icon-primary-color),
+            22px -22px 0 -4px var(--icon-primary-color),
+            22px 22px 0 -4px var(--icon-primary-color);
+        border-radius: 50%;
+        -webkit-transform: scale(0);
+        -ms-transform: scale(0);
+        transform: scale(0);
+        }
+
+        .like::before {
+        content: "";
+        position: absolute;
+        border-radius: 50%;
+        border: var(--icon-circle-border);
+        opacity: 0;
+        }
+
+        /* actions */
+
+        .ui-like:hover .like {
+        fill: var(--icon-hover-color);
+        }
+
+        .ui-like input:checked + .like::after {
+        -webkit-animation: circles var(--icon-anmt-duration)
+            cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+        animation: circles var(--icon-anmt-duration)
+            cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+        -webkit-animation-delay: var(--icon-anmt-duration);
+        animation-delay: var(--icon-anmt-duration);
+        }
+
+        .ui-like input:checked + .like {
+        fill: var(--icon-primary-color);
+        -webkit-animation: like var(--icon-anmt-duration) forwards;
+        animation: like var(--icon-anmt-duration) forwards;
+        -webkit-transition-delay: 0.3s;
+        -o-transition-delay: 0.3s;
+        transition-delay: 0.3s;
+        }
+
+        .ui-like input:checked + .like::before {
+        -webkit-animation: circle var(--icon-anmt-duration)
+            cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+        animation: circle var(--icon-anmt-duration)
+            cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+        -webkit-animation-delay: var(--icon-anmt-duration);
+        animation-delay: var(--icon-anmt-duration);
+        }
+
+        @-webkit-keyframes like {
+        50% {
+            -webkit-transform: scaleY(0.6);
+            transform: scaleY(0.6);
+        }
+
+        100% {
+            -webkit-transform: scaleY(1);
+            transform: scaleY(1);
+        }
+        }
+
+        @keyframes like {
+        50% {
+            -webkit-transform: scaleY(0.6);
+            transform: scaleY(0.6);
+        }
+
+        100% {
+            -webkit-transform: scaleY(1);
+            transform: scaleY(1);
+        }
+        }
+
+        @-webkit-keyframes circle {
+        from {
+            width: 0;
+            height: 0;
+            opacity: 0;
+        }
+
+        90% {
+            width: var(--icon-circle-size);
+            height: var(--icon-circle-size);
+            opacity: 1;
+        }
+
+        to {
+            opacity: 0;
+        }
+        }
+
+        @keyframes circle {
+        from {
+            width: 0;
+            height: 0;
+            opacity: 0;
+        }
+
+        90% {
+            width: var(--icon-circle-size);
+            height: var(--icon-circle-size);
+            opacity: 1;
+        }
+
+        to {
+            opacity: 0;
+        }
+        }
+
+        @-webkit-keyframes circles {
+        from {
+            -webkit-transform: scale(0);
+            transform: scale(0);
+        }
+
+        40% {
+            opacity: 1;
+        }
+
+        to {
+            -webkit-transform: scale(0.8);
+            transform: scale(0.8);
+            opacity: 0;
+        }
+        }
+
+        @keyframes circles {
+        from {
+            -webkit-transform: scale(0);
+            transform: scale(0);
+        }
+
+        40% {
+            opacity: 1;
+        }
+
+        to {
+            -webkit-transform: scale(0.8);
+            transform: scale(0.8);
+            opacity: 0;
+        }
+        }
     </style>
 </head>
 <body>
@@ -237,6 +587,7 @@
     </header>
     
     <div class="main-container">
+        <div class="toast-container"></div>
         <div class="product-image">
             <div class="zoom-container">
                 <a href="<%= products.productImage1 %>" style="cursor: auto;">
@@ -285,13 +636,55 @@
                     <input type="text" hidden value="<%= userId %>" id="userId">
                 </div>
             <% } %>
-            <div class="mt-3">
+            <div class="mt-3" style="display: flex; position: relative; justify-content: space-around;">
                 <% if(!products.productStock) { %>
-                    <button class="btn btn-outline-secondary" style="cursor: not-allowed;">Add to Cart</button>
-                    <button class="btn btn-outline-secondary">Add to Wishlist</button>
+                    <div data-tooltip="" class="button" style="margin-top: 10px; cursor: not-allowed;">
+                        <div class="button-wrapper">
+                        <div class="text">Add to Cart</div>
+                            <span class="icon">
+                                <svg viewBox="0 0 16 16" class="bi bi-cart2" fill="currentColor" height="16" width="16" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M0 2.5A.5.5 0 0 1 .5 2H2a.5.5 0 0 1 .485.379L2.89 4H14.5a.5.5 0 0 1 .485.621l-1.5 6A.5.5 0 0 1 13 11H4a.5.5 0 0 1-.485-.379L1.61 3H.5a.5.5 0 0 1-.5-.5zM3.14 5l1.25 5h8.22l1.25-5H3.14zM5 13a1 1 0 1 0 0 2 1 1 0 0 0 0-2zm-2 1a2 2 0 1 1 4 0 2 2 0 0 1-4 0zm9-1a1 1 0 1 0 0 2 1 1 0 0 0 0-2zm-2 1a2 2 0 1 1 4 0 2 2 0 0 1-4 0z"></path>
+                                </svg>
+                            </span>
+                            </div>
+                        </div>
+                        <label  class="ui-like" style="padding-top: 10px;">
+                            <input type="checkbox" onclick="editWishlist(event, '<%= products._id %>', '<%= userId %>');" <%= wishlistProduct ? 'checked' : '' %>>
+                            <div class="like" >
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="">
+                                    <g stroke-width="0" id="SVGRepo_bgCarrier"></g>
+                                    <g stroke-linejoin="round" stroke-linecap="round" id="SVGRepo_tracerCarrier"></g>
+                                    <g id="SVGRepo_iconCarrier">
+                                        <path d="M20.808,11.079C19.829,16.132,12,20.5,12,20.5s-7.829-4.368-8.808-9.421C2.227,6.1,5.066,3.5,8,3.5a4.444,4.444,0,0,1,4,2,4.444,4.444,0,0,1,4-2C18.934,3.5,21.773,6.1,20.808,11.079Z"></path>
+                                    </g>
+                                </svg>
+                            </div>
+                        </label>
                 <% } else { %>
-                    <button class="btn btn-outline-secondary">Add to Cart</button>
-                    <button class="btn btn-outline-secondary">Add to Wishlist</button>
+                    <div data-tooltip="" class="button" style="margin-top: 10px; cursor: pointer;">
+                    <div class="button-wrapper">
+                    <div class="text">Add to Cart</div>
+                        <span class="icon">
+                            <svg viewBox="0 0 16 16" class="bi bi-cart2" fill="currentColor" height="16" width="16" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M0 2.5A.5.5 0 0 1 .5 2H2a.5.5 0 0 1 .485.379L2.89 4H14.5a.5.5 0 0 1 .485.621l-1.5 6A.5.5 0 0 1 13 11H4a.5.5 0 0 1-.485-.379L1.61 3H.5a.5.5 0 0 1-.5-.5zM3.14 5l1.25 5h8.22l1.25-5H3.14zM5 13a1 1 0 1 0 0 2 1 1 0 0 0 0-2zm-2 1a2 2 0 1 1 4 0 2 2 0 0 1-4 0zm9-1a1 1 0 1 0 0 2 1 1 0 0 0 0-2zm-2 1a2 2 0 1 1 4 0 2 2 0 0 1-4 0z"></path>
+                            </svg>
+                        </span>
+                        </div>
+                    </div>
+                    <div>
+                        <label class="ui-like" style="padding-top: 10px;">
+                            <input onclick="editWishlist(event, '<%= products._id %>', '<%= userId %>');" type="checkbox" <%= wishlistProduct ? 'checked' : '' %>>
+                            <div class="like">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="" >
+                                    <g stroke-width="0" id="SVGRepo_bgCarrier"></g>
+                                    <g stroke-linejoin="round" stroke-linecap="round" id="SVGRepo_tracerCarrier"></g>
+                                    <g id="SVGRepo_iconCarrier">
+                                        <path d="M20.808,11.079C19.829,16.132,12,20.5,12,20.5s-7.829-4.368-8.808-9.421C2.227,6.1,5.066,3.5,8,3.5a4.444,4.444,0,0,1,4,2,4.444,4.444,0,0,1,4-2C18.934,3.5,21.773,6.1,20.808,11.079Z"></path>
+                                    </g>
+                                </svg>
+                            </div>
+                        </label>
+                    </div>
                 <% } %>
             </div>
         </div>
@@ -344,7 +737,7 @@
         </div>
     </footer>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script>
+     <script>
         // JavaScript to handle thumbnail clicks
         document.querySelectorAll('.thumbnail-image').forEach(thumbnail => {
             thumbnail.addEventListener('click', function () {
@@ -359,121 +752,185 @@
 
         const zoomContainer = document.querySelector('.zoom-container');
         const zoomImage = zoomContainer.querySelector('img');
-    
+
         zoomContainer.addEventListener('mousemove', (e) => {
-          const { left, top, width, height } = zoomContainer.getBoundingClientRect();
-          const x = ((e.pageX - left) / width) * 100;
-          const y = ((e.pageY - top) / height) * 100;
-          zoomImage.style.transformOrigin = `${x}% ${y}%`;
+            const { left, top, width, height } = zoomContainer.getBoundingClientRect();
+            const x = ((e.pageX - left) / width) * 100;
+            const y = ((e.pageY - top) / height) * 100;
+            zoomImage.style.transformOrigin = `${x}% ${y}%`;
         });
-    
+
         zoomContainer.addEventListener('mouseleave', () => {
-          zoomImage.style.transformOrigin = 'center center';
+            zoomImage.style.transformOrigin = 'center center';
         });
-      </script>
 
-        <script>
-            // Select elements
-            const quantityContainer = document.querySelector('.quantity');
-            const decreaseBtn = quantityContainer.querySelector('.decrease-btn');
-            const increaseBtn = quantityContainer.querySelector('.increase-btn');
-            const quantityInput = quantityContainer.querySelector('input');
-            const addToCartBtn = document.querySelector('.btn-outline-secondary');
+        // Quantity and Add to Cart Functionality
+        const quantityContainer = document.querySelector('.quantity');
+        const decreaseBtn = quantityContainer.querySelector('.decrease-btn');
+        const increaseBtn = quantityContainer.querySelector('.increase-btn');
+        const quantityInput = quantityContainer.querySelector('input');
+        const addToCartBtn = document.querySelector('.button');
 
-            // Get maximum allowed quantity (either from data-max or default 100)
-            const maxQuantity = Math.min(parseInt(quantityInput.getAttribute('data-max')) || 100, 100);
+        // Get maximum allowed quantity (either from data-max or default 100)
+        const maxQuantity = Math.min(parseInt(quantityInput.getAttribute('data-max')) || 100, 100);
 
-            // Decrease quantity
-            decreaseBtn.addEventListener('click', () => {
-                let currentQuantity = parseInt(quantityInput.value) || 1;
-                if (currentQuantity > 1) {
-                    quantityInput.value = currentQuantity - 1;
-                }
-            });
+        // Decrease quantity
+        decreaseBtn.addEventListener('click', () => {
+            let currentQuantity = parseInt(quantityInput.value) || 1;
+            if (currentQuantity > 1) {
+                quantityInput.value = currentQuantity - 1;
+            }
+        });
 
-            // Increase quantity
-            increaseBtn.addEventListener('click', () => {
-                let currentQuantity = parseInt(quantityInput.value) || 1;
-                if (currentQuantity < maxQuantity) {
-                    quantityInput.value = currentQuantity + 1;
-                } else {
-                    Swal.fire({
-                        title: 'Limit Reached!',
-                        text: `Only <%= products.productStock  %> stocks left or You reached Maximum quantity 100`,
-                        icon: 'info',
-                        timer: 2000,  // Automatically closes after 3 seconds
-                        showConfirmButton: false,  // No confirmation button
-                        timerProgressBar: true
+        // Increase quantity
+        increaseBtn.addEventListener('click', () => {
+            let currentQuantity = parseInt(quantityInput.value) || 1;
+            if (currentQuantity < maxQuantity) {
+                quantityInput.value = currentQuantity + 1;
+            } else {
+                Swal.fire({
+                    title: 'Limit Reached!',
+                    text: `Only <%= products.productStock  %> stocks left or You reached Maximum quantity 100`,
+                    icon: 'info',
+                    timer: 2000,
+                    showConfirmButton: false,
+                    timerProgressBar: true
+                });
+            }
+        });
+
+        // Validate quantity input
+        const validateQuantity = () => {
+            let currentQuantity = parseInt(quantityInput.value) || 1;
+            if (currentQuantity < 1) {
+                alert('Quantity cannot be less than 1.');
+                quantityInput.value = 1;
+                return false;
+            } else if (currentQuantity > maxQuantity) {
+                Swal.fire({
+                    title: 'Limit Reached!',
+                    text: `Only <%= products.productStock  %> stocks left or You reached Maximum quantity 100`,
+                    icon: 'info',
+                    timer: 2000,
+                    showConfirmButton: false,
+                    timerProgressBar: true
+                });
+                quantityInput.value = maxQuantity;
+                return false;
+            }
+            return true;
+        };
+
+        // Add to Cart button click
+        addToCartBtn.addEventListener('click', async () => {
+            const uId = document.getElementById("userId").value;
+            if (!uId) {
+                const toastContainer = document.querySelector(".toast-container");
+                const toast = document.createElement("div");
+                toast.className = "toast";
+                toast.textContent = "You need to login to continue!";
+                toast.style.backgroundColor = "#dc3545"; // Red for error
+                toastContainer.appendChild(toast);
+
+                setTimeout(() => {
+                    toast.style.display = "block";
+                }, 100);
+
+                setTimeout(() => {
+                    toast.style.animation = "slideOutToRight 0.8s ease-out forwards";
+                }, 2000);
+
+                setTimeout(() => {
+                    toast.style.display = "none";
+                    toast.remove();
+                    window.location.href = "/login";
+                }, 2800);
+            }
+            // Check if the quantity is valid before proceeding
+            if (validateQuantity()) {
+                // Set the data attributes with productId and quantity
+                const productId = "<%= products._id %>"; // Example: dynamically populate the product ID
+                const quantity = parseInt(quantityInput.value) || 1;
+                addToCartBtn.setAttribute('data-productId', productId);
+                addToCartBtn.setAttribute('data-quantity', quantity);
+                const datas = {
+                    userId: uId,
+                    productId: productId,
+                    productQuantity: quantity,
+                };
+                try {
+                    let response = await fetch("/addcart", {
+                        method: "POST",
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(datas)
                     });
+                    const result = await response.json();
+                    if (result.success) {
+                        Swal.fire({
+                            title: 'Product Added',
+                            text: `Product Added to Your Cart`,
+                            icon: 'success',
+                            timer: 2000,
+                            showConfirmButton: false,
+                            timerProgressBar: true
+                        });
+                        setTimeout(() => {
+                            window.location.href = "/cart";
+                        }, 2000);
+                    }
+                } catch (error) {
+                    console.log(error);
                 }
-            });
+            }
+        });
+    </script>
 
-            // Validate quantity input
-            const validateQuantity = () => {
-                let currentQuantity = parseInt(quantityInput.value) || 1;
-                if (currentQuantity < 1) {
-                    alert('Quantity cannot be less than 1.');
-                    quantityInput.value = 1;
-                    return false;
-                } else if (currentQuantity > maxQuantity) {
-                    Swal.fire({
-                        title: 'Limit Reached!',
-                        text: `Only <%= products.productStock  %> stocks left or You reached Maximum quantity 100`,
-                        icon: 'info',
-                        timer: 2000,  // Automatically closes after 2 seconds
-                        showConfirmButton: false,  // No confirmation button
-                        timerProgressBar: true
+    <script>
+        async function editWishlist(event, productId, userId) {
+            console.log(" productId: ", productId);
+            console.log(" userId: ", userId);
+            event.stopPropagation(); 
+            let checkbox = event.target.closest('.ui-like').querySelector('input[type="checkbox"]');
+            if (!checkbox) {
+                console.error("Checkbox not found");
+                return;
+            }
+            const newWishlistState = checkbox.checked; // Toggle state correctly
+            const toastContainer = document.querySelector(".toast-container");
+            if (!userId) {
+                const toast = document.createElement("div");
+                toast.className = "toast";
+                toast.textContent = "You need to login to continue!";
+                toast.style.backgroundColor = "#dc3545"; // Red for error
+                toastContainer.appendChild(toast);
+
+                setTimeout(() => {
+                    toast.style.display = "block";
+                }, 100);
+
+                setTimeout(() => {
+                    toast.style.animation = "slideOutToRight 0.8s ease-out forwards";
+                }, 2000);
+
+                setTimeout(() => {
+                    toast.style.display = "none";
+                    toast.remove();
+                    window.location.href = "/login";
+                }, 2800);
+            } else {
+                try {
+                    let response = await fetch("/updatewishlist", {
+                        method: "PATCH",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({ productId, userId, wishlist: newWishlistState }),
                     });
-                    quantityInput.value = maxQuantity;
-                    return false;
+                    const result = await response.json();
+                } catch (error) {
+                    console.error("Error updating wishlist:", error);
                 }
-                return true;
-            };
-
-            // Add to Cart button click
-            addToCartBtn.addEventListener('click', async () => {
-                const uId = document.getElementById("userId").value
-                if(!uId){
-                    window.location.href="/login"
-                }
-                // Check if the quantity is valid before proceeding
-                if (validateQuantity()) {
-                    // Set the data attributes with productId and quantity
-                    const productId = "<%= products._id %>"; // Example: dynamically populate the product ID
-                    const quantity = parseInt(quantityInput.value) || 1;
-                    addToCartBtn.setAttribute('data-productId', productId);
-                    addToCartBtn.setAttribute('data-quantity', quantity);
-                    const datas={
-                        userId: uId,
-                        productId:productId,
-                        productQuantity:quantity,
-                    }
-                    try {
-                        let response = await fetch("/addcart",{
-                            method: "POST",
-                            headers:{'Content-Type':'application/json'},
-                            body:JSON.stringify(datas)
-                        })
-                        const result = await response.json();
-                        if(result.success){
-                            Swal.fire({
-                                title: 'Product Added',
-                                text: `Product Added Your to Cart`,
-                                icon: 'success',
-                                timer: 2000,  // Automatically closes after 3 seconds
-                                showConfirmButton: false,  // No confirmation button
-                                timerProgressBar: true
-                            });
-                            setTimeout(()=>{
-                                window.location.href = "/cart"
-                            },2000)
-                        }
-                    } catch (error) {
-                        console.log(error)
-                    }
-                }
-            });
-        </script>
+            }
+        }
+    </script>
 
 </body>
 </html>

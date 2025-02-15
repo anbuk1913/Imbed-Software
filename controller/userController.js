@@ -1,4 +1,5 @@
 const bcrypt = require('bcrypt')
+const wallet = require("../model/walletModel");
 const product = require("../model/productModel")
 const category = require("../model/categoryModel");
 const usercollection = require("../model/userModel");
@@ -108,6 +109,10 @@ const otpPost = async(req,res)=>{
             password: req.session.user.password
         });
         await user.save();
+        const walletData = new wallet({
+            userId: user._id
+        })
+        walletData.save()
         req.session.signupSession = true
         res.redirect("/")
     } else {
@@ -164,9 +169,13 @@ const googleCallback=async (req, res) => {
       const user = await usercollection.findOneAndUpdate(
         { email: req.user._json.email},
         { $set: { name: req.user.displayName} },
-        { upsert: true,new :true }
+        { upsert: true, new :true }
       );
-  
+      const userId = await usercollection.findOne({ email:req.user._json.email })
+      const walletData = await wallet.updateOne({
+        userId: userId._id
+      },{upsert:true, new :true})
+
       req.session.user = {
         email:req.user._json.email
       }

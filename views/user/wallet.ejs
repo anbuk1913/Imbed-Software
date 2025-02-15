@@ -1,12 +1,10 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title><%= userVer.name %> - Profile</title>
+    <title>Wallet - Page</title>
     <link rel="icon" href="/images/logo.png">
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Source+Sans+3:ital,wght@0,200..900;1,200..900&display=swap" rel="stylesheet">
@@ -55,20 +53,39 @@
             padding: 20px;
             height: 100%;
         }
-        .table-container {
-            flex-grow: 1;
+
+        .wallet-container {
+            border: 2px solid white;
             padding: 20px;
+            width: 600px;
+            text-align: center;
         }
-        .btn-view {
-            background-color: #28a745;
+        .wallet-balance {
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 20px;
+        }
+        .btn {
+            background-color: #008CFF;
             color: white;
+            padding: 10px 20px;
+            border: none;
+            cursor: pointer;
+            font-size: 16px;
+            margin-bottom: 20px;
         }
-        .btn-cancel, .btn-return {
-            background-color: #dc3545;
-            color: white;
+        .transaction-table {
+            width: 100%;
+            border-collapse: collapse;
         }
-
-
+        .transaction-table th, .transaction-table td {
+            border: 1px solid white;
+            padding: 10px;
+            text-align: left;
+        }
+        .transaction-table th {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
         .footer {
             background-color: #8dc63f;
             color: white;
@@ -79,55 +96,9 @@
             color: white;
             text-decoration: none;
         }
-
-        .toast-container {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            z-index: 9999;
-        }
-
-        .toast {
-            display: none;
-            background-color: #ff6600;
-            color: white;
-            padding: 15px 30px;
-            border-radius: 12px;
-            font-size: 16px;
-            text-align: center;
-            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
-            opacity: 0;
-            transform: translateX(100%);
-            animation: slideInFromRight 0.8s ease-out forwards;
-        }
-
-        @keyframes slideInFromRight {
-            0% {
-                opacity: 0;
-                transform: translateX(100%);
-            }
-
-            100% {
-                opacity: 1;
-                transform: translateX(0);
-            }
-        }
-
-        @keyframes slideOutToRight {
-            0% {
-                opacity: 1;
-                transform: translateX(0);
-            }
-
-            100% {
-                opacity: 0;
-                transform: translateX(100%);
-            }
-        }
-
+        
     </style>
 </head>
-
 <body>
     <!-- Header Section -->
     <header>
@@ -170,10 +141,10 @@
                 <nav class="mt-4">
                     <ul class="nav flex-column">
                         <li class="nav-item">
-                            <a class="nav-link" href="/profile">Dashboard</a>
+                            <a class="nav-link" href="">Dashboard</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="">Orders</a>
+                            <a class="nav-link" href="/orders">Orders</a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link" href="/wallet">Wallet</a>
@@ -190,39 +161,30 @@
 
             <!-- Main Content -->
             <div class="col-md-10">
+                <!-- Wallet Section -->
+                <div class="wallet-container">
+                    <div class="wallet-balance">Wallet Balance: ₹<%= walletData?.walletBalance %></div>
+                    <button class="btn">ADD MONEY TO WALLET</button>
                 
-            <!-- Table Content -->
-            <div class="table-container">
-                <table class="table table-bordered text-center">
-                    <thead class="table-light">
-                        <tr>
-                            <th>Order ID</th>
-                            <th>Date</th>
-                            <th>Status</th>
-                            <th>Total</th>
-                            <th>Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <% orders.forEach(order => { %>
+                    <table class="transaction-table">
+                        <thead>
                             <tr>
-                                <td>#<%= order.id %></td>
-                                <td><%= order.createdAt.toISOString().split('T')[0]; %></td>
-                                <td><%= order.status %></td>
-                                <td>₹<%= order.priceDetails.total %></td>
-                                <td>
-                                    <a href="/orderview/<%= order.id %>"><button class="btn btn-view">VIEW</button></a>
-                                    <% if (order.status === 'Pending' || order.status === 'Shipping') { %>
-                                        <button onclick="cancelOrder('<%= order.id %>')" class="btn btn-cancel">CANCEL</button>
-                                    <% } else if (order.status === 'Delivered') { %>
-                                        <button onclick="returnOrder('<%= order.id %>')" class="btn btn-return">RETURN</button>
-                                    <% } %>
-                                </td>
+                                <th>Transaction Date</th>
+                                <th>Transaction Amount</th>
+                                <th>Transaction Details</th>
                             </tr>
-                        <% }) %>
-                    </tbody>
-                </table>
-            </div>
+                        </thead>
+                        <tbody>
+                            <% walletData?.walletTransaction.forEach(transaction => { %>
+                                <tr>
+                                    <td><%= transaction.date %></td>
+                                    <td>₹<%= transaction.amount %></td>
+                                    <td><%= transaction.details %></td>
+                                </tr>
+                            <% }); %>
+                        </tbody>
+                    </table>
+                </div>
                 <form id="logoutForm" action="/logout" method="post" style="display: none;"></form>
 
                 <!-- Footer -->
@@ -268,73 +230,5 @@
             </div>
         </div>
     </div>
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
-    <script>
-        // Cancel Order
-        async function cancelOrder(id){
-            try {
-                Swal.fire({
-                title: "Are you sure?",
-                text: "Are you want cancel this order?",
-                icon: "warning",
-                showCancelButton: true,
-                confirmButtonColor: "#d33",
-                cancelButtonColor:  "#3085d6",
-                confirmButtonText: "Yes, cancel it!"
-            }).then(async (result) => {
-                if (result.isConfirmed) {
-                    const respose = await fetch(`/cancelorder?orderId=${id}`, { method: 'PATCH' })
-                    const result = await respose.json()
-                    console.log(result);
-                    if (result.success) {
-                        Swal.fire({
-                            title: "Cancelled!",
-                            text: "Your order has been cancelled.",
-                            icon: "success"
-                        }).then(() => window.location.reload())
-
-                    }
-
-                }
-            });
-            } catch (error) {
-                console.log(error)
-            }
-        }
-    </script>
-    <script>
-        async function returnOrder(id){
-            try {
-                Swal.fire({
-                title: "Are you sure?",
-                text: "Are you want return this order?",
-                icon: "warning",
-                showCancelButton: true,
-                confirmButtonColor: "#d33",
-                cancelButtonColor:  "#3085d6",
-                confirmButtonText: "Yes, cancel it!"
-            }).then(async (result) => {
-                if (result.isConfirmed) {
-                    const respose = await fetch(`/returnorder?orderId=${id}`, { method: 'PATCH' })
-                    const result = await respose.json()
-                    console.log(result);
-                    if (result.success) {
-                        Swal.fire({
-                            title: "Return processing!",
-                            text: "Your order has been return processing!.",
-                            icon: "success"
-                        }).then(() => window.location.reload())
-
-                    }
-
-                }
-            });
-            } catch (error) {
-                console.log(error)
-            }
-        }
-    </script>
 </body>
-
 </html>

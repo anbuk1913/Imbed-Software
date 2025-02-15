@@ -860,8 +860,6 @@
         async function payNow() {
             let total = parseFloat(document.getElementById("total").innerText.slice(1));
             const amount = Math.round(total * 100); 
-            console.log(amount)
-            console.log(typeof(amount))
             const response = await fetch('/onlinepayment', {
                 method: 'POST',
                 headers: {'Content-Type': 'application/json'},
@@ -877,11 +875,6 @@
                 name: "IMBED SOFTWARE",
                 description: 'Test Transaction',
                 order_id: order.id,
-                prefill: {
-                    name: "ANBU",
-                    email: "anbukumar1913@gmail.com",
-                    contact: '7397500541',
-                },
                 theme: {
                     color: "#28a745"
                 },
@@ -913,6 +906,20 @@
             rzp.open();
         }
     </script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+          const checkoutBtn = document.querySelector(".checkout-btn");
+          
+          // Parse cartItems from server-side data
+          const cartItems = JSON.parse('<%- JSON.stringify(cartItems) %>');
+      
+          if (cartItems.length === 0) {
+            checkoutBtn.disabled = true;
+            checkoutBtn.style.opacity = "0.5"; // Optional: Make it visually disabled
+            checkoutBtn.style.cursor = "not-allowed";
+          }
+        });
+      </script>
 </body>
 </html>
 

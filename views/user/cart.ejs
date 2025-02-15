@@ -328,7 +328,7 @@
                 <ul class="navbar-nav ms-auto">
                     <li class="nav-item"><a class="nav-link" href="/">Home</a></li>
                     <li class="nav-item"><a class="nav-link" href="/shop">Shop</a></li>
-                    <li class="nav-item"><a class="nav-link" href="/cart">Cart</a></li>
+                    <li class="nav-item"><a class="nav-link" href="" style="color: #8CBF3A;">Cart</a></li>
                     <li class="nav-item"><a class="nav-link" href="/wishlist">Wishlist</a></li>
                 </ul>
                 <!-- User Profile Section -->
@@ -685,5 +685,19 @@
             }
         }
     </script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+          const checkoutBtn = document.querySelector(".checkout-btn");
+          
+          // Parse cartItems from server-side data
+          const cartItems = JSON.parse('<%- JSON.stringify(cartItems) %>');
+      
+          if (cartItems.length === 0) {
+            checkoutBtn.disabled = true;
+            checkoutBtn.style.opacity = "0.5"; // Optional: Make it visually disabled
+            checkoutBtn.style.cursor = "not-allowed";
+          }
+        });
+      </script>      
 </body>
 </html>

@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Imbed Software - Wishlist</title>
+    <link rel="icon" href="/images/logo.png">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Source+Sans+3:ital,wght@0,200..900;1,200..900&display=swap" rel="stylesheet">
+    <style>
+        /* General Styles */
+        body {
+            font-family: 'Source Sans 3', sans-serif;
+            margin: 0;
+            background-color: #d3d2d1;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        a {
+            text-decoration: none;
+            color: inherit;
+        }
+
+        img {
+            max-width: 100%;
+            height: auto;
+        }
+
+        /* Navbar */
+        .navbar {
+            width: 100%;
+            padding: 15px 0;
+            box-shadow: 10px 10px 15px rgba(0, 0, 0, 0.5);
+        }
+
+        .navbar-brand {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #8CBF3A;
+        }
+
+        .navbar-nav .nav-link {
+            font-weight: 500;
+            color: #555;
+            font-size: 1rem;
+            margin: 0 10px;
+        }
+
+        .navbar-nav .nav-link:hover {
+            color: #8CBF3A;
+        }
+
+        /* Footer */
+        footer {
+            background-color: #8CBF3A; /* Updated background color */
+            color: white; /* Ensures text remains readable */
+        }
+
+        footer a {
+            color: white; /* Ensures links in the footer are readable */
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+
+        footer a:hover {
+            color: #f0f0f0; /* Slightly lighter color on hover */
+        }
+
+        footer .input-group button {
+            background-color: #6A9F2E; /* Matches footer tone */
+            color: white;
+            border: none;
+        }
+
+        footer .input-group button:hover {
+            background-color: #5A8A27; /* Darker hover effect */
+        }
+
+        .toast-container {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 9999;
+        }
+
+        .toast {
+            display: none;
+            background-color: #ff6600;
+            color: white;
+            padding: 15px 30px;
+            border-radius: 12px;
+            font-size: 16px;
+            text-align: center;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+            opacity: 0;
+            transform: translateX(100%);
+            animation: slideInFromRight 0.8s ease-out forwards;
+        }
+
+        @keyframes slideInFromRight {
+            0% {
+                opacity: 0;
+                transform: translateX(100%);
+            }
+
+            100% {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        @keyframes slideOutToRight {
+            0% {
+                opacity: 1;
+                transform: translateX(0);
+            }
+
+            100% {
+                opacity: 0;
+                transform: translateX(100%);
+            }
+        }
+
+    </style>
+</head>
+<body>
+    <!-- Header Section -->
+    <header>
+        <nav class="navbar navbar-expand-lg navbar-light bg-light">
+            <div class="container">
+                <a class="navbar-brand" href="">
+                    <img src="/images/logo.png" style="width: 30px;">
+                </a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarNav">
+                    <ul class="navbar-nav ms-auto">
+                        <li class="nav-item"><a class="nav-link" href="/">Home</a></li>
+                        <li class="nav-item"><a class="nav-link" href="/shop">Shop</a></li>
+                        <li class="nav-item"><a class="nav-link" href="/cart">Cart</a></li>
+                        <li class="nav-item"><a class="nav-link" href="" style="color: #8CBF3A;">Wishlist</a></li>
+                    </ul>
+                    <!-- User Profile Section -->
+                    <div class="dropdown ms-3">
+                        <a href="#" class="d-flex align-items-center text-decoration-none dropdown-toggle" id="userProfileDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                            <% if(name){ %>
+                                <img src="/images/profile.png" style="width: 30px; height: 30px; border-radius: 50%;">
+                            <span class="ms-2"><%= name %></span>
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userProfileDropdown">
+                            <li><a class="dropdown-item" href="/profile">My Profile</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" href="" onclick="document.getElementById('logoutForm').submit(); return false;">Logout</a></li>
+                        </ul>
+                            <% } else {%>
+                            <img src="/images/profile.png" style="width: 30px; height: 30px; border-radius: 50%;">
+                            <span class="ms-2"><%= name %></span>
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userProfileDropdown">
+                            <li><a class="dropdown-item" href="/login">Log In</a></li>
+                        </ul>
+                        <% } %>
+                    </div>
+                    <!-- End of User Profile Section -->
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <div class="container mt-5">
+        <div class="toast-container"></div>
+        <table class="table table-bordered text-center">
+            <thead class="table-light">
+                <tr>
+                    <th>Image</th>
+                    <th>Product</th>
+                    <th>Unit Price</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                <% products.forEach(product => { %>
+                    <tr>
+                        <td><a href="/product/<%= product.productId._id %>" ><img src="<%= product.productId?.productImage1 %>" alt="<%= product.productId?.productName %>" width="50"></a></td>
+                        <td><a href="/product/<%= product.productId._id %>" class="text-black text-decoration-none" style="text-decoration: none; font-weight: bold;"><%= product?.productId?.productName %></a></td>
+                        <% if(product?.productId?.productOfferPrice) { %>
+                            <td><%= product.productId.productOfferPrice %></td>
+                         <% } else { %>
+                            <td><%= product.productId.productPrice %></td>
+                         <% } %>
+                        <td>
+                            <button class="btn btn-danger" onclick="removeWishlist('<%= product.productId._id %>','<%= userVer._id %>')">&times;</button>
+                            <button class="btn btn-primary" onclick="addToCart('<%= product.productId._id %>','<%= userVer._id %>')">ADD TO CART</button>
+                        </td>
+                    </tr>
+                <% }) %>
+            </tbody>
+        </table>
+        <% if(products.length>0){ %>
+            <button class="btn btn-primary" onclick="addAllItems('<%= userVer._id %>')">ADD ALL ITEM TO CART</button>
+        <% } %>
+    </div>
+
+    <!-- Footer Section -->
+    <footer class="py-5">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-3">
+                    <h5>Contact Us</h5>
+                    <p>No 11, bharathiyar street</p>
+                    <p>Near Gandhi Street,</p>
+                    <p>Karaikudi Tamilnadu.</p>
+                    <p>Phone: +91 8148413021</p>
+                    <p>Email: <a href="https://mail.google.com/mail/?view=cm&fs=1&to=imbedsoftwareteam@gmail.com">imbedsoftwareteam@gmail.com</a></p>
+                </div>
+                <div class="col-md-3">
+                    <h5>Information</h5>
+                    <ul class="list-unstyled">
+                        <li><a href="#">Your Account</a></li>
+                        <li><a href="#">Free Shipping Policy</a></li>
+                        <li><a href="#">Return Policy</a></li>
+                    </ul>
+                </div>
+                <div class="col-md-3">
+                    <h5>Support</h5>
+                    <ul class="list-unstyled">
+                        <li><a href="#">Payment Method</a></li>
+                        <li><a href="#">Product Support</a></li>
+                    </ul>
+                </div>
+                <div class="col-md-3">
+                    <h5>Join Our Mailing List</h5>
+                    <form>
+                        <div class="input-group">
+                            <input type="email" class="form-control" placeholder="Your Email Address">
+                            <button class="btn btn-dark">→</button>
+                        </div>
+                    </form>
+                    <h5 class="mt-3">Download Our Mobile Apps</h5>
+                    <a href=""><img src="/images/playstore.webp" alt="App Stores" style="max-width: 100px;"></a>
+                    <a href=""><img src="/images/appstore.png" alt="App Stores" style="max-width: 110px;margin-left: 20px;"></a>
+                </div>
+            </div>
+        </div>
+    </footer>
+    <script>
+        async function removeWishlist(productId,userId) {
+            const formData = {productId,userId}
+            try {
+                let response = await fetch('/romovewishlistproduct', {
+                    method: 'DELETE',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(formData)
+                });
+
+                const result = await response.json();
+
+                const toastContainer = document.querySelector(".toast-container");
+                const toast = document.createElement("div");
+                toast.className = "toast";
+                if(result.success){
+                    toast.textContent = "Product removed Successfully!";
+                    toast.style.backgroundColor = "#28a745"; // Green color for success
+                    toastContainer.appendChild(toast);
+
+                    setTimeout(() => {
+                        toast.style.display = "block";
+                    }, 100);
+
+                    setTimeout(() => {
+                        toast.style.animation = "slideOutToRight 0.8s ease-out forwards";
+                    }, 2000);
+
+                    setTimeout(() => {
+                        toast.style.display = "none";
+                        toast.remove(); // Remove toast from DOM
+                        window.location.reload()
+                    }, 2800);
+                } else {
+                    toast.textContent = "Somthing Wrong!";
+                    toast.style.backgroundColor = "#dc3545"; // Red color for error
+                    toastContainer.appendChild(toast);
+                    setTimeout(() => {
+                        toast.style.display = "block";
+                    }, 100);
+
+                    setTimeout(() => {
+                        toast.style.animation = "slideOutToRight 0.8s ease-out forwards";
+                    }, 3000);
+
+                    setTimeout(() => {
+                        toast.style.display = "none";
+                        toast.remove(); // Remove toast from DOM
+                    }, 3800);
+                }
+            } catch (error) {
+                console.log(error)
+            }
+        }
+    </script>
+    <script>
+        async function addToCart(productId,userId) {
+            const productQuantity = 1
+            const formData = {productId,userId,productQuantity}
+            try {
+                let response = await fetch('/addcart', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(formData)
+                });
+
+                const result = await response.json();
+
+                const toastContainer = document.querySelector(".toast-container");
+                const toast = document.createElement("div");
+                toast.className = "toast";
+                if(result.success){
+                    toast.textContent = result.message
+                    toast.style.backgroundColor = "#28a745"; // Green color for success
+                    toastContainer.appendChild(toast);
+
+                    setTimeout(() => {
+                        toast.style.display = "block";
+                    }, 100);
+
+                    setTimeout(() => {
+                        toast.style.animation = "slideOutToRight 0.8s ease-out forwards";
+                    }, 2000);
+
+                    setTimeout(() => {
+                        toast.style.display = "none";
+                        toast.remove(); // Remove toast from DOM
+                        window.location.reload()
+                    }, 2800);
+                }
+            } catch (error) {
+                console.log(error)
+            }
+        }
+    </script>
+    <script>
+        async function addAllItems(userId){
+            const formData = {userId}
+            try {
+                let response = await fetch('/addalltocart', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(formData)
+                });
+
+                const result = await response.json();
+
+                const toastContainer = document.querySelector(".toast-container");
+                const toast = document.createElement("div");
+                toast.className = "toast";
+                if(result.success){
+                    toast.textContent = result.message
+                    toast.style.backgroundColor = "#28a745"; // Green color for success
+                    toastContainer.appendChild(toast);
+
+                    setTimeout(() => {
+                        toast.style.display = "block";
+                    }, 100);
+
+                    setTimeout(() => {
+                        toast.style.animation = "slideOutToRight 0.8s ease-out forwards";
+                    }, 2000);
+
+                    setTimeout(() => {
+                        toast.style.display = "none";
+                        toast.remove(); // Remove toast from DOM
+                        window.location.href = "/cart"
+                    }, 2800);
+                }
+            } catch (error) {
+                console.log(error)
+            }
+        }
+    </script>
+</body>
+</html>

@@ -17,7 +17,7 @@ const cartView = async (req,res) => {
         });
         res.render("user/cart",{name,cartItems})
     } catch (error) {
-        console.log("cartView",error)
+        console.log(error)
     }
 }
 

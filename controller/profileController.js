@@ -1,4 +1,5 @@
 const usercollection = require("../model/userModel");
+const wallet = require("../model/walletModel");
 const address = require("../model/address");
 const bcrypt = require('bcrypt')
 
@@ -108,8 +109,6 @@ const deleteAddress = async(req,res)=>{
         const addressId = req.params.id;
         const addressNum = await address.findOne({_id:addressId})
         const results = await address.updateMany({userId:addressNum.userId,addressCount:{$gt:addressNum.addressCount}},{$inc:{addressCount:-1}})
-        console.log(addressNum)
-        console.log(results)
         const data = await address.findByIdAndDelete({_id:addressId})
         if(data){
             return res.json({success:true, message:"Address deleted Successfully!"})
@@ -160,4 +159,16 @@ const editUserData = async(req,res)=>{
     }
 }
 
-module.exports = {profile,editProfile,addressPage,addAddress,addAddressPost,editAddress,editAddressPut,deleteAddress,changePassword,changePasswordPatch,editUserData}
+// Wallet
+const walletPage = async(req,res)=>{
+    try {
+        const userEmail = req.session.user.email
+        const userVer = await usercollection.findOne({ email: userEmail });
+        const walletData = await wallet.findOne({userId:userVer._id});
+        return res.render("user/wallet",{userVer,walletData})
+    } catch (error) {
+        console.log(error)
+    }
+}
+
+module.exports = {profile,editProfile,addressPage,addAddress,addAddressPost,editAddress,editAddressPut,deleteAddress,changePassword,changePasswordPatch,editUserData,walletPage}

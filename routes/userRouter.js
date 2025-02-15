@@ -9,6 +9,7 @@ const cartController = require("../controller/cartController")
 const profileController = require("../controller/profileController")
 const checkoutController = require("../controller/checkoutController")
 const orderController = require('../controller/orderController')
+const wishlistController = require('../controller/wishlistController')
 const router = express.Router()
 
 router.use(bodyParser.json());
@@ -69,5 +70,13 @@ router.post("/onlinepayment",userAuth,checkoutController.onlinePay)
 router.post("/verify-payment",userAuth,checkoutController.verifyPayment)
 router.get("/confirm",userAuth,checkoutController.confirmPage)
 
+// Wishlist
+router.get("/wishlist",userAuth,wishlistController.wishlistPage)
+router.patch("/updatewishlist",userAuth,wishlistController.editWishlist)
+router.delete("/romovewishlistproduct",userAuth,wishlistController.deleteProduct)
+router.post("/addalltocart",userAuth,wishlistController.addAlltoCart)
+
+// Wallet
+router.get("/wallet",userAuth,profileController.walletPage)
 
 module.exports = router
