@@ -1,4 +1,5 @@
 const order = require("../model/orders");
+const wallet = require("../model/walletModel");
 const usercollection = require("../model/userModel")
 
 const userOrder = async(req,res)=>{
@@ -54,6 +55,35 @@ const adminEditOrderPost = async(req,res)=>{
     }
 }
 
+const editOrder = async(req,res)=>{
+    try {
+        const datas = await order.findById({_id:req.body.orderId})
+        if(req.body.orderStatus == 'Returned' && datas.paymentMethod == "COD"){
+            const transactionData = {
+                transactionDate: new Date(),
+                transactionAmount: datas.priceDetails.total,
+                transactionType: "Credit on Cancel"
+            };
+            const changes = datas.priceDetails.total
+            await wallet.updateOne(
+                {userId:datas.userId},
+                {
+                    $inc: { walletBalance: changes },
+                    $push: { walletTransaction: transactionData }
+                },
+                { new: true } // Returns updated document
+            );
+            await order.updateOne({_id:req.body.orderId},{$set:{status:req.body.orderStatus}})
+            res.json({ success: true, message: 'Order Status Updated!' });
+        } else {
+            await order.updateOne({_id:req.body.orderId},{$set:{status:req.body.orderStatus}})
+            res.json({ success: true, message: 'Order Status Updated!' });
+        }
+    } catch (error) {
+        console.log(error)
+    }
+}
+
 const cancelOrder = async(req,res)=>{
     try {
         const id = req.query.orderId
@@ -82,4 +112,4 @@ const returnOrder = async(req,res)=>{
     }
 }
 
-module.exports = {userOrder,userOrderView,adminOrderview,adminEditOrder,adminEditOrderPost,cancelOrder,returnOrder}
+module.exports = {userOrder,userOrderView,adminOrderview,adminEditOrder,editOrder,adminEditOrderPost,cancelOrder,returnOrder}

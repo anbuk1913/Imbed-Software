@@ -177,9 +177,9 @@
                         <tbody>
                             <% walletData?.walletTransaction.forEach(transaction => { %>
                                 <tr>
-                                    <td><%= transaction.date %></td>
-                                    <td>₹<%= transaction.amount %></td>
-                                    <td><%= transaction.details %></td>
+                                    <td><%= transaction.transactionDate.toISOString().split('T')[0]; %></td>
+                                    <td>₹<%= transaction.transactionAmount %></td>
+                                    <td><%= transaction.transactionType %></td>
                                 </tr>
                             <% }); %>
                         </tbody>

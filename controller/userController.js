@@ -152,6 +152,11 @@ const loginPost = async(req,res)=>{
               req.session.user = {
                 email:req.body.email
               }
+              
+              await wallet.updateOne(
+                {userId: userData._id},
+                {$set: {userId: userData._id} },
+                {upsert:true, new :true});
               return res.status(200).send({ success: true })
             } else {
                 return res.status(208).send({ success: false })
@@ -172,15 +177,16 @@ const googleCallback=async (req, res) => {
         { upsert: true, new :true }
       );
       const userId = await usercollection.findOne({ email:req.user._json.email })
-      const walletData = await wallet.updateOne({
-        userId: userId._id
-      },{upsert:true, new :true})
+      const walletData = await wallet.updateOne(
+        {userId: userId._id},
+        {$set: {userId: userId._id} },
+        {upsert:true, new :true});
 
       req.session.user = {
         email:req.user._json.email
       }
       // Set the user session
-      req.session.loginSession=true
+      req.session.loginSession = true
       // Redirect to the homepage
       res.redirect('/');
     } catch (err) {

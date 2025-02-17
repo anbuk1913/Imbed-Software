@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Category Offers</title>
+    <link rel="icon" href="/images/logo.png">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Afacad+Flux:wght@100..1000&display=swap" rel="stylesheet">
+    <style>
+        * {
+            font-family: "Afacad Flux", serif;
+            font-weight: 700;
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        .container {
+            margin-top: 30px;
+        }
+        .edit-btn {
+            background-color: red;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        
+        .modal-box {
+            display: none; /* Hide modal by default */
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: white;
+            padding: 20px;
+            box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+            border-radius: 5px;
+            z-index: 1000;
+        }
+
+        .modal-header {
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .modal-footer {
+            margin-top: 15px;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .btn-save {
+            background-color: green;
+            color: white;
+            padding: 5px 10px;
+            border: none;
+            cursor: pointer;
+        }
+
+    </style>
+</head>
+<body>
+    <%- include('../adminPartials/header') %>
+
+    <div class="container">
+        <button class="btn btn-success mb-3" data-bs-toggle="modal" data-bs-target="#addOfferModal">Add Category Offer</button>
+
+        <div class="d-flex justify-content-end mb-2">
+            <label for="search">Search:</label>
+            <input type="text" id="search" class="ms-2">
+        </div>
+
+        <table class="table table-bordered text-center">
+            <thead>
+                <tr>
+                    <th>S No</th>
+                    <th>Category Name</th>
+                    <th>Offer Percentage</th>
+                    <th>Start Date</th>
+                    <th>End Date</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                <% categoryOffer.forEach((offer, index) => { %>
+                    <tr>
+                        <td><%= index + 1 %></td>
+                        <td><%= offer?.category %></td>
+                        <td><%= offer?.percentage %>%</td>
+                        <td><%= offer?.startDate %></td>
+                        <td><%= offer?.endDate %></td>
+                        <td>
+                            <button class="edit-btn">Edit</button>
+                        </td>
+                    </tr>
+                <% }) %>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Add Category Offer -->
+    <div class="modal-box" class="modal fade" id="addOfferModal" tabindex="-1" aria-labelledby="addOfferModalLabel" aria-hidden="true">
+        <div class="modal-header">
+            <div class="modal-header" style="padding-right: 20px;">
+                Add New Category Offer
+            </div>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>    
+        
+        <form>
+            <!-- Category Name -->
+            <div class="form-group">
+                <label for="categoryName">Category Name:</label>
+                <select id="categoryName" class="form-control">
+                    <option value="" disabled selected>Select a Category</option>
+                    <% categories.forEach(category=> { %>
+                        <option value="<%= category._id %>"> 
+                            <%= category.categoryName %>
+                        </option>
+                    <% }); %>
+                </select>
+                <p class="category-err" style="display: none; color: red;" id="category-err"></p>
+            </div>
+
+            <!-- Offer Percentage -->
+            <div class="form-group">
+                <label for="offerPercentage">Category Offer Percentage:</label>
+                <input type="number" id="offerPercentage" class="form-control" placeholder="Enter the offer percentage" min="5" max="90">
+                <p style="display: none; color: red;" id="percentage-err"></p>
+            </div>
+
+            <!-- Offer Start Date -->
+            <div class="form-group position-relative">
+                <label for="startDate">Offer Start Date:</label>
+                <input type="date" id="startDate" class="form-control">
+                <p style="display: none; color: red;" id="startdate-err"></p>
+            </div>
+
+            <!-- Offer Expiry Date -->
+            <div class="form-group position-relative">
+                <label for="expiryDate">Offer Expiry Date:</label>
+                <input type="date" id="expiryDate" class="form-control">
+                <p style="display: none; color: red;" id="enddate-err"></p>
+            </div>
+
+            <!-- Buttons -->
+            <div class="modal-footer">
+                <button type="submit" class="btn-save">Save changes</button>
+            </div>
+        </form>
+    </div>
+
+    <%- include('../adminPartials/footer') %>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const modal = document.querySelector(".modal-box");
+            const addButton = document.querySelector(".btn-success");
+            const closeButton = document.querySelector(".btn-close");
+    
+            // Show the modal when the "Add Category Offer" button is clicked
+            addButton.addEventListener("click", function () {
+                modal.style.display = "block";
+            });
+    
+            // Hide the modal when the "Close" button is clicked
+            closeButton.addEventListener("click", function () {
+                modal.style.display = "none";
+            });
+        });
+    </script>
+
+</body>
+</html>

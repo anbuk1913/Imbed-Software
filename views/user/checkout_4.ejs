@@ -716,7 +716,7 @@
                     const payMethod = {
                         paymentMethod: "<%= paymentMethod %>"
                     }
-                    if(payMethod.paymentMethod == "UPI"){
+                    if(payMethod.paymentMethod == "Online Payment"){
                         const ans = await payNow();
                     } else {
                         await orderItem();
