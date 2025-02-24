@@ -7,6 +7,7 @@ const upload = require("../services/multer")
 const orderController = require("../controller/orderController")
 const couponController = require("../controller/couponController")
 const offerController = require("../controller/offerController")
+const salesReportController = require("../controller/salesReportController")
 const router = express.Router()
 
 //Admin
@@ -37,6 +38,7 @@ router.post("/product/unlist/:id",productController.unListProduct)
 
 //Order
 router.get("/admin/orders",adminAuth,orderController.adminOrderview)
+router.get("/admin/orderview/:id",adminAuth,orderController.adminSingleOrderView)
 router.get("/editorder/:id",adminAuth,orderController.adminEditOrder)
 router.post("/orderupdate",adminAuth,orderController.adminEditOrderPost)
 router.patch("/updateorder",adminAuth,orderController.editOrder)
@@ -49,5 +51,10 @@ router.delete("/deleteCoupon",adminAuth,couponController.deleteCoupon)
 
 // Offer
 router.get("/admin/offers",adminAuth,offerController.offerPage)
+router.post("/admin/addoffer",adminAuth,offerController.addOffer)
+router.put("/admin/editoffer",adminAuth,offerController.editOffer)
+
+// Sales Report
+router.get("/admin/salesreport",adminAuth,salesReportController.salesReportPage)
 
 module.exports = router

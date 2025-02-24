@@ -1,3 +1,4 @@
+const offer = require("../model/offerModel")
 const product = require("../model/productModel")
 const wishlist = require("../model/wishlistModel")
 const category = require("../model/categoryModel");
@@ -9,13 +10,13 @@ const productPage = async(req,res)=>{
     const products = await product.find({}).populate({
                     path: "productCategoryId",
                     select: "categoryName -_id"
-               });
+               }).sort({ createdAt: -1 });
     return res.render("admin/product",{products})
 }
 
 const addProduct = async(req,res)=>{
     try{
-        const categories = await category.find({})
+        const categories = await category.find({}).sort({ createdAt: -1 })
         res.render("admin/addProduct",{categories})
     } catch (error) {
         console.log(error)
@@ -76,7 +77,7 @@ const productEdit = async(req,res)=>{
         path: "productCategoryId",
         select: "categoryName -_id"
     });
-    const categories = await category.find({})
+    const categories = await category.find({}).sort({ createdAt: -1 })
     if(products){
         return res.render("admin/editProduct",{products,categories})
     } else {
@@ -153,9 +154,23 @@ const singleProductView = async(req,res)=>{
     let wishlistProduct = false
     const products = await product.findOne({_id:req.params.id}).populate({
         path: "productCategoryId",
-        select: "categoryName -_id"
+        select: "categoryName _id"
    });
    if(products){
+        const offers = await offer.findOne({categoryId:products.productCategoryId._id})
+        if(offers){
+            const expiryDate = new Date(offers.expiryDate);
+            const today = new Date();
+            const todayDateOnly = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+            if(expiryDate >= todayDateOnly){
+                const tem = Math.floor(products.productPrice-(products.productPrice*offers.offerPercentage/100))
+                if(products.productOfferPrice && products.productOfferPrice>tem){
+                    products.productOfferPrice = tem
+                } else {
+                    products.productOfferPrice = tem
+                }
+            }
+        }
         if(req.session.loginSession || req.session.signupSession){
             const userEmail = req.session.user.email
             const userVer = await usercollection.findOne({ email: userEmail });

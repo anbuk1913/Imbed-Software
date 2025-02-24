@@ -313,7 +313,7 @@
                 showCancelButton: true,
                 confirmButtonColor: "#d33",
                 cancelButtonColor:  "#3085d6",
-                confirmButtonText: "Yes, cancel it!"
+                confirmButtonText: "Yes, Return it!"
             }).then(async (result) => {
                 if (result.isConfirmed) {
                     const respose = await fetch(`/returnorder?orderId=${id}`, { method: 'PATCH' })

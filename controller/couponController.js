@@ -2,7 +2,7 @@ const coupon = require("../model/couponModel")
 
 const couponPage = async(req,res)=>{
     try {
-        const coupons = await coupon.find({})
+        const coupons = await coupon.find({}).sort({ createdAt: -1 })
         res.render("admin/coupons",{coupons})
     } catch (error) {
         console.log(error)

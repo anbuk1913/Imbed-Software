@@ -1,4 +1,5 @@
 const cart = require("../model/cartModel")
+const offer = require("../model/offerModel")
 const wishlist = require("../model/wishlistModel")
 const usercollection = require("../model/userModel")
 
@@ -9,8 +10,27 @@ const wishlistPage = async(req,res)=>{
         const name = userVer.name
         let products = await wishlist.find({userId:userVer._id}).populate({
             path: "productId",
-            select: "productName productPrice productOfferPrice productImage1 isListed productStock _id"
-       });
+            select: "productName productPrice productOfferPrice productImage1 productCategoryId isListed productStock _id"
+       }).sort({ createdAt: -1 });
+       const offers = await offer.find({})
+        for(let i of products){
+            for(let j of offers){
+                if(i.productId.productCategoryId.toString() == j.categoryId.toString()){
+                    const expiryDate = new Date(j.expiryDate);
+                    const today = new Date();
+                    const todayDateOnly = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+                    if(expiryDate >= todayDateOnly){
+                        const tem = Math.floor(i.productId.productPrice-(i.productId.productPrice*j.offerPercentage/100))
+                        if(i.productId.productOfferPrice && i.productId.productOfferPrice > tem){
+                            i.productId.productOfferPrice = tem
+                        } else {
+                            i.productId.productOfferPrice = tem
+                        }
+                    }
+                    break
+                }
+            }
+        }
        res.render("user/wishlist",{name,products,userVer})
     } catch (error) {
         console.log(error)

@@ -1,0 +1,601 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Category Offers</title>
+    <link rel="icon" href="/images/logo.png">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Afacad+Flux:wght@100..1000&display=swap" rel="stylesheet">
+    <style>
+        * {
+            font-family: "Afacad Flux", serif;
+            font-weight: 700;
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        .container {
+            margin-top: 30px;
+        }
+        .edit-btn {
+            background-color: rgb(0, 183, 224);
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .edit-btn:hover{
+            background-color: rgb(5, 79, 95);
+        }
+        .btn-danger {
+            background-color: rgb(224, 0, 0);
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .btn-danger:hover {
+            background-color: rgb(118, 23, 23);
+        }
+        
+        .modal-box {
+            display: none; /* Hide modal by default */
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: white;
+            padding: 20px;
+            box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+            border-radius: 5px;
+            z-index: 1000;
+        }
+
+        .modal-header {
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .modal-footer {
+            margin-top: 15px;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .btn-save {
+            background-color: green;
+            color: white;
+            padding: 5px 10px;
+            border: none;
+            cursor: pointer;
+        }
+
+        #offerPercentage::-webkit-outer-spin-button,
+        #offerPercentage::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+
+        .toast-container {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 9999;
+        }
+
+        .toast {
+            display: none;
+            background-color: #ff6600;
+            color: white;
+            padding: 15px 30px;
+            border-radius: 12px;
+            font-size: 16px;
+            text-align: center;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+            opacity: 0;
+            transform: translateX(100%);
+            animation: slideInFromRight 0.8s ease-out forwards;
+        }
+
+        @keyframes slideInFromRight {
+            0% {
+                opacity: 0;
+                transform: translateX(100%);
+            }
+
+            100% {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        @keyframes slideOutToRight {
+            0% {
+                opacity: 1;
+                transform: translateX(0);
+            }
+
+            100% {
+                opacity: 0;
+                transform: translateX(100%);
+            }
+        }
+
+    </style>
+</head>
+<body>
+    <%- include('../adminPartials/header') %>
+
+    <div class="toast-container"></div>
+    <div class="container">
+        <button class="btn btn-success mb-3" data-bs-toggle="modal" data-bs-target="#addOfferModal">Add Category Offer</button>
+
+        <div class="d-flex justify-content-end mb-2">
+            <label for="search">Search:</label>
+            <input type="text" id="search" class="ms-2">
+        </div>
+
+        <table class="table table-bordered text-center">
+            <thead>
+                <tr>
+                    <th>S No</th>
+                    <th>Category Name</th>
+                    <th>Offer Percentage</th>
+                    <th>Start Date</th>
+                    <th>End Date</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                <% categoryOffer.forEach((offer, index) => { %>
+                    <tr>
+                        <td><%= index + 1 %></td>
+                        <td><%= offer?.categoryId.categoryName %></td>
+                        <td><%= offer?.offerPercentage %>%</td>
+                        <td><%= offer?.startDate.toISOString().split('T')[0]; %></td>
+                        <td><%= offer?.expiryDate.toISOString().split('T')[0]; %></td>
+                        <td>
+                            <button class="edit-btn" data-id="<%= offer._id %>" data-categoryId="<%= offer?.categoryId._id %>" data-offerpercentage="<%= offer?.offerPercentage %>" data-startdate="<%= offer?.startDate.toISOString().split('T')[0]; %>" data-expirydate="<%= offer?.expiryDate.toISOString().split('T')[0]; %>">
+                                Edit
+                            </button>
+                            <button class="btn-danger">Delete</button>
+                        </td>
+                    </tr>
+                <% }) %>
+            </tbody>
+        </table>
+    </div>
+
+
+    <!-- Add Category Offer Modal -->
+    <div class="modal fade" id="addOfferModal" tabindex="-1" aria-labelledby="addOfferModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Add New Category Offer</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>  
+
+                <form id="offerForm">
+                    <div class="modal-body">
+                        <!-- Category Name -->
+                        <div class="form-group">
+                            <label for="categoryName">Category Name:</label>
+                            <select id="categoryName" class="form-control" style="margin-bottom: 10px;">
+                                <option value="" disabled selected>Select a Category</option>
+                                <% categories.forEach(category => { %>
+                                    <option value="<%= category._id %>"> 
+                                        <%= category.categoryName %>
+                                    </option>
+                                <% }); %>
+                            </select>
+                            <p class="category-err text-danger d-none" id="category-err"></p>
+                        </div>
+
+                        <!-- Offer Percentage -->
+                        <div class="form-group">
+                            <label for="offerPercentage">Category Offer Percentage:</label>
+                            <input type="number" id="offerPercentage" class="form-control" placeholder="Enter the offer percentage" style="margin-bottom: 10px;">
+                            <p class="text-danger d-none" id="percentage-err"></p>
+                        </div>
+
+                        <!-- Offer Start Date -->
+                        <div class="form-group">
+                            <label for="startDate">Offer Start Date:</label>
+                            <input type="date" id="startDate" class="form-control" style="margin-bottom: 10px;">
+                            <p class="text-danger d-none" id="startdate-err"></p>
+                        </div>
+
+                        <!-- Offer Expiry Date -->
+                        <div class="form-group">
+                            <label for="expiryDate">Offer Expiry Date:</label>
+                            <input type="date" id="expiryDate" class="form-control" style="margin-bottom: 10px;">
+                            <p class="text-danger d-none" id="enddate-err"></p>
+                        </div>
+                    </div>
+
+                    <!-- Modal Footer -->
+                    <div class="modal-footer">
+                        <button type="submit" class="btn btn-success">Add new Offer</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit Category Offer Modal -->
+    <div class="modal fade" id="editOfferModal" tabindex="-1" aria-labelledby="editOfferModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Edit Category Offer</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>  
+
+                <form id="editOfferForm">
+                    <div class="modal-body">
+                        <!-- Hidden Offer ID -->
+                        <input type="hidden" id="editOfferId" value="">
+
+                        <!-- Category Name -->
+                        <div class="form-group">
+                            <label for="editCategoryName">Category Name:</label>
+                            <select id="editCategoryName" class="form-control" style="margin-bottom: 10px;">
+                                <option value="" disabled selected>Select a Category</option>
+                                <% categories.forEach(category => { %>
+                                    <option value="<%= category._id %>"> 
+                                        <%= category.categoryName %>
+                                    </option>
+                                <% }); %>
+                            </select>
+                            <p class="category-err text-danger d-none" id="category-err"></p>
+                        </div>
+
+                        <!-- Offer Percentage -->
+                        <div class="form-group">
+                            <label for="editOfferPercentage">Category Offer Percentage:</label>
+                            <input type="number" id="editOfferPercentage" class="form-control" placeholder="Enter the offer percentage" style="margin-bottom: 10px;">
+                            <p class="text-danger d-none" id="edit-percentage-err"></p>
+                        </div>
+
+                        <!-- Offer Start Date -->
+                        <div class="form-group">
+                            <label for="editStartDate">Offer Start Date:</label>
+                            <input type="date" id="editStartDate" class="form-control" style="margin-bottom: 10px;">
+                            <p class="text-danger d-none" id="edit-startdate-err"></p>
+                        </div>
+
+                        <!-- Offer Expiry Date -->
+                        <div class="form-group">
+                            <label for="editExpiryDate">Offer Expiry Date:</label>
+                            <input type="date" id="editExpiryDate" class="form-control" style="margin-bottom: 10px;">
+                            <p class="text-danger d-none" id="edit-enddate-err"></p>
+                        </div>
+                    </div>
+
+                    <!-- Modal Footer -->
+                    <div class="modal-footer">
+                        <button type="submit" class="btn btn-success">Update Offer</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <%- include('../adminPartials/footer') %>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const modal = document.querySelector(".modal-box");
+            const addButton = document.querySelector(".btn-success");
+            const closeButton = document.querySelector(".btn-close");
+    
+            // Show the modal when the "Add Category Offer" button is clicked
+            addButton.addEventListener("click", function () {
+                modal.style.display = "block";
+            });
+    
+            // Hide the modal when the "Close" button is clicked
+            closeButton.addEventListener("click", function () {
+                modal.style.display = "none";
+            });
+        });
+    </script>
+    <script>
+        document.getElementById('offerForm').addEventListener('submit', async function (event) {
+            event.preventDefault(); // Prevent form submission
+
+            // Get form values
+            const categoryName = document.getElementById('categoryName').value;
+            const offerPercentage = document.getElementById('offerPercentage').value;
+            const startDate = document.getElementById('startDate').value;
+            const expiryDate = document.getElementById('expiryDate').value;
+
+            // Get error elements
+            const categoryErr = document.getElementById('category-err');
+            const percentageErr = document.getElementById('percentage-err');
+            const startDateErr = document.getElementById('startdate-err');
+            const endDateErr = document.getElementById('enddate-err');
+
+            // Reset errors
+            categoryErr.classList.add('d-none');
+            percentageErr.classList.add('d-none');
+            startDateErr.classList.add('d-none');
+            endDateErr.classList.add('d-none');
+            
+            let valid = true;
+
+            // Validate category selection
+            if (!categoryName) {
+                categoryErr.textContent = 'Please select a category';
+                categoryErr.classList.remove('d-none');
+                valid = false;
+            }
+
+            // Validate offer percentage (3% to 99%)
+            const percentageValue = Number(offerPercentage);
+            if (!offerPercentage || percentageValue < 3 || percentageValue > 99) {
+                percentageErr.textContent = 'Offer percentage must be between 3% and 99%';
+                percentageErr.classList.remove('d-none');
+                valid = false;
+            }
+
+            // Validate start date
+            if (!startDate) {
+                startDateErr.textContent = 'Please select a start date';
+                startDateErr.classList.remove('d-none');
+                valid = false;
+            }
+
+            // Validate expiry date
+            if (!expiryDate) {
+                endDateErr.textContent = 'Please select an expiry date';
+                endDateErr.classList.remove('d-none');
+                valid = false;
+            } else if (startDate && new Date(expiryDate) < new Date(startDate)) {
+                endDateErr.textContent = 'Expiry date must be the same or after the start date';
+                endDateErr.classList.remove('d-none');
+                valid = false;
+            }
+
+            if (!valid) return; // Stop execution if validation fails
+
+            // Prepare data for submission
+            const formData = {
+                categoryName,
+                offerPercentage: percentageValue,
+                startDate,
+                expiryDate
+            };
+
+            try {
+                const response = await fetch('/admin/addoffer', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(formData)
+                });
+                
+
+                const result = await response.json();
+                const toastContainer = document.querySelector(".toast-container");
+                const toast = document.createElement("div");
+                toast.className = "toast";
+
+                if (result.success) {
+                    toast.textContent = result.message; 
+                    toast.style.backgroundColor = "#28a745"; // Green color for success
+                    toastContainer.appendChild(toast);
+
+                    setTimeout(() => {
+                        toast.style.display = "block";
+                    }, 100);
+
+                    setTimeout(() => {
+                        toast.style.animation = "slideOutToRight 0.8s ease-out forwards";
+                    }, 2000);
+
+                    setTimeout(() => {
+                        toast.style.display = "none";
+                        toast.remove(); // Remove toast from DOM
+                        window.location.reload()
+                    }, 2800);
+                } else {
+                    toast.textContent = result.message
+                    toast.style.backgroundColor = "#dc3545"; // Red color for error
+                    toastContainer.appendChild(toast);
+                    setTimeout(() => {
+                        toast.style.display = "block";
+                    }, 100);
+
+                    setTimeout(() => {
+                        toast.style.animation = "slideOutToRight 0.8s ease-out forwards";
+                    }, 3000);
+
+                    setTimeout(() => {
+                        toast.style.display = "none";
+                        toast.remove(); // Remove toast from DOM
+                    }, 3800);
+                }
+            } catch (error) {
+                console.error('Error submitting form:', error);
+                alert('Failed to submit form. Please try again later.');
+            }
+        });
+        // Clear form on modal close
+        document.getElementById('addOfferModal').addEventListener('hidden.bs.modal', function () {
+            document.querySelector('form').reset();
+            document.getElementById('category-err').classList.add('d-none');
+            document.getElementById('percentage-err').classList.add('d-none');
+            document.getElementById('startdate-err').classList.add('d-none');
+            document.getElementById('enddate-err').classList.add('d-none');
+        });
+    </script>
+    <script>
+        // Fill data
+        document.addEventListener("DOMContentLoaded", function () {
+        document.querySelectorAll(".edit-btn").forEach(button => {
+            button.addEventListener("click", function () {
+                const offerId = this.getAttribute("data-id");
+                const categoryId = this.getAttribute("data-categoryid");
+                const offerPercentage = this.getAttribute("data-offerpercentage");
+                const startDate = this.getAttribute("data-startdate");
+                const expiryDate = this.getAttribute("data-expirydate");
+
+                document.getElementById("editOfferId").value = offerId;
+                document.getElementById("editOfferPercentage").value = offerPercentage;
+                document.getElementById("editStartDate").value = startDate;
+                document.getElementById("editExpiryDate").value = expiryDate;
+                
+                // Set selected category
+                const categorySelect = document.getElementById("editCategoryName");
+                for (let i = 0; i < categorySelect.options.length; i++) {
+                    if (categorySelect.options[i].value === categoryId) {
+                        categorySelect.options[i].selected = true;
+                        break;
+                    }
+                }
+                
+                var editModal = new bootstrap.Modal(document.getElementById("editOfferModal"));
+                editModal.show();
+            });
+        });
+    });
+    </script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            document.getElementById('editOfferForm').addEventListener('submit', async function (event) {
+                event.preventDefault(); // Prevent form submission
+                // Get form values
+                const offerId = document.getElementById("editOfferId").value
+                const categoryName = document.getElementById('editCategoryName').value;
+                const offerPercentage = document.getElementById('editOfferPercentage').value;
+                const startDate = document.getElementById('editStartDate').value;
+                const expiryDate = document.getElementById('editExpiryDate').value;
+    
+                // Get error elements
+                const categoryErr = document.getElementById('category-err');
+                const percentageErr = document.getElementById('edit-percentage-err');
+                const startDateErr = document.getElementById('edit-startdate-err');
+                const endDateErr = document.getElementById('edit-enddate-err');
+    
+                // Reset previous error messages
+                categoryErr.classList.add('d-none');
+                percentageErr.classList.add('d-none');
+                startDateErr.classList.add('d-none');
+                endDateErr.classList.add('d-none');
+                
+                let valid = true;
+    
+                // Validate category selection
+                if (!categoryName) {
+                    categoryErr.textContent = 'Please select a category';
+                    categoryErr.classList.remove('d-none');
+                    valid = false;
+                }
+    
+                // Validate offer percentage (3% to 99%)
+                const percentageValue = Number(offerPercentage);
+                if (!offerPercentage || percentageValue < 3 || percentageValue > 99) {
+                    percentageErr.textContent = 'Offer percentage must be between 3% and 99%';
+                    percentageErr.classList.remove('d-none');
+                    valid = false;
+                }
+    
+                // Validate start date
+                if (!startDate) {
+                    startDateErr.textContent = 'Please select a start date';
+                    startDateErr.classList.remove('d-none');
+                    valid = false;
+                }
+    
+                // Validate expiry date
+                if (!expiryDate) {
+                    endDateErr.textContent = 'Please select an expiry date';
+                    endDateErr.classList.remove('d-none');
+                    valid = false;
+                } else if (startDate && new Date(expiryDate) < new Date(startDate)) {
+                    endDateErr.textContent = 'Expiry date must be the same or after the start date';
+                    endDateErr.classList.remove('d-none');
+                    valid = false;
+                }
+    
+                if (!valid){ 
+                    return; // Stop execution if validation fails
+                } else {
+                    const formData = {
+                    offerId,
+                    categoryName,
+                    offerPercentage: percentageValue,
+                    startDate,
+                    expiryDate
+                };
+                try {
+                    const response = await fetch('/admin/editoffer', {
+                        method: 'PUT',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(formData)
+                    });
+                    
+
+                    const result = await response.json();
+                    const toastContainer = document.querySelector(".toast-container");
+                    const toast = document.createElement("div");
+                    toast.className = "toast";
+
+                    if (result.success) {
+                        toast.textContent = result.message; 
+                        toast.style.backgroundColor = "#28a745"; // Green color for success
+                        toastContainer.appendChild(toast);
+
+                        setTimeout(() => {
+                            toast.style.display = "block";
+                        }, 100);
+
+                        setTimeout(() => {
+                            toast.style.animation = "slideOutToRight 0.8s ease-out forwards";
+                        }, 2000);
+
+                        setTimeout(() => {
+                            toast.style.display = "none";
+                            toast.remove(); // Remove toast from DOM
+                            window.location.reload()
+                        }, 2800);
+                    } else {
+                        toast.textContent = result.message
+                        toast.style.backgroundColor = "#dc3545"; // Red color for error
+                        toastContainer.appendChild(toast);
+                        setTimeout(() => {
+                            toast.style.display = "block";
+                        }, 100);
+
+                        setTimeout(() => {
+                            toast.style.animation = "slideOutToRight 0.8s ease-out forwards";
+                        }, 3000);
+
+                        setTimeout(() => {
+                            toast.style.display = "none";
+                            toast.remove(); // Remove toast from DOM
+                        }, 3800);
+                    }
+                } catch (error) {
+                    console.error('Error submitting form:', error);
+                    alert('Failed to submit form. Please try again later.');
+                }
+                }
+            });
+        });
+    </script>
+</body>
+</html>

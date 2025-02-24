@@ -104,6 +104,16 @@
             }
         }
 
+        #productPrice::-webkit-outer-spin-button,
+        #productPrice::-webkit-inner-spin-button,
+        #productOfferPrice::-webkit-outer-spin-button,
+        #productOfferPrice::-webkit-inner-spin-button,
+        #productStock::-webkit-outer-spin-button,
+        #productStock::-webkit-inner-spin-button {
+            -webkit-appearance: none; /* Chrome, Safari, Edge */
+            margin: 0;
+        }
+
     </style>
 </head>
 
@@ -126,8 +136,7 @@
                         <select class="form-select" id="parentCategory" name="productCategoryId">
                             <% categories.forEach(category=> { %>
                                 <option value="<%= category._id %>"
-                                    <%=category.categoryName===products.productCategoryId.categoryName ? 'selected' : ''
-                                    %>>
+                                    <%= category.categoryName === products.productCategoryId.categoryName ? 'selected' : '' %> >
                                     <%= category.categoryName %>
                                 </option>
                                 <% }); %>

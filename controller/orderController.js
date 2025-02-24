@@ -7,7 +7,7 @@ const userOrder = async(req,res)=>{
         const userEmail = req.session.user.email
         const userVer = await usercollection.findOne({ email: userEmail });
         const name = userVer.name
-        const orders = await order.find({userId:userVer._id})
+        const orders = await order.find({userId:userVer._id}).sort({ createdAt: -1 })
         return res.render("user/orders",{userVer,name,orders})
     } catch (error) {
         console.log(error)
@@ -29,8 +29,18 @@ const userOrderView = async(req,res)=>{
 
 const adminOrderview = async(req,res)=>{
     try {
-        const orders = await order.find({})
+        const orders = await order.find({}).sort({ createdAt: -1 })
         res.render('admin/orders',{orders})
+    } catch (error) {
+        console.log(error)
+    }
+}
+
+const adminSingleOrderView = async(req,res)=>{
+    try {
+        const orderId = req.params.id;
+        const orderData = await order.findById({_id:orderId})
+        return res.render('admin/singleOrder',{orderData})
     } catch (error) {
         console.log(error)
     }
@@ -48,7 +58,11 @@ const adminEditOrder = async(req,res)=>{
 
 const adminEditOrderPost = async(req,res)=>{
     try {
-        await order.updateOne({_id:req.body.orderId},{$set:{status:req.body.orderStatus}})
+        if(req.body.orderStatus == "Delivered"){
+            await order.updateOne({_id:req.body.orderId},{$set:{status:req.body.orderStatus, deliveryDate: new Date()}})
+        } else {
+            await order.updateOne({_id:req.body.orderId},{$set:{status:req.body.orderStatus}})
+        }
         return res.redirect("/admin/orders")
     } catch (error) {
         console.log(error)
@@ -112,4 +126,4 @@ const returnOrder = async(req,res)=>{
     }
 }
 
-module.exports = {userOrder,userOrderView,adminOrderview,adminEditOrder,editOrder,adminEditOrderPost,cancelOrder,returnOrder}
+module.exports = {userOrder,userOrderView,adminSingleOrderView,adminOrderview,adminEditOrder,editOrder,adminEditOrderPost,cancelOrder,returnOrder}

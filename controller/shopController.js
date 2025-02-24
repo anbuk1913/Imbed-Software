@@ -1,14 +1,34 @@
+const offer = require("../model/offerModel")
 const product = require("../model/productModel")
 const category = require("../model/categoryModel");
 const usercollection = require("../model/userModel");
 
 const shopPage = async (req,res)=>{
     let name = ""
-    const categories = await category.find({});
+    const offers = await offer.find({})
+    const categories = await category.find({}).sort({ createdAt: -1 });
     const products = await product.find({}).populate({
         path: "productCategoryId",
-        select: "categoryName isListed -_id"
-   });
+        select: "categoryName isListed _id"
+    }).sort({ createdAt: -1 });
+    for(let i of products){
+        for(let j of offers){
+            if(i.productCategoryId._id.toString() == j.categoryId.toString()){
+                const expiryDate = new Date(j.expiryDate);
+                const today = new Date();
+                const todayDateOnly = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+                if(expiryDate >= todayDateOnly){
+                    const tem = Math.floor(i.productPrice-(i.productPrice*j.offerPercentage/100))
+                    if(i.productOfferPrice && i.productOfferPrice > tem){
+                        i.productOfferPrice = tem
+                    } else {
+                        i.productOfferPrice = tem
+                    }
+                }
+                break
+            }
+        }
+    }
     if(req.session.loginSession || req.session.signupSession){
         const userEmail = req.session.user.email
         const userVer = await usercollection.findOne({ email: userEmail });

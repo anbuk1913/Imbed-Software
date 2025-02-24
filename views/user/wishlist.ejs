@@ -180,6 +180,7 @@
                     <th>Image</th>
                     <th>Product</th>
                     <th>Unit Price</th>
+                    <th>Available Stock</th>
                     <th>Action</th>
                 </tr>
             </thead>
@@ -190,9 +191,14 @@
                         <td><a href="/product/<%= product.productId._id %>" class="text-black text-decoration-none" style="text-decoration: none; font-weight: bold;"><%= product?.productId?.productName %></a></td>
                         <% if(product?.productId?.productOfferPrice) { %>
                             <td><%= product.productId.productOfferPrice %></td>
-                         <% } else { %>
+                        <% } else { %>
                             <td><%= product.productId.productPrice %></td>
-                         <% } %>
+                        <% } %>
+                        <% if(product?.productId?.productStock>100){ %>
+                            <td>100+</td>
+                        <% }else{ %>
+                            <td><%= product?.productId?.productStock %></td>
+                        <% } %>
                         <td>
                             <button class="btn btn-danger" onclick="removeWishlist('<%= product.productId._id %>','<%= userVer._id %>')">&times;</button>
                             <button class="btn btn-primary" onclick="addToCart('<%= product.productId._id %>','<%= userVer._id %>')">ADD TO CART</button>

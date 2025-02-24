@@ -24,7 +24,7 @@ const adminLogPost = async(req,res)=>{
 }
 
 const adminUser = async(req,res)=>{
-    const users = await usercollection.find({})
+    const users = await usercollection.find({}).sort({ createdAt: -1 });
     return res.render("admin/users",{users})
 }
 

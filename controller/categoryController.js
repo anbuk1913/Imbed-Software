@@ -1,7 +1,7 @@
 const category = require("../model/categoryModel");
 
 const categoryPage = async(req,res)=>{
-    const categories = await category.find({})
+    const categories = await category.find({}).sort({ createdAt: -1 })
     return res.render("admin/category",{categories})
 }
 

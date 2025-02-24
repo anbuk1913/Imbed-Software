@@ -52,6 +52,8 @@
                         <td>
                             <% if (order.status=="Pending" || order.status=="Shipping" || order.status=="Return processing") { %>
                                 <button class="btn btn-danger list-toggle" onclick='editPage("<%= order._id %>")'>Edit</button>
+                            <% } else { %>
+                                <a href="/admin/orderview/<%= order.id %>"><button class="btn btn-view">View</button></a>
                             <% } %>
                         </td>
                     </tr>

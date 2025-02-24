@@ -1,4 +1,5 @@
 const cart = require("../model/cartModel")
+const offer = require("../model/offerModel") 
 const usercollection = require("../model/userModel")
 
 const cartView = async (req,res) => {
@@ -8,14 +9,33 @@ const cartView = async (req,res) => {
         const name = userVer.name
         let cartItems = await cart.find({userId:userVer._id}).populate({
             path: "productId",
-            select: "productName productPrice productOfferPrice productImage1 isListed productStock _id"
-       });
+            select: "productName productPrice productOfferPrice productImage1 isListed productStock productCategoryId _id"
+       }).sort({ createdAt: -1 });
        cartItems = cartItems.map((item) => {
             const productStock = item.productId?.productStock || 100; // Default stock if undefined
             item.productQuantity = Math.min(item.productQuantity, productStock); // Adjust quantity to stock
             return item;
         });
-        res.render("user/cart",{name,cartItems})
+        const offers = await offer.find({})
+        for(let i of cartItems){
+            for(let j of offers){
+                if(i.productId.productCategoryId.toString() == j.categoryId.toString()){
+                    const expiryDate = new Date(j.expiryDate);
+                    const today = new Date();
+                    const todayDateOnly = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+                    if(expiryDate >= todayDateOnly){
+                        const tem = Math.floor(i.productId.productPrice-(i.productId.productPrice*j.offerPercentage/100))
+                        if(i.productId.productOfferPrice && i.productId.productOfferPrice > tem){
+                            i.productId.productOfferPrice = tem
+                        } else {
+                            i.productId.productOfferPrice = tem
+                        }
+                    }
+                    break
+                }
+            }
+        }
+        return res.render("user/cart",{name,cartItems})
     } catch (error) {
         console.log(error)
     }
