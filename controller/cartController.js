@@ -1,6 +1,7 @@
 const cart = require("../model/cartModel")
 const offer = require("../model/offerModel") 
 const usercollection = require("../model/userModel")
+const AppError = require("../middleware/errorHandling")
 
 const cartView = async (req,res) => {
     try {
@@ -38,6 +39,7 @@ const cartView = async (req,res) => {
         return res.render("user/cart",{name,cartItems})
     } catch (error) {
         console.log(error)
+        next(new AppError('Sorry...Something went wrong', 500));
     }
 }
 
@@ -47,6 +49,7 @@ const addtoCart = async(req,res)=>{
         res.json({success: true, message: 'Product Added to Cart successfully.'});
     } catch(error){
         console.log(error)
+        next(new AppError('Sorry...Something went wrong', 500));
     }
     
 }
@@ -62,6 +65,7 @@ const removeItem = async(req,res)=>{
         }
     } catch (error) {
         console.log(error)
+        next(new AppError('Sorry...Something went wrong', 500));
     }
 }
 
@@ -75,7 +79,7 @@ const updateCartItems = async (req, res) => {
         res.json({success: true});
     } catch (error) {
         console.log(error);
-        res.json({success: false, message: 'Somthing Wrong!'});
+        next(new AppError('Sorry...Something went wrong', 500));
     }
 };
 

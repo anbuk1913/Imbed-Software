@@ -1,6 +1,7 @@
 const order = require("../model/orders");
 const wallet = require("../model/walletModel");
 const usercollection = require("../model/userModel")
+const AppError = require("../middleware/errorHandling")
 
 const userOrder = async(req,res)=>{
     try {
@@ -11,6 +12,7 @@ const userOrder = async(req,res)=>{
         return res.render("user/orders",{userVer,name,orders})
     } catch (error) {
         console.log(error)
+        next(new AppError('Sorry...Something went wrong', 500));
     }
 }
 
@@ -24,6 +26,7 @@ const userOrderView = async(req,res)=>{
         return res.render('user/singleOrder',{orderData,userVer,name})
     } catch (error) {
         console.log(error)
+        next(new AppError('Sorry...Something went wrong', 500));
     }
 }
 
@@ -33,6 +36,7 @@ const adminOrderview = async(req,res)=>{
         res.render('admin/orders',{orders})
     } catch (error) {
         console.log(error)
+        next(new AppError('Sorry...Something went wrong', 500));
     }
 }
 
@@ -40,9 +44,14 @@ const adminSingleOrderView = async(req,res)=>{
     try {
         const orderId = req.params.id;
         const orderData = await order.findById({_id:orderId})
-        return res.render('admin/singleOrder',{orderData})
+        if(orderData){
+            return res.render('admin/singleOrder',{orderData})
+        } else {
+            return res.redirect('/orders')
+        }
     } catch (error) {
         console.log(error)
+        next(new AppError('Sorry...Something went wrong', 500));
     }
 }
 
@@ -50,9 +59,14 @@ const adminEditOrder = async(req,res)=>{
     try {
         const orderId = req.params.id;
         const orderData = await order.findById({_id:orderId})
-        return res.render('admin/editOrder',{orderData})
+        if(orderData){
+            return res.render('admin/editOrder',{orderData})
+        } else {
+            return res.redirect('admin/orders')
+        }
     } catch (error) {
         console.log(error)
+        next(new AppError('Sorry...Something went wrong', 500));
     }
 }
 
@@ -66,6 +80,7 @@ const adminEditOrderPost = async(req,res)=>{
         return res.redirect("/admin/orders")
     } catch (error) {
         console.log(error)
+        next(new AppError('Sorry...Something went wrong', 500));
     }
 }
 
@@ -95,6 +110,7 @@ const editOrder = async(req,res)=>{
         }
     } catch (error) {
         console.log(error)
+        next(new AppError('Sorry...Something went wrong', 500));
     }
 }
 
@@ -109,13 +125,14 @@ const cancelOrder = async(req,res)=>{
         }
     } catch (error) {
         console.log(error)
+        next(new AppError('Sorry...Something went wrong', 500));
     }
 }
 
 const returnOrder = async(req,res)=>{
     try {
         const id = req.query.orderId
-        const data = await order.updateOne({_id:id},{$set:{status:"Return processing"}})
+        const data = await order.updateOne({_id:id},{$set:{status:"Return processing",returnReason: req.body.value}})
         if(data){
             return res.json({success:true})
         } else {
@@ -123,6 +140,7 @@ const returnOrder = async(req,res)=>{
         }
     } catch (error) {
         console.log(error)
+        next(new AppError('Sorry...Something went wrong', 500));
     }
 }
 

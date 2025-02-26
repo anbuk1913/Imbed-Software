@@ -1,6 +1,7 @@
 const usercollection = require("../model/userModel");
 const wallet = require("../model/walletModel");
 const address = require("../model/address");
+const AppError = require("../middleware/errorHandling")
 const bcrypt = require('bcrypt')
 
 async function encryptPassword(password) {
@@ -25,6 +26,7 @@ const profile = async(req,res)=>{
         }
     } catch (error) {
         console.log(error)
+        next(new AppError('Sorry...Something went wrong', 500));
     }
 } 
 
@@ -35,6 +37,7 @@ const editProfile = async(req,res)=>{
         await cart.updateOne({_id:userVer._id},{$set:{name:req.body.userId,productId:req.body.productId,productQuantity:req.body.productQuantity}})
     } catch (error) {
         console.log(error)
+        next(new AppError('Sorry...Something went wrong', 500));
     }
 }
 
@@ -46,6 +49,7 @@ const addressPage = async(req,res)=>{
         res.render("user/address",{userVer,userAddress})
     } catch (error) {
         console.log(error)
+        next(new AppError('Sorry...Something went wrong', 500));
     }
 }
 
@@ -56,6 +60,7 @@ const addAddress = async(req,res)=>{
         res.render("user/addAddress",{userVer})   
     } catch (error) {
         console.log(error)
+        next(new AppError('Sorry...Something went wrong', 500));
     }
 } 
 
@@ -75,6 +80,7 @@ const addAddressPost = async(req,res)=>{
         return res.status(200).send({ success: true,message: "Address Added Successfully!"})
     } catch (error) {
         console.log(error)
+        next(new AppError('Sorry...Something went wrong', 500));
     }
 }
 
@@ -91,6 +97,7 @@ const editAddress = async(req,res)=>{
         }
     } catch (error) {
         console.log(error)
+        next(new AppError('Sorry...Something went wrong', 500));
     }
 }
 
@@ -101,6 +108,7 @@ const editAddressPut = async(req,res)=>{
         return res.json({ success: true, message: 'Address Edited Successfully!'});
     } catch (error) {
         console.log(error)
+        next(new AppError('Sorry...Something went wrong', 500));
     }
 }
 
@@ -117,6 +125,7 @@ const deleteAddress = async(req,res)=>{
         }
     } catch (error) {
         console.log(error)
+        next(new AppError('Sorry...Something went wrong', 500));
     }
 }
 
@@ -132,6 +141,7 @@ const changePassword = async(req,res)=>{
         }
     } catch (error) {
         console.log(error)
+        next(new AppError('Sorry...Something went wrong', 500));
     }
 }
 
@@ -147,6 +157,7 @@ const changePasswordPatch = async(req,res)=>{
         }
     } catch (error) {
         console.log(error)
+        next(new AppError('Sorry...Something went wrong', 500));
     }
 }
 
@@ -156,6 +167,7 @@ const editUserData = async(req,res)=>{
         return res.json({success:true, message:"Pofile Updated!"})
     } catch (error) {
         console.log(error)
+        next(new AppError('Sorry...Something went wrong', 500));
     }
 }
 
@@ -168,6 +180,7 @@ const walletPage = async(req,res)=>{
         return res.render("user/wallet",{userVer,walletData})
     } catch (error) {
         console.log(error)
+        next(new AppError('Sorry...Something went wrong', 500));
     }
 }
 

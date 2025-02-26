@@ -752,11 +752,11 @@
     </script>
     <script>
         async function orderItem() {
-            let subTotal = parseFloat(document.getElementById("sub-total").innerText.slice(1));
-            let delivery = parseFloat(document.getElementById("delivery").innerText.slice(1));
-            let gst = parseFloat(document.getElementById("gst").innerText.slice(1));
-            let tem = document.getElementById("coupon-value")
-            let total = parseFloat(document.getElementById("total").innerText.slice(1));
+            const subTotal = parseFloat(document.getElementById("sub-total").innerText.slice(1));
+            const delivery = parseFloat(document.getElementById("delivery").innerText.slice(1));
+            const gst = parseFloat(document.getElementById("gst").innerText.slice(1));
+            const tem = document.getElementById("coupon-value")
+            const total = parseFloat(document.getElementById("total").innerText.slice(1));
             let orderPrice
             if(tem){
                 let coupon = parseFloat(document.getElementById("coupon-value").innerText.slice(1));
@@ -764,7 +764,6 @@
             } else {
                 orderPrice = { subTotal, delivery, gst,  total };
             }
-            console.log(orderPrice)
             try{
                 const response = await fetch('/orderproduct', {
                     method: 'POST',

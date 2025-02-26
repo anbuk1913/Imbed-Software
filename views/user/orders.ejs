@@ -275,29 +275,27 @@
         async function cancelOrder(id){
             try {
                 Swal.fire({
-                title: "Are you sure?",
-                text: "Are you want cancel this order?",
-                icon: "warning",
-                showCancelButton: true,
-                confirmButtonColor: "#d33",
-                cancelButtonColor:  "#3085d6",
-                confirmButtonText: "Yes, cancel it!"
-            }).then(async (result) => {
-                if (result.isConfirmed) {
-                    const respose = await fetch(`/cancelorder?orderId=${id}`, { method: 'PATCH' })
-                    const result = await respose.json()
-                    console.log(result);
-                    if (result.success) {
-                        Swal.fire({
-                            title: "Cancelled!",
-                            text: "Your order has been cancelled.",
-                            icon: "success"
-                        }).then(() => window.location.reload())
-
+                    title: "Are you sure?",
+                    text: "Are you want cancel this order?",
+                    icon: "warning",
+                    showCancelButton: true,
+                    confirmButtonColor: "#d33",
+                    cancelButtonText: "Ignore",
+                    cancelButtonColor:  "#3085d6",
+                    confirmButtonText: "Yes, cancel it!"
+                }).then(async (result) => {
+                    if (result.isConfirmed) {
+                        const respose = await fetch(`/cancelorder?orderId=${id}`, { method: 'PATCH' })
+                        const result = await respose.json()
+                        if (result.success) {
+                            Swal.fire({
+                                title: "Cancelled!",
+                                text: "Your order has been cancelled.",
+                                icon: "success"
+                            }).then(() => window.location.reload())
+                        }
                     }
-
-                }
-            });
+                });
             } catch (error) {
                 console.log(error)
             }
@@ -307,29 +305,48 @@
         async function returnOrder(id){
             try {
                 Swal.fire({
-                title: "Are you sure?",
-                text: "Are you want return this order?",
-                icon: "warning",
-                showCancelButton: true,
-                confirmButtonColor: "#d33",
-                cancelButtonColor:  "#3085d6",
-                confirmButtonText: "Yes, Return it!"
-            }).then(async (result) => {
-                if (result.isConfirmed) {
-                    const respose = await fetch(`/returnorder?orderId=${id}`, { method: 'PATCH' })
-                    const result = await respose.json()
-                    console.log(result);
-                    if (result.success) {
-                        Swal.fire({
-                            title: "Return processing!",
-                            text: "Your order has been return processing!.",
-                            icon: "success"
-                        }).then(() => window.location.reload())
-
+                    title: "Are you sure?",
+                    text: "Are you want return this order?",
+                    icon: "warning",
+                    showCancelButton: true,
+                    confirmButtonColor: "#d33",
+                    cancelButtonColor:  "#3085d6",
+                    confirmButtonText: "Yes, Return it!",
+                    input: "textarea",
+                    inputPlaceholder: "Please enter the reason for returning the order...",
+                    inputValidator: (value) => {
+                        if (!value) {
+                        return "This field is required!";
+                        }
+                    },
+                }).then(async (results) => {
+                    if (results.isConfirmed) {
+                        const values = results.value;
+                        console.log(values);
+                        const response = await fetch(`/returnorder?orderId=${id}`, {
+                            method: 'PATCH',
+                            headers: {
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify({ value: values })
+                        });
+                        const result = await response.json()
+                        console.log(result)
+                        if (result.success) {
+                            Swal.fire({
+                                title: "Return processing!",
+                                text: "Your order has been return processing!.",
+                                icon: "success"
+                            }).then(() => window.location.reload())
+                        } else {
+                            Swal.fire({
+                                title: "Error!",
+                                text: result.message || "Something went wrong!",
+                                icon: "error"
+                            });
+                        }
                     }
-
-                }
-            });
+                });
             } catch (error) {
                 console.log(error)
             }

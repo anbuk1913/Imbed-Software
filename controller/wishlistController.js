@@ -2,6 +2,7 @@ const cart = require("../model/cartModel")
 const offer = require("../model/offerModel")
 const wishlist = require("../model/wishlistModel")
 const usercollection = require("../model/userModel")
+const AppError = require("../middleware/errorHandling")
 
 const wishlistPage = async(req,res)=>{
     try {
@@ -34,6 +35,7 @@ const wishlistPage = async(req,res)=>{
        res.render("user/wishlist",{name,products,userVer})
     } catch (error) {
         console.log(error)
+        next(new AppError('Sorry...Something went wrong', 500));
     }
 }
 
@@ -52,6 +54,7 @@ const editWishlist = async(req,res)=>{
         }
     } catch(error){
         console.log(error)
+        next(new AppError('Sorry...Something went wrong', 500));
     }
 }
 
@@ -65,6 +68,7 @@ const deleteProduct = async(req,res)=>{
         }
     } catch (error) {
         console.log(error)
+        next(new AppError('Sorry...Something went wrong', 500));
     }
 }
 
@@ -77,6 +81,7 @@ const addAlltoCart = async(req,res)=>{
         return res.json({success: true, message: 'Products added to cart!'});
     } catch (error) {
         console.log(error)
+        next(new AppError('Sorry...Something went wrong', 500));
     }
 }
 

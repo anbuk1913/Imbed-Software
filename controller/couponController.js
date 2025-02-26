@@ -1,4 +1,5 @@
 const coupon = require("../model/couponModel")
+const AppError = require("../middleware/errorHandling")
 
 const couponPage = async(req,res)=>{
     try {
@@ -6,6 +7,7 @@ const couponPage = async(req,res)=>{
         res.render("admin/coupons",{coupons})
     } catch (error) {
         console.log(error)
+        next(new AppError('Sorry...Something went wrong', 500));
     }
 }
 
@@ -32,6 +34,7 @@ const addCoupon = async(req,res)=>{
         }
     } catch (error) {
         console.log(error)
+        next(new AppError('Sorry...Something went wrong', 500));
     }
 }
 
@@ -54,6 +57,7 @@ const editCoupon = async(req,res)=>{
         }
     } catch (error) {
         console.log(error)
+        next(new AppError('Sorry...Something went wrong', 500));
     }
 }
 

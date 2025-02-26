@@ -56,5 +56,10 @@ router.put("/admin/editoffer",adminAuth,offerController.editOffer)
 
 // Sales Report
 router.get("/admin/salesreport",adminAuth,salesReportController.salesReportPage)
+router.put("/admin/filter-by-date",adminAuth,salesReportController.filterByDate)
+router.put("/admin/filter-plan",adminAuth,salesReportController.filterByTimePeriod)
+router.put("/admin/clearfilter",adminAuth,salesReportController.clearFilter)
+router.get("/admin/salesreport-pdf",adminAuth,salesReportController.generatePDFpage)
+router.get("/admin/salesreport-xlsx",adminAuth,salesReportController.generateExcel)
 
 module.exports = router

@@ -3,6 +3,7 @@ const product = require("../model/productModel")
 const wishlist = require("../model/wishlistModel")
 const category = require("../model/categoryModel");
 const usercollection = require("../model/userModel")
+const AppError = require("../middleware/errorHandling")
 const path = require('path');
 const fs = require('fs');
 
@@ -20,6 +21,7 @@ const addProduct = async(req,res)=>{
         res.render("admin/addProduct",{categories})
     } catch (error) {
         console.log(error)
+        next(new AppError('Sorry...Something went wrong', 500));
     }
 }
 
@@ -123,6 +125,7 @@ const productEditPost = async(req,res)=>{
         }
     } catch(error){
         console.log(error)
+        next(new AppError('Sorry...Something went wrong', 500));
     }
 }
 

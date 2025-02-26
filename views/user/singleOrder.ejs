@@ -290,6 +290,9 @@
                 <p style="font-weight: 500;">Payment Method: <span style="font-weight: bold;"><%= orderData.paymentMethod %></span></p>
                 <p style="font-weight: 500;">Ordered Date: <span style="font-weight: bold;"><%= orderData.createdAt.toISOString().split('T')[0]; %></span></p>
                 <p style="font-weight: 500;">Status: <span style="font-weight: bold;"><%= orderData.status %></span></p>
+                <% if(orderData.status == "Return processing" || orderData.status == "Returned"){ %>
+                    <p style="font-weight: 500;">Return Reason: <span style="font-weight: bold;"><%= orderData.returnReason %></span></p>
+                <% } %>
             </div>
             <div class="totals-box">
                 <h3>Address Details</h3>

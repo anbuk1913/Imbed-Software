@@ -7,6 +7,7 @@ const product = require("../model/productModel");
 const coupon = require("../model/couponModel")
 const Razorpay = require('razorpay')
 const fs = require('fs')
+const AppError = require("../middleware/errorHandling")
 
 const {validateWebhookSignature} = require('razorpay/dist/utils/razorpay-utils')
 
@@ -42,6 +43,7 @@ const checkoutPageOne = async(req,res)=>{
         }
     } catch (error) {
         console.log(error)
+        next(new AppError('Sorry...Something went wrong', 500));
     }
 }
 
@@ -64,6 +66,7 @@ const checkoutTwoPost = async(req,res)=>{
         return res.redirect("/billing")
     } catch (error) {
         console.log(error)
+        next(new AppError('Sorry...Something went wrong', 500));
     }
 }
 
@@ -75,6 +78,7 @@ const billingPage = async(req,res)=>{
         return res.render("user/checkout_2",{userVer,name})
     } catch (error) {
         console.log(error)
+        next(new AppError('Sorry...Something went wrong', 500));
     }
 }
 
@@ -84,6 +88,7 @@ const billingMethodPost = async(req,res)=>{
         return res.redirect("/payment")
     } catch (error) {
         console.log(error)
+        next(new AppError('Sorry...Something went wrong', 500));
     }
 }
 
@@ -95,6 +100,7 @@ const paymentPage = async(req,res)=>{
         return res.render("user/checkout_3",{userVer,name})
     } catch (error) {
         console.log(error)
+        next(new AppError('Sorry...Something went wrong', 500));
     }
 }
 
@@ -104,6 +110,7 @@ const paymentMethod = async(req,res)=>{
         return res.redirect("/review")
     } catch (error) {
         console.log(error)
+        next(new AppError('Sorry...Something went wrong', 500));
     }
 }
 
@@ -149,6 +156,7 @@ const finalReview = async(req,res)=>{
         res.render("user/checkout_4",{name,cartItems,deliveryFee,paymentMethod})
     } catch (error) {
         console.log(error)
+        next(new AppError('Sorry...Something went wrong', 500));
     }
 }
 
@@ -201,6 +209,7 @@ const finalQuantityCheck = async(req,res)=>{
         return res.json({success: true});
     } catch (error) {
        console.log(error) 
+       next(new AppError('Sorry...Something went wrong', 500));
     }
 }
 
@@ -209,7 +218,7 @@ const orderPost = async(req,res)=>{
         const userEmail = req.session.user.email
         const userVer = await usercollection.findOne({ email: userEmail });
         let placedAddress = {}
-        const priceDetail = {
+        let priceDetail = {
             subTotal:req.body.subTotal,
             delivery:req.body.delivery,
             gst:req.body.gst,
@@ -248,14 +257,40 @@ const orderPost = async(req,res)=>{
         
         let cartItems = await cart.find({userId:userVer._id}).populate({
             path: "productId",
-            select: "productName productPrice productOfferPrice productImage1 isListed productStock _id"
+            select: "productName productPrice productOfferPrice productImage1 productCategoryId isListed productStock _id"
         });
 
+        const offers = await offer.find({})
+        for(let i of cartItems){
+            for(let j of offers){
+                if(i.productId.productCategoryId.toString() == j.categoryId.toString()){
+                    const expiryDate = new Date(j.expiryDate);
+                    const today = new Date();
+                    const todayDateOnly = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+                    if(expiryDate >= todayDateOnly){
+                        const tem = Math.floor(i.productId.productPrice-(i.productId.productPrice*j.offerPercentage/100))
+                        if(i.productId.productOfferPrice && i.productId.productOfferPrice > tem){
+                            i.productId.productOfferPrice = tem
+                        } else {
+                            i.productId.productOfferPrice = tem
+                        }
+                    }
+                    break
+                }
+            }
+        }
+
         let productDetails=[]
+        let totalDiscountAmount = 0
         for(let i=0;i<cartItems.length;i++){
-            let price=0
-            if(cartItems[i].productId?.productOfferPrice)price=cartItems[i].productId.productOfferPrice
-            else price = cartItems[i].productId.productPrice
+            let price = 0
+            if(cartItems[i].productId?.productOfferPrice){
+                price = cartItems[i].productId.productOfferPrice
+                totalDiscountAmount += cartItems[i].productId.productPrice - cartItems[i].productId.productOfferPrice
+            }
+            else{
+                price = cartItems[i].productId.productPrice
+            } 
             let obj={
                 productName:cartItems[i].productId.productName,
                 productPrice:price,
@@ -264,6 +299,9 @@ const orderPost = async(req,res)=>{
             productDetails.push(obj)
         }
 
+        totalDiscountAmount += req.body.coupon ?? 0
+        priceDetail.totalDiscountAmount = totalDiscountAmount
+        
         const orders = new order({
             userId:userVer._id,
             address:placedAddress,
@@ -272,6 +310,7 @@ const orderPost = async(req,res)=>{
             email:req.session.email,
             paymentMethod:req.session.paymentMethod,
             orderNotes:req.session.orderNotes,
+            totalDiscountAmount:totalDiscountAmount,
             priceDetails:priceDetail,
             products:productDetails
         }) 
@@ -314,6 +353,7 @@ const orderPost = async(req,res)=>{
         return res.status(200).send({ success: true})
     } catch (error) {
         console.log(error)
+        next(new AppError('Sorry...Something went wrong', 500));
     }
 }
 
@@ -330,6 +370,7 @@ const confirmPage = async(req,res)=>{
         }
     } catch (error) {
         console.log(error)
+        next(new AppError('Sorry...Something went wrong', 500));
     }
 }
 
@@ -384,6 +425,7 @@ const applyCoupon = async(req,res)=>{
         }
     } catch (error) {
         console.log(error)
+        next(new AppError('Sorry...Something went wrong', 500));
     }
 }
 
@@ -394,6 +436,7 @@ const removeCoupon = async(req,res)=>{
         return res.status(200).send({ success: true, title:"Coupon removed!", message: "Coupon removed Successfully!"})
     } catch (error) {
         console.log(error)
+        next(new AppError('Sorry...Something went wrong', 500));
     }
 }
 

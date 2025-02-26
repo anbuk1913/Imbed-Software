@@ -6,13 +6,13 @@ const path = require('path');
 const session = require('express-session');
 const methodOverride = require('method-override');
 const passport = require('./config/passport');
+const morgan = require('morgan')
 
 const setUser = require('./model/userModel');
 require("./config/dbConnect");
 
 const userRouter = require("./routes/userRouter");
 const adminRouter = require("./routes/adminRouter");
-
 app.use(express.static('public'));
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
@@ -35,9 +35,17 @@ app.use(session({
 app.use(passport.initialize());
 app.use(passport.session());
 app.use(methodOverride('_method'));
-
+app.use(morgan("dev"));
 app.use(userRouter);
 app.use(adminRouter);
+
+app.use((err, req, res, next) => {
+    const statusCode = err.statusCode || 500;
+    const errorMessage = err.message || "Internal Server Error";
+    res.status(statusCode).render("user/errorPage", { statusCode, errorMessage });
+});
+
+
 
 app.listen(3000, () => {
     console.log("Server Created");

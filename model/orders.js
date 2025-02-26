@@ -45,6 +45,9 @@ const ordersSchema = new mongoose.Schema({
     deliveryDate:{
         type:Date,
     },
+    returnReason:{
+        type: String,
+    }
 },
 {
     timestamps:true

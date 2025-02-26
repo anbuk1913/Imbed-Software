@@ -1,4 +1,5 @@
 const category = require("../model/categoryModel");
+const AppError = require("../middleware/errorHandling")
 
 const categoryPage = async(req,res)=>{
     const categories = await category.find({}).sort({ createdAt: -1 })
@@ -20,6 +21,7 @@ const addCategory = async(req,res)=>{
         }
     } catch (error) {
         console.log(error);
+        next(new AppError('Sorry...Something went wrong', 500));
     }
 }
 
@@ -56,6 +58,7 @@ const editCategory = async(req,res)=>{
         }
     } catch(error) {
         console.log(error)
+        next(new AppError('Sorry...Something went wrong', 500));
     }
 }
 

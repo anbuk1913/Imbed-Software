@@ -90,6 +90,8 @@
         .filter-section .btn-success {
             background-color: #28a745;
             border-color: #28a745;
+            width: 100%;
+            margin-bottom: 20px;
         }
 
         .filter-section .btn-success:hover {
@@ -98,76 +100,153 @@
         }
 
         .filter-section .btn-outline-secondary {
+            width: 99%;
             border-color: #6c757d;
-            color: #6c757d;
+            color: #ffffff;
+            background-color: #862424;
         }
 
         .filter-section .btn-outline-secondary:hover {
-            background-color: #6c757d;
+            background-color: #511010;
             color: #fff;
         }
 
+        .toast-container {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 9999;
+        }
+
+        .toast {
+            display: none;
+            background-color: #ff6600;
+            color: white;
+            padding: 15px 30px;
+            border-radius: 12px;
+            font-size: 16px;
+            text-align: center;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+            opacity: 0;
+            transform: translateX(100%);
+            animation: slideInFromRight 0.8s ease-out forwards;
+        }
+
+        @keyframes slideInFromRight {
+            0% {
+                opacity: 0;
+                transform: translateX(100%);
+            }
+
+            100% {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        @keyframes slideOutToRight {
+            0% {
+                opacity: 1;
+                transform: translateX(0);
+            }
+
+            100% {
+                opacity: 0;
+                transform: translateX(100%);
+            }
+        }
     </style>
 </head>
 <body>
     <%- include('../adminPartials/header') %>
     <div class="container mt-4">
-        <!-- Download Buttons -->
-        <div class="btn-group">
-            <button class="btn btn-info">Download (PDF)</button>
-            <button class="btn btn-info">Download (xlsx)</button>
+        <!-- Summary Cards -->
+        <div class="row mb-4">
+            <div class="col-md-6">
+                <div class="card text-center border-primary">
+                    <div class="card-body">
+                        <h5 class="card-title">Overall Order Amount</h5>
+                        <p class="card-text display-6">₹<%= totalAmount %></p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="card text-center border-success">
+                    <div class="card-body">
+                        <h5 class="card-title">Discount</h5>
+                        <p class="card-text display-6">₹<%= discount %></p>
+                    </div>
+                </div>
+            </div>
         </div>
-
+        
+        
+        <div class="toast-container"></div>
+        
         <!-- Filter Section -->
-        <div class="filter-section d-flex justify-content-center">
-            <div class="row g-2 align-items-center d-flex flex-wrap">
-                <form id="date-wise-filter" class="d-flex gap-2 align-items-center">
-                    <input type="date" class="form-control" placeholder="From" id="startDate">
-                    <input type="date" class="form-control" placeholder="To" id="endDate">
-                    <button class="form-control btn btn-success">Apply Date</button>
+        <div class="filter-section d-flex justify-content-center flex-wrap">
+            <div class="row g-2 align-items-center">
+                <form id="date-wise-filter" class="d-flex gap-2 align-items-center flex-wrap">
+                    <div style="display: flex; justify-content: right; width: 99%;">
+                        <div style="width: 50%;">
+                            <label for="from">From</label>
+                            <input type="date" class="form-control" id="startDate" value="<%= start %>" name="from">
+                        </div>
+                        <div style="width: 50%; margin-left: 10px;">
+                            <label for="to">To</label>
+                            <input type="date" class="form-control" id="endDate" value="<%= end %>" name="to">
+                        </div>
+                    </div>
+                    <button class="btn btn-success">Apply Date</button>
                 </form>
-                <form id="plan-view" class="d-flex gap-2 align-items-center">
-                    <select class="form-select form-control">
-                        <option selected disabled>Select</option>
-                        <option value="week">Week</option>
-                        <option value="month">Month</option>
-                        <option value="year">Year</option>
+                <form id="plan-view" class="d-flex gap-2 align-items-center flex-wrap">
+                    <label for="timePeriod">Time Period</label>
+                    <select id="timePeriod" class="form-select" name="timePeriod">
+                        <option disabled value="" <%= timePeriod === null ? "selected" : "" %>>Select</option>
+                        <option value="week" <%= timePeriod === "week" ? "selected" : "" %>>Week</option>
+                        <option value="month" <%= timePeriod === "month" ? "selected" : "" %>>Month</option>
+                        <option value="year" <%= timePeriod === "year" ? "selected" : "" %>>Year</option>
                     </select>
-                    <button class="btn btn-success">Filter</button>
+                    <button id="filterBtn" class="btn btn-success" disabled>Filter</button>
                 </form>
-                <button class="btn btn-outline-secondary">Clear Filters</button>
+                <button class="btn btn-outline-secondary" onclick="clearFilter()">Clear Filters</button>
+                <div class="btn-group mb-3">
+                    <button class="btn btn-info" onclick="window.location.href='/admin/salesreport-pdf'">Download (PDF)</button>
+                    <button class="btn btn-info" onclick="window.location.href='/admin/salesreport-xlsx'">Download (xlsx)</button>
+                </div>
             </div>
         </div>
 
         <!-- Sales Table -->
-        <table class="table table-bordered text-center">
-            <thead class="table-dark">
-                <tr>
-                    <th>S.No</th>
-                    <th>Name</th>
-                    <th>Delivery Date</th>
-                    <th>No of Products</th>
-                    <th>Total Cost</th>
-                    <th>Payment Method</th>
-                    <th>Status</th>
-                </tr>
-            </thead>
-            <tbody>
-                <% orders.forEach((order, index) => { %>
+        <div class="table-responsive">
+            <table class="table table-bordered text-center">
+                <thead class="table-dark">
                     <tr>
-                        <td><%= index + 1 %></td>
-                        <td><%= order.fullName %></td>
-                        <td><%= order.deliveryDate.toISOString().split('T')[0]; %></td>
-                        <td><%= order.products.length %></td>
-                        <td>₹<%= order.priceDetails.total %></td>
-                        <td><%= order.paymentMethod %></td>
-                        <td><%= order.status %></td>
+                        <th>S.No</th>
+                        <th>Name</th>
+                        <th>Delivery Date</th>
+                        <th>No of Products</th>
+                        <th>Total Cost</th>
+                        <th>Payment Method</th>
                     </tr>
-                <% }) %>
-            </tbody>
-        </table>
+                </thead>
+                <tbody>
+                    <% orders.forEach((order, index) => { %>
+                        <tr>
+                            <td><%= index + 1 %></td>
+                            <td><%= order.fullName %></td>
+                            <td><%= order.deliveryDate.toISOString().split('T')[0]; %></td>
+                            <td><%= order.products.length %></td>
+                            <td>₹<%= order.priceDetails.total %></td>
+                            <td><%= order.paymentMethod %></td>
+                        </tr>
+                    <% }) %>
+                </tbody>
+            </table>
+        </div>
     </div>
     <%- include('../adminPartials/footer') %>
+
     <script>
         let startDate = document.getElementById("startDate");
         let endDate = document.getElementById("endDate");
@@ -183,5 +262,157 @@
         });
     </script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        document.getElementById("date-wise-filter").addEventListener("submit", async function(event) {
+            event.preventDefault(); // Prevent form from reloading the page
+        
+            const startDate = document.getElementById("startDate").value;
+            const endDate = document.getElementById("endDate").value;
+        
+            const requestData = { startDate, endDate };
+        
+            try {
+                const response = await fetch("/admin/filter-by-date", {
+                    method: "PUT",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(requestData),
+                });
+
+                const result = await response.json();
+                
+                const toastContainer = document.querySelector(".toast-container");
+                const toast = document.createElement("div");
+                toast.className = "toast";
+
+                if (result.success) {
+                    window.location.reload()
+                } else {
+                    toast.textContent = "Somthing Wrong!";
+                    toast.style.backgroundColor = "#dc3545"; // Red color for error
+                    toastContainer.appendChild(toast);
+                    setTimeout(() => {
+                        toast.style.display = "block";
+                    }, 100);
+
+                    setTimeout(() => {
+                        toast.style.animation = "slideOutToRight 0.8s ease-out forwards";
+                    }, 3000);
+
+                    setTimeout(() => {
+                        toast.style.display = "none";
+                        toast.remove(); // Remove toast from DOM
+                    }, 3800);   
+                }
+            } catch (error) {
+                console.error("Error:", error);
+            }
+        });
+    </script>
+
+    <script>
+        document.getElementById("timePeriod").addEventListener("change", function() {
+            const filterBtn = document.getElementById("filterBtn");
+            
+            if (this.value === "") {
+                filterBtn.disabled = true;
+                filterBtn.style.cursor = "not-allowed";
+            } else {
+                filterBtn.disabled = false;
+                filterBtn.style.cursor = "pointer";
+            }
+        });
+        
+        document.getElementById("plan-view").addEventListener("submit", async function(event) {
+            event.preventDefault(); // Prevent page reload
+        
+            const timePeriod = document.getElementById("timePeriod").value;
+            const filterBtn = document.getElementById("filterBtn");
+        
+            if (!timePeriod) {
+                alert("Please select a time period!");
+                return;
+            }
+        
+            // Disable button while sending the request
+            filterBtn.disabled = true;
+            filterBtn.style.cursor = "not-allowed";
+        
+            try {
+                const response = await fetch("/admin/filter-plan", {
+                    method: "PUT",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ timePeriod }),
+                });
+        
+                const result = await response.json();
+                
+                const toastContainer = document.querySelector(".toast-container");
+                const toast = document.createElement("div");
+                toast.className = "toast";
+
+                if (result.success) {
+                    window.location.reload()
+                } else {
+                    toast.textContent = "Somthing Wrong!";
+                    toast.style.backgroundColor = "#dc3545"; // Red color for error
+                    toastContainer.appendChild(toast);
+                    setTimeout(() => {
+                        toast.style.display = "block";
+                    }, 100);
+
+                    setTimeout(() => {
+                        toast.style.animation = "slideOutToRight 0.8s ease-out forwards";
+                    }, 3000);
+
+                    setTimeout(() => {
+                        toast.style.display = "none";
+                        toast.remove(); // Remove toast from DOM
+                    }, 3800);   
+                }
+            } catch (error) {
+                console.error("Error:", error);
+            }
+        });
+    </script>
+    <script>
+        // Clear Filter
+        async function clearFilter() {
+            try {
+                const response = await fetch("/admin/clearfilter", {
+                    method: "PUT",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ timePeriod }),
+                });
+
+                const result = await response.json();
+                const toastContainer = document.querySelector(".toast-container");
+                const toast = document.createElement("div");
+                toast.className = "toast";
+
+                if (result.success) {
+                    window.location.reload()
+                } else {
+                    toast.textContent = "Somthing Wrong!";
+                    toast.style.backgroundColor = "#dc3545"; // Red color for error
+                    toastContainer.appendChild(toast);
+                    setTimeout(() => {
+                        toast.style.display = "block";
+                    }, 100);
+
+                    setTimeout(() => {
+                        toast.style.animation = "slideOutToRight 0.8s ease-out forwards";
+                    }, 3000);
+
+                    setTimeout(() => {
+                        toast.style.display = "none";
+                        toast.remove(); // Remove toast from DOM
+                    }, 3800);   
+                }
+
+            } catch (error) {
+                console.log(error)
+            }
+        }
+    </script>
 </body>
 </html>

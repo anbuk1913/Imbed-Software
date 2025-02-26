@@ -1,4 +1,5 @@
 const bcrypt = require('bcrypt')
+const offer = require("../model/offerModel")
 const wallet = require("../model/walletModel");
 const product = require("../model/productModel")
 const category = require("../model/categoryModel");
@@ -6,6 +7,7 @@ const usercollection = require("../model/userModel");
 const otpCollection = require("../model/otp");
 const sendotp = require('../helper/sendOtp')
 const passport = require('passport');
+const AppError = require("../middleware/errorHandling")
 
 async function encryptPassword(password) {
     const saltRounds = 10;
@@ -21,8 +23,27 @@ async function comparePassword(enteredPassword, storedPassword) {
 const homePage = async (req,res)=>{
     try{
         let name = ""
+        const offers = await offer.find({})
         const products = await product.find({}).limit(4)
         const categories = await category.find({}).limit(5)
+        for(let i of products){
+            for(let j of offers){
+                if(i.productCategoryId._id.toString() == j.categoryId.toString()){
+                    const expiryDate = new Date(j.expiryDate);
+                    const today = new Date();
+                    const todayDateOnly = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+                    if(expiryDate >= todayDateOnly){
+                        const tem = Math.floor(i.productPrice-(i.productPrice*j.offerPercentage/100))
+                        if(i.productOfferPrice && i.productOfferPrice > tem){
+                            i.productOfferPrice = tem
+                        } else {
+                            i.productOfferPrice = tem
+                        }
+                    }
+                    break
+                }
+            }
+        }
         if(req.session.loginSession || req.session.signupSession){
             const userEmail = req.session.user.email
             const userVer = await usercollection.findOne({ email: userEmail });
@@ -42,6 +63,7 @@ const homePage = async (req,res)=>{
         }
     }catch(error) {
         console.log(error)
+        next(new AppError('Sorry...Something went wrong', 500));
     }
 }
 
@@ -55,6 +77,7 @@ const loginPage = async(req,res)=>{
         } 
     } catch (error){
         console.log(error)
+        next(new AppError('Sorry...Something went wrong', 500));
     }
 }
 
@@ -68,6 +91,7 @@ const signUpPage = async(req,res)=>{
         }
     } catch (error){
         console.log(error)
+        next(new AppError('Sorry...Something went wrong', 500));
     }
 }
 
@@ -139,7 +163,7 @@ const signUpPost = async(req,res)=>{
         }
     } catch (error){
         console.error("Signup error:", error);
-        return res.status(500).send({ success: false, message: "Server error" });
+        next(new AppError('Sorry...Something went wrong', 500));
     }
 }
 
@@ -166,6 +190,7 @@ const loginPost = async(req,res)=>{
           }
     } catch (error) {
         console.log(error);
+        next(new AppError('Sorry...Something went wrong', 500));
     }
 }
 
@@ -191,7 +216,7 @@ const googleCallback=async (req, res) => {
       res.redirect('/');
     } catch (err) {
       console.error(err);
-      res.redirect('/login');
+      next(new AppError('Sorry...Something went wrong', 500));
     }
   } 
 

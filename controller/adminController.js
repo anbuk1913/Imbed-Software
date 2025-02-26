@@ -1,4 +1,5 @@
 const usercollection = require("../model/userModel")
+const AppError = require("../middleware/errorHandling")
 
 const adminLog = async(req,res)=>{
     if(req.session.adminVer){
@@ -55,6 +56,7 @@ const logoutAdmin = async(req,res)=>{
         req.session.adminVer = false
         res.redirect("/admin")
     } catch (error) {
+        next(new AppError('Sorry...Something went wrong', 500));
         console.log(error)
     }
 }

@@ -1,5 +1,6 @@
 const offer = require("../model/offerModel")
 const category = require("../model/categoryModel");
+const AppError = require("../middleware/errorHandling")
 
 const offerPage = async(req,res)=>{
     try {
@@ -11,6 +12,7 @@ const offerPage = async(req,res)=>{
         return res.render("admin/offer",{categoryOffer,categories})
     } catch (error) {
         console.log(error)
+        next(new AppError('Sorry...Something went wrong', 500));
     }
 }
 
@@ -31,6 +33,7 @@ const addOffer = async(req,res)=>{
         }
     } catch (error) {
         console.log(error)
+        next(new AppError('Sorry...Something went wrong', 500));
     }
 }
 
@@ -50,6 +53,7 @@ const editOffer = async(req,res)=>{
         }
     } catch (error) {
         console.log(error)
+        next(new AppError('Sorry...Something went wrong', 500));
     }
 }
 

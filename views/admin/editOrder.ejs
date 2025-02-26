@@ -199,7 +199,7 @@
                 </tr>
             </thead>
             <tbody>
-                <% orderData.products.forEach(item => { %>
+                <% orderData?.products.forEach(item => { %>
                     <tr>
                       <td><%= item?.productName %></td>
                       <td><%= item.productPrice %></td>
