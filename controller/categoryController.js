@@ -1,12 +1,12 @@
 const category = require("../model/categoryModel");
 const AppError = require("../middleware/errorHandling")
 
-const categoryPage = async(req,res)=>{
+const categoryPage = async(req,res,next)=>{
     const categories = await category.find({}).sort({ createdAt: -1 })
     return res.render("admin/category",{categories})
 }
 
-const addCategory = async(req,res)=>{
+const addCategory = async(req,res,next)=>{
     try {
         const categoryCheck = await category.findOne({categoryName:{$regex: new RegExp('^'+req.body.categoryName +'$','i') }});
         if (categoryCheck) {
@@ -25,7 +25,7 @@ const addCategory = async(req,res)=>{
     }
 }
 
-const unListCategory = async(req,res)=>{
+const unListCategory = async(req,res,next)=>{
     try {
         const categoryId = req.params.id;
         await category.updateOne({ _id:categoryId}, { isListed:false});
@@ -36,7 +36,7 @@ const unListCategory = async(req,res)=>{
     }
 }
 
-const listCategory = async(req,res)=>{
+const listCategory = async(req,res,next)=>{
     try {
         const categoryId = req.params.id;
         await category.updateOne({ _id:categoryId}, { isListed:true});
@@ -47,7 +47,7 @@ const listCategory = async(req,res)=>{
     }
 }
 
-const editCategory = async(req,res)=>{
+const editCategory = async(req,res,next)=>{
     try{
         const categoryCheck = await category.find({categoryName:{$regex: new RegExp('^'+req.body.categoryName +'$','i') }});
         if((categoryCheck.length == 1 && req.body._id == categoryCheck[0]._id) || categoryCheck.length == 0){

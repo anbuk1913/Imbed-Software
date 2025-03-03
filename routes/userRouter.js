@@ -49,10 +49,6 @@ router.delete("/deleteaddress/:id",userAuth,profileController.deleteAddress)
 router.get("/changepassword",userAuth,profileController.changePassword)
 router.patch("/changepassword",userAuth,profileController.changePasswordPatch)
 router.patch("/edituserdata",userAuth,profileController.editUserData)
-router.get("/orders",userAuth,orderController.userOrder)
-router.get('/orderview/:id',userAuth,orderController.userOrderView)
-router.patch('/cancelorder',userAuth,orderController.cancelOrder)
-router.patch('/returnorder',userAuth,orderController.returnOrder)
 
 // Checkout Pages
 router.get("/checkoutaddress",userAuth,checkoutController.checkoutPageOne)
@@ -78,5 +74,12 @@ router.post("/addalltocart",userAuth,wishlistController.addAlltoCart)
 
 // Wallet
 router.get("/wallet",userAuth,profileController.walletPage)
+
+// Order
+router.get("/orders",userAuth,orderController.userOrder)
+router.get('/orderview/:id',userAuth,orderController.userOrderView)
+router.patch('/cancelorder',userAuth,orderController.cancelOrder)
+router.patch('/returnorder',userAuth,orderController.returnOrder)
+router.get("/generate-invoice/:id",userAuth,orderController.generateInvoice)
 
 module.exports = router

@@ -1,7 +1,7 @@
 const coupon = require("../model/couponModel")
 const AppError = require("../middleware/errorHandling")
 
-const couponPage = async(req,res)=>{
+const couponPage = async(req,res,next)=>{
     try {
         const coupons = await coupon.find({}).sort({ createdAt: -1 })
         res.render("admin/coupons",{coupons})
@@ -11,7 +11,7 @@ const couponPage = async(req,res)=>{
     }
 }
 
-const addCoupon = async(req,res)=>{
+const addCoupon = async(req,res,next)=>{
     try {
         const couponCheck = await coupon.findOne({code:{$regex: new RegExp('^'+req.body.code +'$','i') }});
         if(couponCheck){
@@ -38,7 +38,7 @@ const addCoupon = async(req,res)=>{
     }
 }
 
-const editCoupon = async(req,res)=>{
+const editCoupon = async(req,res,next)=>{
     try {
         const couponCheck = await coupon.find({code:{$regex: new RegExp('^'+req.body.code +'$','i') }});
         if((couponCheck.length == 1 && req.body.id == couponCheck[0]._id) || couponCheck.length == 0){
@@ -61,7 +61,7 @@ const editCoupon = async(req,res)=>{
     }
 }
 
-const deleteCoupon = async(req,res)=>{
+const deleteCoupon = async(req,res,next)=>{
     const id = req.query.couponid
     const data = await coupon.findByIdAndDelete({_id:id})
     if(!data){

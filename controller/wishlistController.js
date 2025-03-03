@@ -4,7 +4,7 @@ const wishlist = require("../model/wishlistModel")
 const usercollection = require("../model/userModel")
 const AppError = require("../middleware/errorHandling")
 
-const wishlistPage = async(req,res)=>{
+const wishlistPage = async(req,res,next)=>{
     try {
         const userEmail = req.session.user.email
         const userVer = await usercollection.findOne({ email: userEmail });
@@ -39,7 +39,7 @@ const wishlistPage = async(req,res)=>{
     }
 }
 
-const editWishlist = async(req,res)=>{
+const editWishlist = async(req,res,next)=>{
     try{
         if(req.body.wishlist){
             newData = new wishlist({
@@ -58,7 +58,7 @@ const editWishlist = async(req,res)=>{
     }
 }
 
-const deleteProduct = async(req,res)=>{
+const deleteProduct = async(req,res,next)=>{
     try {
         const data = await wishlist.deleteOne({userId:req.body.userId, productId:req.body.productId})
         if(data.deletedCount!=0){
@@ -72,7 +72,7 @@ const deleteProduct = async(req,res)=>{
     }
 }
 
-const addAlltoCart = async(req,res)=>{
+const addAlltoCart = async(req,res,next)=>{
     try {
         const wishlistData = await wishlist.find({userId:req.body.userId})
         for(let i of wishlistData){

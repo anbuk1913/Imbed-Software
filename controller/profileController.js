@@ -15,7 +15,7 @@ async function comparePassword(enteredPassword, storedPassword) {
     return isMatch;
 }
 
-const profile = async(req,res)=>{
+const profile = async(req,res,next)=>{
     try {
         const userEmail = req.session.user.email
         const userVer = await usercollection.findOne({ email: userEmail });
@@ -30,7 +30,7 @@ const profile = async(req,res)=>{
     }
 } 
 
-const editProfile = async(req,res)=>{
+const editProfile = async(req,res,next)=>{
     try {
         const userEmail = req.session.user.email
         const userVer = await usercollection.findOne({ email: userEmail });
@@ -41,7 +41,7 @@ const editProfile = async(req,res)=>{
     }
 }
 
-const addressPage = async(req,res)=>{
+const addressPage = async(req,res,next)=>{
     try {
         const userEmail = req.session.user.email
         const userVer = await usercollection.findOne({ email: userEmail });
@@ -53,7 +53,7 @@ const addressPage = async(req,res)=>{
     }
 }
 
-const addAddress = async(req,res)=>{
+const addAddress = async(req,res,next)=>{
     try {
         const userEmail = req.session.user.email
         const userVer = await usercollection.findOne({ email: userEmail });
@@ -64,7 +64,7 @@ const addAddress = async(req,res)=>{
     }
 } 
 
-const addAddressPost = async(req,res)=>{
+const addAddressPost = async(req,res,next)=>{
     try {
         const addressCount = await address.countDocuments({userId:req.body.userId});
         const newaddress = new address({
@@ -84,7 +84,7 @@ const addAddressPost = async(req,res)=>{
     }
 }
 
-const editAddress = async(req,res)=>{
+const editAddress = async(req,res,next)=>{
     try {
         const addressId = req.params.id;
         const userEmail = req.session.user.email
@@ -101,7 +101,7 @@ const editAddress = async(req,res)=>{
     }
 }
 
-const editAddressPut = async(req,res)=>{
+const editAddressPut = async(req,res,next)=>{
     try {
         console.log(req.body)
         await address.updateOne({_id:req.body._id},{$set:{doorNo: req.body.doorNo, street: req.body.street, city: req.body.city, district: req.body.district, pinCode: req.body.pinCode}})
@@ -112,7 +112,7 @@ const editAddressPut = async(req,res)=>{
     }
 }
 
-const deleteAddress = async(req,res)=>{
+const deleteAddress = async(req,res,next)=>{
     try {
         const addressId = req.params.id;
         const addressNum = await address.findOne({_id:addressId})
@@ -129,7 +129,7 @@ const deleteAddress = async(req,res)=>{
     }
 }
 
-const changePassword = async(req,res)=>{
+const changePassword = async(req,res,next)=>{
     try {
         const userEmail = req.session.user.email
         const userVer = await usercollection.findOne({ email: userEmail });
@@ -145,7 +145,7 @@ const changePassword = async(req,res)=>{
     }
 }
 
-const changePasswordPatch = async(req,res)=>{
+const changePasswordPatch = async(req,res,next)=>{
     try {
         const user = await usercollection.findOne({ email: req.session.user.email })
         if (await comparePassword(req.body.oldPassword,user.password)){
@@ -161,7 +161,7 @@ const changePasswordPatch = async(req,res)=>{
     }
 }
 
-const editUserData = async(req,res)=>{
+const editUserData = async(req,res,next)=>{
     try {
         await usercollection.updateOne({email:req.session.user.email},{$set:{name:req.body.name,phone:req.body.phone}})
         return res.json({success:true, message:"Pofile Updated!"})
@@ -172,7 +172,7 @@ const editUserData = async(req,res)=>{
 }
 
 // Wallet
-const walletPage = async(req,res)=>{
+const walletPage = async(req,res,next)=>{
     try {
         const userEmail = req.session.user.email
         const userVer = await usercollection.findOne({ email: userEmail });

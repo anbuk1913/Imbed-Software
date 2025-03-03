@@ -7,15 +7,20 @@ const AppError = require("../middleware/errorHandling")
 const path = require('path');
 const fs = require('fs');
 
-const productPage = async(req,res)=>{
-    const products = await product.find({}).populate({
-                    path: "productCategoryId",
-                    select: "categoryName -_id"
-               }).sort({ createdAt: -1 });
-    return res.render("admin/product",{products})
+const productPage = async(req,res,next)=>{
+    try {
+        const products = await product.find({}).populate({
+                        path: "productCategoryId",
+                        select: "categoryName -_id"
+                }).sort({ createdAt: -1 });
+        return res.render("admin/product",{products})
+    } catch (error) {
+        console.log(error)
+        next(new AppError('Sorry...Something went wrong', 500));
+    }
 }
 
-const addProduct = async(req,res)=>{
+const addProduct = async(req,res,next)=>{
     try{
         const categories = await category.find({}).sort({ createdAt: -1 })
         res.render("admin/addProduct",{categories})
@@ -25,7 +30,7 @@ const addProduct = async(req,res)=>{
     }
 }
 
-const addProductPost = async (req, res) => {
+const addProductPost = async (req,res,next) => {
     try {
         const productCheck = await  product.findOne({productName:{$regex: new RegExp('^'+req.body.productName +'$','i') }})
         
@@ -73,21 +78,27 @@ const addProductPost = async (req, res) => {
     }
 };
 
-const productEdit = async(req,res)=>{
-    const id = req.params.id
-    const products = await product.findById({_id: id}).populate({
-        path: "productCategoryId",
-        select: "categoryName -_id"
-    });
-    const categories = await category.find({}).sort({ createdAt: -1 })
-    if(products){
-        return res.render("admin/editProduct",{products,categories})
-    } else {
-        return res.redirect("/admin/product")
+const productEdit = async(req,res,next)=>{
+    try {
+        const id = req.params.id
+        const products = await product.findById({_id: id}).populate({
+            path: "productCategoryId",
+            select: "categoryName -_id"
+        });
+        const categories = await category.find({}).sort({ createdAt: -1 })
+        if(products){
+            return res.render("admin/editProduct",{products,categories})
+        } else {
+            return res.redirect("/admin/product")
+        }
+        
+    } catch (error) {
+        console.log('Error adding product:', error);
+        res.status(500).json({ error: 'Internal Server Error' });
     }
 }
 
-const productEditPost = async(req,res)=>{
+const productEditPost = async(req,res,next)=>{
     try{
         const productCheck = await product.find({productName:{$regex: new RegExp('^'+req.body.productName +'$','i') }});
         if((productCheck.length == 1 && req.body._id == productCheck[0]._id) || productCheck.length == 0){
@@ -129,7 +140,7 @@ const productEditPost = async(req,res)=>{
     }
 }
 
-const unListProduct = async(req,res)=>{
+const unListProduct = async(req,res,next)=>{
     try {
         const productId = req.params.id;
         await product.updateOne({ _id:productId}, { isListed:false});
@@ -140,7 +151,7 @@ const unListProduct = async(req,res)=>{
     }
 }
 
-const listProduct = async(req,res)=>{
+const listProduct = async(req,res,next)=>{
     try {
         const productId = req.params.id;
         await product.updateOne({ _id:productId}, { isListed:true});
@@ -151,61 +162,71 @@ const listProduct = async(req,res)=>{
     }
 }
 
-const singleProductView = async(req,res)=>{
-    let name = ""
-    let userId = ""
-    let wishlistProduct = false
-    const products = await product.findOne({_id:req.params.id}).populate({
-        path: "productCategoryId",
-        select: "categoryName _id"
-   });
-   if(products){
-        const offers = await offer.findOne({categoryId:products.productCategoryId._id})
-        if(offers){
-            const expiryDate = new Date(offers.expiryDate);
-            const today = new Date();
-            const todayDateOnly = new Date(today.getFullYear(), today.getMonth(), today.getDate());
-            if(expiryDate >= todayDateOnly){
-                const tem = Math.floor(products.productPrice-(products.productPrice*offers.offerPercentage/100))
-                if(products.productOfferPrice && products.productOfferPrice>tem){
-                    products.productOfferPrice = tem
-                } else {
-                    products.productOfferPrice = tem
+const singleProductView = async(req,res,next)=>{
+    try {
+        let name = ""
+        let userId = ""
+        let wishlistProduct = false
+        const products = await product.findOne({_id:req.params.id}).populate({
+            path: "productCategoryId",
+            select: "categoryName _id"
+    });
+    if(products){
+            const offers = await offer.findOne({categoryId:products.productCategoryId._id})
+            if(offers){
+                const expiryDate = new Date(offers.expiryDate);
+                const today = new Date();
+                const todayDateOnly = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+                if(expiryDate >= todayDateOnly){
+                    const tem = Math.floor(products.productPrice-(products.productPrice*offers.offerPercentage/100))
+                    if(products.productOfferPrice && products.productOfferPrice>tem){
+                        products.productOfferPrice = tem
+                    } else {
+                        products.productOfferPrice = tem
+                    }
                 }
             }
-        }
-        if(req.session.loginSession || req.session.signupSession){
-            const userEmail = req.session.user.email
-            const userVer = await usercollection.findOne({ email: userEmail });
-            const isWishlist = await wishlist.findOne({userId:userVer._id, productId:products._id})
-            if(isWishlist) wishlistProduct = true
-            if(userVer){
-                if(userVer.isActive == false){
-                    req.session.block = true
-                    return res.redirect("/blocked")
+            if(req.session.loginSession || req.session.signupSession){
+                const userEmail = req.session.user.email
+                const userVer = await usercollection.findOne({ email: userEmail });
+                const isWishlist = await wishlist.findOne({userId:userVer._id, productId:products._id})
+                if(isWishlist) wishlistProduct = true
+                if(userVer){
+                    if(userVer.isActive == false){
+                        req.session.block = true
+                        return res.redirect("/blocked")
+                    } else {
+                        name = userVer.name
+                        userId = userVer._id
+                        return res.render("user/product",{name,products,userId,wishlistProduct})
+                    }
                 } else {
-                    name = userVer.name
-                    userId = userVer._id
                     return res.render("user/product",{name,products,userId,wishlistProduct})
                 }
             } else {
                 return res.render("user/product",{name,products,userId,wishlistProduct})
             }
         } else {
-            return res.render("user/product",{name,products,userId,wishlistProduct})
+            return res.redirect("/shop")
         }
-    } else {
-        return res.redirect("/shop")
+    } catch (error) {
+        console.log(error) 
+        next(new AppError('Sorry...Something went wrong', 500)); 
     }
 }
 
-const deleteProduct = async(req,res)=>{
-    const id = req.query.productId
-    const data = await product.findByIdAndDelete({_id:id})
-    if(!data){
-       return res.json({success:false})
+const deleteProduct = async(req,res,next)=>{
+    try {
+        const id = req.query.productId
+        const data = await product.findByIdAndDelete({_id:id})
+        if(!data){
+        return res.json({success:false})
+        }
+        res.json({success: true})
+    } catch (error) {
+        console.log(error)
+        next(new AppError('Sorry...Something went wrong', 500)); 
     }
-    res.json({success: true})
 }
 
 

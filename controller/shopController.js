@@ -4,7 +4,7 @@ const category = require("../model/categoryModel");
 const usercollection = require("../model/userModel");
 const AppError = require("../middleware/errorHandling")
 
-const shopPage = async (req,res)=>{
+const shopPage = async (req,res,next)=>{
     try {
         let name = ""
         const offers = await offer.find({})

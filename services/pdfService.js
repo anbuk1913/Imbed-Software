@@ -13,10 +13,10 @@ const printer = new PdfPrinter(fonts);
 
 const generatePDF = (orders, totalOrderAmount, discountAmount, start, end) => {
     if(start && end){
+        console.log(start)
         const dateText = `From: ${start.toISOString().split('T')[0]}  To: ${end.toISOString().split('T')[0]}`
         return new Promise((resolve, reject) => {
             const logoPath = path.join(__dirname, '../public/images', 'logo.png');
-
             const docDefinition = {
                 content: [
                     {

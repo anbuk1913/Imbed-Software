@@ -3,7 +3,7 @@ const offer = require("../model/offerModel")
 const usercollection = require("../model/userModel")
 const AppError = require("../middleware/errorHandling")
 
-const cartView = async (req,res) => {
+const cartView = async (req,res,next) => {
     try {
         const userEmail = req.session.user.email
         const userVer = await usercollection.findOne({ email: userEmail });
@@ -43,7 +43,7 @@ const cartView = async (req,res) => {
     }
 }
 
-const addtoCart = async(req,res)=>{
+const addtoCart = async(req,res,next)=>{
     try{
         await cart.updateOne({userId:req.body.userId,productId:req.body.productId},{$set:{userId:req.body.userId,productId:req.body.productId,productQuantity:req.body.productQuantity}},{upsert:true})
         res.json({success: true, message: 'Product Added to Cart successfully.'});
@@ -54,7 +54,7 @@ const addtoCart = async(req,res)=>{
     
 }
 
-const removeItem = async(req,res)=>{
+const removeItem = async(req,res,next)=>{
     try {
         const id = req.query.id
         const data = await cart.findByIdAndDelete({_id:id})
@@ -72,7 +72,10 @@ const removeItem = async(req,res)=>{
 const updateCartItems = async (req, res) => {
     try {
         for (const data of req.body.arr) {
-            if(typeof(data.productId)== 'string')continue
+            console.log(data.productId.length)
+            if(data.productId.length != 24){
+                continue
+            }
             await cart.updateOne({ _id: data.productId }, { $set: { productQuantity: data.value } });
         }
         req.session.checkOne = true

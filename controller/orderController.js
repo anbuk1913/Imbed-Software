@@ -1,9 +1,10 @@
 const order = require("../model/orders");
 const wallet = require("../model/walletModel");
 const usercollection = require("../model/userModel")
+const pdfService = require("../services/invoice")
 const AppError = require("../middleware/errorHandling")
 
-const userOrder = async(req,res)=>{
+const userOrder = async(req,res,next)=>{
     try {
         const userEmail = req.session.user.email
         const userVer = await usercollection.findOne({ email: userEmail });
@@ -16,7 +17,7 @@ const userOrder = async(req,res)=>{
     }
 }
 
-const userOrderView = async(req,res)=>{
+const userOrderView = async(req,res,next)=>{
     try {
         const orderId = req.params.id;
         const userEmail = req.session.user.email
@@ -30,7 +31,7 @@ const userOrderView = async(req,res)=>{
     }
 }
 
-const adminOrderview = async(req,res)=>{
+const adminOrderview = async(req,res,next)=>{
     try {
         const orders = await order.find({}).sort({ createdAt: -1 })
         res.render('admin/orders',{orders})
@@ -40,10 +41,11 @@ const adminOrderview = async(req,res)=>{
     }
 }
 
-const adminSingleOrderView = async(req,res)=>{
+const adminSingleOrderView = async(req,res,next)=>{
     try {
         const orderId = req.params.id;
         const orderData = await order.findById({_id:orderId})
+        console.log(orderData)
         if(orderData){
             return res.render('admin/singleOrder',{orderData})
         } else {
@@ -55,7 +57,7 @@ const adminSingleOrderView = async(req,res)=>{
     }
 }
 
-const adminEditOrder = async(req,res)=>{
+const adminEditOrder = async(req,res,next)=>{
     try {
         const orderId = req.params.id;
         const orderData = await order.findById({_id:orderId})
@@ -70,7 +72,7 @@ const adminEditOrder = async(req,res)=>{
     }
 }
 
-const adminEditOrderPost = async(req,res)=>{
+const adminEditOrderPost = async(req,res,next)=>{
     try {
         if(req.body.orderStatus == "Delivered"){
             await order.updateOne({_id:req.body.orderId},{$set:{status:req.body.orderStatus, deliveryDate: new Date()}})
@@ -84,7 +86,7 @@ const adminEditOrderPost = async(req,res)=>{
     }
 }
 
-const editOrder = async(req,res)=>{
+const editOrder = async(req,res,next)=>{
     try {
         const datas = await order.findById({_id:req.body.orderId})
         if(req.body.orderStatus == 'Returned' && datas.paymentMethod == "COD"){
@@ -100,7 +102,7 @@ const editOrder = async(req,res)=>{
                     $inc: { walletBalance: changes },
                     $push: { walletTransaction: transactionData }
                 },
-                { new: true } // Returns updated document
+                { new: true }
             );
             await order.updateOne({_id:req.body.orderId},{$set:{status:req.body.orderStatus}})
             res.json({ success: true, message: 'Order Status Updated!' });
@@ -114,7 +116,7 @@ const editOrder = async(req,res)=>{
     }
 }
 
-const cancelOrder = async(req,res)=>{
+const cancelOrder = async(req,res,next)=>{
     try {
         const id = req.query.orderId
         const data = await order.updateOne({_id:id},{$set:{status:"Cancelled"}})
@@ -129,7 +131,7 @@ const cancelOrder = async(req,res)=>{
     }
 }
 
-const returnOrder = async(req,res)=>{
+const returnOrder = async(req,res,next)=>{
     try {
         const id = req.query.orderId
         const data = await order.updateOne({_id:id},{$set:{status:"Return processing",returnReason: req.body.value}})
@@ -144,4 +146,16 @@ const returnOrder = async(req,res)=>{
     }
 }
 
-module.exports = {userOrder,userOrderView,adminSingleOrderView,adminOrderview,adminEditOrder,editOrder,adminEditOrderPost,cancelOrder,returnOrder}
+const generateInvoice = async(req,res,next)=>{
+    try {
+        const orderId = req.params.id;
+        const orderData = await order.findById({_id:orderId})
+        const pdfPath = await pdfService.generateInvoice(orderData)
+        res.download(pdfPath);
+    } catch (error) {
+        console.log(error)
+        next(new AppError('Sorry...Something went wrong', 500))
+    }
+}
+
+module.exports = {userOrder,userOrderView,adminSingleOrderView,adminOrderview,adminEditOrder,editOrder,adminEditOrderPost,cancelOrder,returnOrder,generateInvoice}

@@ -369,74 +369,86 @@
     </nav>
   </header>
   <div class="toast-container"></div>
-    <div class="cart-container">
-        <table>
-            <thead>
-                <tr>
-                    <th>Remove</th>
-                    <th>Image</th>
-                    <th>Product</th>
-                    <th>Unit Price</th>
-                    <th>Quantity</th>
-                    <th>Total</th>
-                </tr>
-            </thead>
-            <tbody>
-                <% cartItems.forEach(item => { %>
-                  <% if(item?.productId?.isListed) { %>
+    <% if(cartItems.length != 0){ %>
+        <div class="cart-container">
+            <table>
+                <thead>
                     <tr>
-                      <td><button class="remove-product" onclick="removeItem('<%= item._id %>')">⛔</button></td>
-                      <td><img src="<%= item?.productId?.productImage1 %>" alt="<%= item.productId?.productName %>" class="cart-image"></td>
-                      <td><%= item?.productId?.productName %></td>
-                      <% if(item?.productId?.productOfferPrice) { %>
-                          <td><%= item.productId.productOfferPrice %></td>
-                       <% } else { %>
-                          <td><%= item.productId.productPrice %></td>
-                       <% } %>
-                      <td>
-                        <div class="quantity">
-                            <button class="crl-button decrease-btn" id="dec-button" onclick="decr('<%= item._id %>')">-</button>
-                            <input type="number" id="quantity-input-<%= item._id %>" value="<%= item.productQuantity %>" min="1" data-limit="<%= item.productId.productStock  %>" data-max="<%= item.productId.productStock  %> || 100" class="quantity-input">
-                            <button class="crl-button increase-btn" id="inc-button" onclick="incr('<%= item._id %>')">+</button>
-                        </div>
-                      </td>
-                      <% if(item.productId.productOfferPrice) { %>
-                        <td><%= item.productId.productOfferPrice * item.productQuantity %></td>
-                     <% } else { %>
-                        <td><%= item.productId.productPrice * item.productQuantity %></td>
-                     <% } %>
+                        <th>Remove</th>
+                        <th>Image</th>
+                        <th>Product</th>
+                        <th>Unit Price</th>
+                        <th>Quantity</th>
+                        <th>Total</th>
                     </tr>
-                  <% } %>
-                <% }) %>
-            </tbody>
-        </table>
-
-        <div class="cart-totals">
-            <div class="totals-box">
-                <h3>Cart Totals</h3>
-                <table class="totals-table">
-                    <tr>
-                        <td>Sub Total:</td>
-                        <td id="sub-total">₹0.00</td>
-                    </tr>
-                    <tr>
-                        <td>Delivery:</td>
-                        <td>Free</td>
-                    </tr>
-                    <tr>
-                        <td>GST (18%):</td>
-                        <td id="gst">₹0.00</td>
-                    </tr>
-                    <tr>
-                        <td><strong>Total:</strong></td>
-                        <td id="total"><strong>₹0.00</strong></td>
-                    </tr>
-                </table>
-                <button class="checkout-btn" onclick="checkout()">Proceed to Checkout</button>
+                </thead>
+                <tbody>
+                    <% cartItems.forEach(item => { %>
+                      <% if(item?.productId?.isListed) { %>
+                        <tr>
+                          <td><button class="remove-product" onclick="removeItem('<%= item._id %>')">⛔</button></td>
+                          <td><img src="<%= item?.productId?.productImage1 %>" alt="<%= item.productId?.productName %>" class="cart-image"></td>
+                          <td><%= item?.productId?.productName %></td>
+                          <% if(item?.productId?.productOfferPrice) { %>
+                              <td><%= item.productId.productOfferPrice %></td>
+                           <% } else { %>
+                              <td><%= item.productId.productPrice %></td>
+                           <% } %>
+                          <td>
+                            <div class="quantity">
+                                <button class="crl-button decrease-btn" id="dec-button" onclick="decr('<%= item._id %>')">-</button>
+                                <input type="number" id="quantity-input-<%= item._id %>" value="<%= item.productQuantity %>" min="1" data-limit="<%= item.productId.productStock  %>" data-max="<%= item.productId.productStock  %> || 100" class="quantity-input">
+                                <button class="crl-button increase-btn" id="inc-button" onclick="incr('<%= item._id %>')">+</button>
+                            </div>
+                          </td>
+                          <% if(item.productId.productOfferPrice) { %>
+                            <td><%= item.productId.productOfferPrice * item.productQuantity %></td>
+                         <% } else { %>
+                            <td><%= item.productId.productPrice * item.productQuantity %></td>
+                         <% } %>
+                        </tr>
+                      <% } %>
+                    <% }) %>
+                </tbody>
+            </table>
+    
+            <div class="cart-totals">
+                <div class="totals-box">
+                    <h3>Cart Totals</h3>
+                    <table class="totals-table">
+                        <tr>
+                            <td>Sub Total:</td>
+                            <td id="sub-total">₹0.00</td>
+                        </tr>
+                        <tr>
+                            <td>Delivery:</td>
+                            <td>Free</td>
+                        </tr>
+                        <tr>
+                            <td>GST (18%):</td>
+                            <td id="gst">₹0.00</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Total:</strong></td>
+                            <td id="total"><strong>₹0.00</strong></td>
+                        </tr>
+                    </table>
+                    <button class="checkout-btn" onclick="checkout()">Proceed to Checkout</button>
+                </div>
+                
             </div>
-            
         </div>
-    </div>
+    <% } else { %>
+        <div class="cart-container">
+            <div class="cart-totals">
+                <div class="totals-box">
+                    <h3>Empty Cart</h3>
+                    <p>Your cart is currently empty.</p>
+                </div>
+                
+            </div>
+        </div>
+    <% } %>
     <!-- Footer Section -->
     <footer class="py-5">
       <div class="container">

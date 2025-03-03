@@ -160,6 +160,48 @@
         .checkout-btn:hover {
             background-color: #218838;
         }
+
+        .invoice {
+            position: relative;
+            overflow: hidden;
+            height: 3rem;
+            padding: 0 2rem;
+            border-radius: 1.5rem;
+            background: #767676;
+            background-size: 400%;
+            color: #fff;
+            border: none;
+            cursor: pointer;
+        }
+
+        .invoice:hover::before {
+            transform: scaleX(1);
+        }
+
+        .button-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .invoice::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            transform: scaleX(0);
+            transform-origin: 0 50%;
+            width: 100%;
+            height: inherit;
+            border-radius: inherit;
+            background: linear-gradient(
+                82.3deg,
+                #5A8A27,
+                #4d6930
+            );
+            transition: all 0.475s;
+        }
+
+
         /* Footer */
         footer {
             background-color: #8CBF3A; /* Updated background color */
@@ -256,6 +298,14 @@
     </nav>
   </header>
     <div class="cart-container">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <h1>Order</h1>
+                <a href="/generate-invoice/<%= orderData._id %>">
+                    <button class="invoice">
+                        <span class="button-content">Download Invoice</span>
+                    </button>
+                </a>
+        </div>
         <table>
             <thead>
                 <tr>

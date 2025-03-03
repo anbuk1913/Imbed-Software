@@ -4,7 +4,7 @@ const AppError = require("../middleware/errorHandling")
 const generatePDFService = require('../services/pdfService');
 const generateExcelService = require('../services/xlsxService')
 
-const salesReportPage = async(req,res)=>{
+const salesReportPage = async(req,res,next)=>{
     try {
         const start = req.session.startDate
         const end = req.session.endDate
@@ -23,6 +23,7 @@ const salesReportPage = async(req,res)=>{
             }
             totalAmount = Math.floor(totalAmount)
             discount = Math.floor(discount)
+            console.log(discount)
             return res.render("admin/salesReport",{orders,start,end,timePeriod,totalAmount,discount})
         }
         else if(timePeriod){
@@ -86,7 +87,7 @@ const salesReportPage = async(req,res)=>{
     }
 }
 
-const filterByDate = async(req,res)=>{
+const filterByDate = async(req,res,next)=>{
     try {
         req.session.startDate = req.body.startDate
         req.session.endDate = req.body.endDate
@@ -98,7 +99,7 @@ const filterByDate = async(req,res)=>{
     }
 }
 
-const filterByTimePeriod = async(req,res)=>{
+const filterByTimePeriod = async(req,res,next)=>{
     try {
         req.session.startDate = null
         req.session.endDate = null
@@ -110,7 +111,7 @@ const filterByTimePeriod = async(req,res)=>{
     }
 }
 
-const clearFilter = async(req,res)=>{
+const clearFilter = async(req,res,next)=>{
     try {
         req.session.startDate = null
         req.session.endDate = null
@@ -122,7 +123,7 @@ const clearFilter = async(req,res)=>{
     }
 }
 
-const generatePDFpage = async(req,res)=>{
+const generatePDFpage = async(req,res,next)=>{
     try {
         let totalAmount = 0
         let discount = 0
@@ -238,7 +239,7 @@ const generatePDFpage = async(req,res)=>{
     }
 }
 
-const generateExcel = async(req,res)=>{
+const generateExcel = async(req,res,next)=>{
     try {
         let totalAmount = 0
         let discount = 0

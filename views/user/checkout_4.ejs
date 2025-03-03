@@ -718,7 +718,9 @@
                     }
                     if(payMethod.paymentMethod == "Online Payment"){
                         const ans = await payNow();
-                    } else {
+                    } else if(payMethod.paymentMethod == "COD"){
+                        await orderItem();
+                    } else if(payMethod.paymentMethod == "Wallet"){
                         await orderItem();
                     }
                 } else {
@@ -763,6 +765,15 @@
                 orderPrice = { subTotal, delivery, gst, coupon, total };
             } else {
                 orderPrice = { subTotal, delivery, gst,  total };
+            }
+            if(total>1000){
+                Swal.fire({
+                        title: 'OOPS!',
+                        text: 'Cash on Delivery is not available for orders above ₹1000. Please choose a different payment method.',
+                        icon: 'error',
+                        confirmButtonText: 'OK'
+                    })
+                    return 
             }
             try{
                 const response = await fetch('/orderproduct', {

@@ -2,7 +2,7 @@ const offer = require("../model/offerModel")
 const category = require("../model/categoryModel");
 const AppError = require("../middleware/errorHandling")
 
-const offerPage = async(req,res)=>{
+const offerPage = async(req,res,next)=>{
     try {
         const categoryOffer = await offer.find({}).populate({
             path: "categoryId",
@@ -16,7 +16,7 @@ const offerPage = async(req,res)=>{
     }
 }
 
-const addOffer = async(req,res)=>{
+const addOffer = async(req,res,next)=>{
     try {
         const categoryCheck = await offer.findOne({categoryId: req.body.categoryName});
         if(categoryCheck){
@@ -37,7 +37,7 @@ const addOffer = async(req,res)=>{
     }
 }
 
-const editOffer = async(req,res)=>{
+const editOffer = async(req,res,next)=>{
     try {
         const offerId = req.body.offerId
         const categoryId = req.body.categoryName

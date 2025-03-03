@@ -20,7 +20,7 @@ async function comparePassword(enteredPassword, storedPassword) {
     return isMatch;
 }
 
-const homePage = async (req,res)=>{
+const homePage = async (req,res,next)=>{
     try{
         let name = ""
         const offers = await offer.find({})
@@ -67,7 +67,7 @@ const homePage = async (req,res)=>{
     }
 }
 
-const loginPage = async(req,res)=>{
+const loginPage = async(req,res,next)=>{
     try {
         if(req.session.loginSession || req.session.signupSession){
             return res.redirect("/")
@@ -81,7 +81,7 @@ const loginPage = async(req,res)=>{
     }
 }
 
-const signUpPage = async(req,res)=>{
+const signUpPage = async(req,res,next)=>{
     try {
         if(req.session.loginSession || req.session.signupSession){
             return res.redirect("/")
@@ -95,7 +95,7 @@ const signUpPage = async(req,res)=>{
     }
 }
 
-const otpSend = async(req,res)=>{
+const otpSend = async(req,res,next)=>{
     req.session.otpSession = true
     const generatedOtp = Math.floor(100000 + Math.random() * 900000).toString()
     req.session.otpError = null
@@ -107,7 +107,7 @@ const otpSend = async(req,res)=>{
     res.redirect("/otp")
 }
 
-const otpPage = async(req,res)=>{
+const otpPage = async(req,res,next)=>{
     if(req.session.otpSession){
         const otpError = req.session.otpError
         // If OTP time isn't set, set it
@@ -123,7 +123,7 @@ const otpPage = async(req,res)=>{
 } 
 
 
-const otpPost = async(req,res)=>{
+const otpPost = async(req,res,next)=>{
     const findOtp = await otpCollection.findOne({email:req.session.user.email})
     if(await comparePassword(req.body.otp,findOtp.otp)){
         const user = new usercollection({
@@ -145,7 +145,7 @@ const otpPost = async(req,res)=>{
     }
 }
 
-const signUpPost = async(req,res)=>{
+const signUpPost = async(req,res,next)=>{
     try{
         const userExists = await usercollection.findOne({ email: req.body.email });
         if (userExists) {
@@ -167,7 +167,7 @@ const signUpPost = async(req,res)=>{
     }
 }
 
-const loginPost = async(req,res)=>{
+const loginPost = async(req,res,next)=>{
     try{
         const userData = await usercollection.findOne({ email: req.body.email });
         if (userData) {
@@ -221,7 +221,7 @@ const googleCallback=async (req, res) => {
   } 
 
 
-const blockedUser = async(req,res)=>{
+const blockedUser = async(req,res,next)=>{
     const user = await usercollection.findOne({ email: req.session.user.email })
     if(user.isActive == false){
         return res.render("user/blockedUser")

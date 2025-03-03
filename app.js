@@ -7,8 +7,6 @@ const session = require('express-session');
 const methodOverride = require('method-override');
 const passport = require('./config/passport');
 const morgan = require('morgan')
-
-const setUser = require('./model/userModel');
 require("./config/dbConnect");
 
 const userRouter = require("./routes/userRouter");
@@ -19,7 +17,6 @@ app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 app.set('view engine', 'ejs');
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ limit: '10mb', extended: true }));
-
 
 app.use((req, res, next) => {
     res.set("Cache-Control", "no-store");
@@ -45,6 +42,9 @@ app.use((err, req, res, next) => {
     res.status(statusCode).render("user/errorPage", { statusCode, errorMessage });
 });
 
+app.use((req, res) => {
+    res.status(404).render("user/page404");
+});
 
 
 app.listen(3000, () => {

@@ -4,7 +4,7 @@ const fs = require("fs");
 const path = require("path");
 
 // Read HTML template
-const emailTemplatePath = path.join(__dirname, '/../views/admin/otp.html');
+const emailTemplatePath = path.join(__dirname, '/../public/otp.html');
 const emailTemplate = fs.readFileSync(emailTemplatePath, 'utf8');
 
 let sendOtp = async (otp, email, name) => {

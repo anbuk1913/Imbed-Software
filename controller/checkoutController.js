@@ -32,7 +32,7 @@ if(!fs.existsSync('orders.json')){
     writeData([])
 }
 
-const checkoutPageOne = async(req,res)=>{
+const checkoutPageOne = async(req,res,next)=>{
     try {
         if(req.session.checkOne){
             const userEmail = req.session.user.email
@@ -47,7 +47,7 @@ const checkoutPageOne = async(req,res)=>{
     }
 }
 
-const checkoutTwoPost = async(req,res)=>{
+const checkoutTwoPost = async(req,res,next)=>{
     try {
         req.session.firstName = req.body.firstName
         req.session.lastName = req.body.lastName
@@ -70,7 +70,7 @@ const checkoutTwoPost = async(req,res)=>{
     }
 }
 
-const billingPage = async(req,res)=>{
+const billingPage = async(req,res,next)=>{
     try {
         const userEmail = req.session.user.email
         const userVer = await usercollection.findOne({ email: userEmail });
@@ -82,7 +82,7 @@ const billingPage = async(req,res)=>{
     }
 }
 
-const billingMethodPost = async(req,res)=>{
+const billingMethodPost = async(req,res,next)=>{
     try {
         req.session.billingMethode = req.body.shipping
         return res.redirect("/payment")
@@ -92,7 +92,7 @@ const billingMethodPost = async(req,res)=>{
     }
 }
 
-const paymentPage = async(req,res)=>{
+const paymentPage = async(req,res,next)=>{
     try {
         const userEmail = req.session.user.email
         const userVer = await usercollection.findOne({ email: userEmail });
@@ -104,7 +104,7 @@ const paymentPage = async(req,res)=>{
     }
 }
 
-const paymentMethod = async(req,res)=>{
+const paymentMethod = async(req,res,next)=>{
     try {
         req.session.paymentMethod = req.body.payment
         return res.redirect("/review")
@@ -114,7 +114,7 @@ const paymentMethod = async(req,res)=>{
     }
 }
 
-const finalReview = async(req,res)=>{
+const finalReview = async(req,res,next)=>{
     try {
         const userEmail = req.session.user.email
         const userVer = await usercollection.findOne({ email: userEmail });
@@ -160,7 +160,7 @@ const finalReview = async(req,res)=>{
     }
 }
 
-const finalQuantityCheck = async(req,res)=>{
+const finalQuantityCheck = async(req,res,next)=>{
     try {
         const userEmail = req.session.user.email
         const userVer = await usercollection.findOne({ email: userEmail });
@@ -213,7 +213,7 @@ const finalQuantityCheck = async(req,res)=>{
     }
 }
 
-const orderPost = async(req,res)=>{
+const orderPost = async(req,res,next)=>{
     try {
         const userEmail = req.session.user.email
         const userVer = await usercollection.findOne({ email: userEmail });
@@ -286,7 +286,7 @@ const orderPost = async(req,res)=>{
             let price = 0
             if(cartItems[i].productId?.productOfferPrice){
                 price = cartItems[i].productId.productOfferPrice
-                totalDiscountAmount += cartItems[i].productId.productPrice - cartItems[i].productId.productOfferPrice
+                totalDiscountAmount += (cartItems[i].productId.productPrice - cartItems[i].productId.productOfferPrice)*(cartItems[i].productQuantity)
             }
             else{
                 price = cartItems[i].productId.productPrice
@@ -357,7 +357,7 @@ const orderPost = async(req,res)=>{
     }
 }
 
-const confirmPage = async(req,res)=>{
+const confirmPage = async(req,res,next)=>{
     try {
         if(req.session.orderId){
             const userEmail = req.session.user.email
@@ -374,7 +374,7 @@ const confirmPage = async(req,res)=>{
     }
 }
 
-const applyCoupon = async(req,res)=>{
+const applyCoupon = async(req,res,next)=>{
     try {
         const userEmail = req.session.user.email
         const userVer = await usercollection.findOne({ email: userEmail });
@@ -429,7 +429,7 @@ const applyCoupon = async(req,res)=>{
     }
 }
 
-const removeCoupon = async(req,res)=>{
+const removeCoupon = async(req,res,next)=>{
     try {
         req.session.couponCode = null
         req.session.coupon = null
@@ -440,7 +440,7 @@ const removeCoupon = async(req,res)=>{
     }
 }
 
-const onlinePay = async(req,res)=>{
+const onlinePay = async(req,res,next)=>{
     try {
         const {amount, currency, receipt, notes } = req.body;
         const options = {
@@ -467,7 +467,7 @@ const onlinePay = async(req,res)=>{
     }
 }
 
-const verifyPayment = async(req,res)=>{
+const verifyPayment = async(req,res,next)=>{
 
     const {razorpay_order_id, razorpay_payment_id, razorpay_signature } = req.body
     const secret = process.env.KEY_SECRET
