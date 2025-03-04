@@ -45,7 +45,6 @@ const adminSingleOrderView = async(req,res,next)=>{
     try {
         const orderId = req.params.id;
         const orderData = await order.findById({_id:orderId})
-        console.log(orderData)
         if(orderData){
             return res.render('admin/singleOrder',{orderData})
         } else {

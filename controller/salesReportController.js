@@ -23,7 +23,6 @@ const salesReportPage = async(req,res,next)=>{
             }
             totalAmount = Math.floor(totalAmount)
             discount = Math.floor(discount)
-            console.log(discount)
             return res.render("admin/salesReport",{orders,start,end,timePeriod,totalAmount,discount})
         }
         else if(timePeriod){

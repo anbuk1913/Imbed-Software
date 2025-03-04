@@ -12,8 +12,8 @@ const router = express.Router()
 
 //Admin
 router.get("/admin",adminController.adminLog)
-router.get("/adminhome",adminAuth,adminController.adminHome)
-router.get("/adminusers",adminAuth,adminController.adminUser)
+router.get("/admin/home",adminAuth,adminController.adminHome)
+router.get("/admin/users",adminAuth,adminController.adminUser)
 router.post("/adminVer",adminController.adminLogPost)
 router.post("/user/list/:id",adminController.listUser)
 router.post("/user/unlist/:id",adminController.unListUser)

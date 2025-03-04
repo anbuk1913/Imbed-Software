@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Dashboard</title>
+  <link rel="icon" href="/images/logo.png">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Afacad+Flux:wght@100..1000&display=swap" rel="stylesheet">
+</head>
+<style>
+  * {
+      font-family: "Afacad Flux", serif;
+      font-weight: 700;
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+  }
+</style>
+
+<body >
+  <%- include('../adminPartials/header') %>
+  <div class="container mt-4">
+    <h3>Imbed Software</h3>
+
+    <div class="row">
+        <div class="col-md-3">
+            <div class="card p-3 text-center">
+                <h4><%= completedOrders %></h4>
+                <p>Completed Orders</p>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card p-3 text-center">
+                <h4><%= ordersToShip %></h4>
+                <p>Orders to ship</p>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card p-3 text-center">
+                <h4>₹<%= todayIncome %></h4>
+                <p>Today's Income</p>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card p-3 text-center">
+                <h4><%= productCount.total %> in <%= productCount.categories %> categories</h4>
+                <p>Products Count</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="row mt-4">
+        <div class="col-md-6" style="max-width: 500px;">
+            <div class="card p-3">
+                <h5>Category Wise Revenue</h5>
+                <canvas id="categoryChart"></canvas>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card p-3">
+                <h5>Last Two Week Sales</h5>
+                <canvas id="salesChart"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <div class="row mt-4">
+        <div class="col-md-4">
+            <div class="card p-3 text-center">
+                <h4>Total Revenue</h4>
+                <h3>₹<%= totalRevenue %></h3>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card p-3 text-center">
+                <h4>Monthly Revenue</h4>
+                <h3>₹<%= monthlyRevenue %></h3>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card p-3 text-center">
+                <h4>Users</h4>
+                <h3>₹<%= activeUsers %> <span class="text-success">Active users</span></h3>
+            </div>
+        </div>
+    </div>
+  </div>
+  <%- include('../adminPartials/footer') %>
+
+  <input type="hidden" id="categoryRevenue" value='<%- JSON.stringify(categoryRevenue) %>' />
+  <input type="hidden" id="salesData" value='<%- JSON.stringify(salesData) %>' />
+
+  <script>
+      // Pie Chart for Category Wise Revenue
+      const categoryData = JSON.parse(document.getElementById('categoryRevenue').value);
+      const categoryCtx = document.getElementById('categoryChart').getContext('2d');
+      new Chart(categoryCtx, {
+          type: 'doughnut',
+          data: {
+              labels: categoryData.map(c => c.name),
+              datasets: [{
+                  data: categoryData.map(c => c.value),
+                  backgroundColor: categoryData.map(c => c.color),
+              }]
+          }
+      });
+
+      // Line Chart for Last Two Week Sales
+      const salesData = JSON.parse(document.getElementById('salesData').value);
+      const salesCtx = document.getElementById('salesChart').getContext('2d');
+      new Chart(salesCtx, {
+          type: 'line',
+          data: {
+              labels: salesData.map(s => s.date),
+              datasets: [{
+                  label: 'Last 2 weeks revenue per day',
+                  data: salesData.map(s => s.revenue),
+                  borderColor: 'blue',
+                  fill: false,
+                  tension: 0.1
+              }]
+          }
+      });
+  </script>
+</body>
+</html>

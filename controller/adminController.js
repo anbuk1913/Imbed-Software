@@ -1,4 +1,5 @@
 const usercollection = require("../model/userModel")
+const dashboardHelper = require("../helper/dashboardHelper")
 const AppError = require("../middleware/errorHandling")
 
 const adminLog = async(req,res,next)=>{
@@ -11,13 +12,38 @@ const adminLog = async(req,res,next)=>{
 }
 
 const adminHome = async (req,res,next)=>{
-        return res.render("admin/adminDash")
+    try {
+        const [
+            completedOrders,
+            ordersToShip,
+            todayIncome,
+            productCount,
+            totalRevenue,
+            monthlyRevenue,
+            activeUsers,
+            categoryRevenue,
+            salesData
+        ] = await Promise.all([
+            dashboardHelper.completedOrders(),
+            dashboardHelper.ordersToShip(),
+            dashboardHelper.todayIncome(),
+            dashboardHelper.productCount(),
+            dashboardHelper.totalRevenue(),
+            dashboardHelper.monthlyRevenue(),
+            dashboardHelper.activeUsers(),
+            dashboardHelper.categoryRevenue(),
+            dashboardHelper.salesData()
+        ]);
+        return res.render("admin/dashboard",{completedOrders,ordersToShip,todayIncome,productCount,totalRevenue,monthlyRevenue,activeUsers,categoryRevenue,salesData})
+    } catch (error) {
+        console.log(error)
+    }
 }
 
 const adminLogPost = async(req,res,next)=>{
     if(req.body.email===process.env.EMAIL && req.body.password === process.env.PASSWORD){
         req.session.adminVer = true
-        return res.redirect("/adminusers")
+        return res.redirect("/admin/home")
     } else {
         req.session.adminError = "Incorrect Email or Password"
         return res.redirect("/admin")

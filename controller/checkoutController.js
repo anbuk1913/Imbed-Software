@@ -317,7 +317,7 @@ const orderPost = async(req,res,next)=>{
         for(let i=0;i<cartItems.length;i++){
             const count=-(cartItems[i].productQuantity)
             const id = cartItems[i].productId
-            await product.updateOne({_id:id},{$inc:{productStock:count}})
+            await product.updateOne({_id:id},{$inc:{productStock:count,salesCount:(-count)}})
         }
         let amounts
         if(req.body.coupon){
