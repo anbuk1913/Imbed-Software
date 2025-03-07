@@ -10,6 +10,9 @@ const walletSchema= new mongoose.Schema({
             transactionType: { type: String,enum : ['Credit on Cancel', 'Debit', 'Refund'] }
         }
     ]
+},
+{
+    timestamps:true
 })
 
 const wallet = mongoose.model('wallet',walletSchema)

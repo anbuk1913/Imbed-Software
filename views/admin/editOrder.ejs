@@ -278,7 +278,7 @@
                     <select name="orderStatus" id="orderStatus" class="form-control">
                         <option value="Pending" <%= orderData.status === "pending" ? "selected" : "" %>>Pending</option>
                         <option value="Delivered" <%= orderData.status === "delivered" ? "selected" : "" %>>Delivered</option>
-                        <option value="Shipping" <%= orderData.status === "cancelled" ? "selected" : "" %>>Shipping</option>
+                        <option value="Shipping" <%= orderData.status === "Shipping" ? "selected" : "" %>>Shipping</option>
                         <option value="Returned" <%= orderData.status === "returned" ? "selected" : "" %>>Returned</option>
                     </select>
                     <button type="submit" class="btn btn-primary">Update</button>

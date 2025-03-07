@@ -75,8 +75,8 @@ const generateInvoice = (orderData) => {
               ...orderData.products.map(product => [
                 product.productName,
                 product.quantity,
-                `$${product.productPrice}`,
-                `$${product.productPrice * product.quantity}`
+                `₹${product.productPrice}`,
+                `₹${product.productPrice * product.quantity}`
               ])
             ]
           },

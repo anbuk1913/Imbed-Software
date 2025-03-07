@@ -4,7 +4,7 @@ const category = require("../model/categoryModel");
 const usercollection = require("../model/userModel");
 const AppError = require("../middleware/errorHandling");
 
-function getRandomColor() {
+function getRandomColor(){
     return `#${Math.floor(Math.random()*16777215).toString(16)}`;
 }
 
@@ -24,19 +24,35 @@ function fillMissingRevenue(data, days = 14) {
     return result;
 }
 
-const completedOrders = async()=>{
+const completedOrders = async(start,end)=>{
     try {
-        const completedOrdersCount = await order.countDocuments({status:"Delivered"})
-        return completedOrdersCount
+        if(start&&end){
+            const completedOrdersCount = await order.countDocuments({status:"Delivered",deliveryDate:{
+                $gte: start,
+                $lte: end
+            }})
+            return completedOrdersCount
+        } else {
+            const completedOrdersCount = await order.countDocuments({status:"Delivered"})
+            return completedOrdersCount
+        }
     } catch (error) {
         console.log("CompletedOrders Error:",error)        
     }
 }
 
-const ordersToShip = async()=>{
+const ordersToShip = async(start,end)=>{
     try {
-        const ordersToShipCount = await order.countDocuments({status:"Pending"})
-        return ordersToShipCount
+        if(start && end){
+            const ordersToShipCount = await order.countDocuments({status:"Pending",createdAt:{
+                $gte: start,
+                $lte: end
+            }})
+            return ordersToShipCount
+        } else {
+            const ordersToShipCount = await order.countDocuments({status:"Pending"})
+            return ordersToShipCount
+        }
     } catch (error) {
         console.log("ordersToShip Error:",error)
     }
@@ -127,44 +143,92 @@ const activeUsers = async()=>{
     }
 }
 
-const categoryRevenue = async()=>{
+const categoryRevenue = async(start,end)=>{
     try {
-        const categoryRevenueData = await product.aggregate([
-            {
-                $match:{salesCount:{$gt:0}}
-            },
-            {
-                $group:{
-                    _id: "$productCategoryId",
-                    totalProducts:{ $sum: "$salesCount" }
-                }
-            },
-            {
-                $lookup:{
-                    from:"category",
-                    localField:"_id",
-                    foreignField:"_id",
-                    as:"categoryRevenueData"
-                }
-            },
-            {
-                $project: {
-                    categoryName: { $arrayElemAt: ["$categoryRevenueData.categoryName", 0] },
-                    totalProducts: 1
+        if(start && end){
+            const completedOrders = await order.find({status:"Delivered",deliveryDate:{
+                $gte: start,
+                $lte: end
+            }})
+            let productCount = []
+            for(let i=0;i<completedOrders.length;i++){
+                for(let j=0;j<completedOrders[i].products.length;j++){
+                    for(let k=0;k<completedOrders[i].products[j].quantity;k++){
+                        productCount.push(completedOrders[i].products[j].productName)
+                    }
                 }
             }
-        ])
-        for(let i of categoryRevenueData){
-            const categories = await category.findOne({_id:i._id})
-            i.categoryName = categories.categoryName
+            let obj = {};
+            for (let i = 0; i < productCount.length; i++) {
+                if (!Object.keys(obj).includes(productCount[i])) {
+                    obj[productCount[i]] = 1;
+                } else {
+                    obj[productCount[i]] += 1;
+                }
+            }
+
+            let cat = {};
+            const promises = Object.keys(obj).map(async (i) => {
+                const data = await product.findOne({ productName: { $regex: i, $options: "i" } });
+                if (data) {
+                    cat[data.productCategoryId] = obj[i];
+                }
+            });
+            await Promise.all(promises);
+
+            let res = {};
+            for (let i of Object.keys(cat)) {
+                const data = await category.findById(i);
+                if (data) {
+                    res[data.categoryName] = cat[i];
+                }
+            }
+
+            let result = [];
+            for (let i of Object.keys(res)) {
+                const color = getRandomColor();
+                const tem = { name: i, value: res[i], color };
+                result.push(tem);
+            }
+            return result
+        } else {
+            const categoryRevenueData = await product.aggregate([
+                {
+                    $match:{salesCount:{$gt:0}}
+                },
+                {
+                    $group:{
+                        _id: "$productCategoryId",
+                        totalProducts:{ $sum: "$salesCount" }
+                    }
+                },
+                {
+                    $lookup:{
+                        from:"category",
+                        localField:"_id",
+                        foreignField:"_id",
+                        as:"categoryRevenueData"
+                    }
+                },
+                {
+                    $project: {
+                        categoryName: { $arrayElemAt: ["$categoryRevenueData.categoryName", 0] },
+                        totalProducts: 1
+                    }
+                }
+            ])
+            for(let i of categoryRevenueData){
+                const categories = await category.findOne({_id:i._id})
+                i.categoryName = categories.categoryName
+            }
+            let result = []
+            for(let i of categoryRevenueData){
+                const color = getRandomColor()
+                const tem = {name: i.categoryName, value: i.totalProducts , color: color}
+                result.push(tem)
+            }
+            return result
         }
-        let result = []
-        for(let i of categoryRevenueData){
-            const color = getRandomColor()
-            const tem = {name: i.categoryName, value: i.totalProducts , color: color}
-            result.push(tem)
-        }
-        return result
     } catch (error) {
         console.log("categoryRevenue Error:",error)
     }

@@ -12,11 +12,16 @@ const router = express.Router()
 
 //Admin
 router.get("/admin",adminController.adminLog)
+router.post("/adminVer",adminController.adminLogPost)
 router.get("/admin/home",adminAuth,adminController.adminHome)
 router.get("/admin/users",adminAuth,adminController.adminUser)
-router.post("/adminVer",adminController.adminLogPost)
-router.post("/user/list/:id",adminController.listUser)
-router.post("/user/unlist/:id",adminController.unListUser)
+router.post("/user/list/:id",adminAuth,adminController.listUser)
+router.post("/user/unlist/:id",adminAuth,adminController.unListUser)
+router.get("/admin/top-products",adminAuth,adminController.topProduct)
+router.get("/admin/top-category",adminAuth,adminController.topCategory)
+router.put("/admin/dash/filter",adminAuth,adminController.timePeriodFilter)
+router.put("/admin/dash/clearfilter",adminAuth,adminController.clearDashFilter)
+router.put("/admin/dash/filter-by-date",adminAuth,adminController.dashBoardDateWiseFilter)
 router.post("/adminlogout",adminController.logoutAdmin)
 
 //Category

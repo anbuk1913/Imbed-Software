@@ -46,6 +46,6 @@ app.use((req, res) => {
     res.status(404).render("user/page404");
 });
 
-app.listen(3000, () => {
+app.listen(process.env.PORT, () => {
     console.log("Server Created");
 });
