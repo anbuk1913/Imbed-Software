@@ -24,7 +24,7 @@ app.use((req, res, next) => {
 });
 
 app.use(session({
-    secret: process.env.SECRET-KEYS,
+    secret: "secret-key",
     resave: false,
     saveUninitialized: true
 }));
