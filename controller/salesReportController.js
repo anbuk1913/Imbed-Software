@@ -126,9 +126,9 @@ const generatePDFpage = async(req,res,next)=>{
     try {
         let totalAmount = 0
         let discount = 0
-        if(req.session.startDate){
-            const start = req.session.startDate
-            const end = req.session.endDate
+        if(req.session.startDate && req.session.startDate){
+            let start = req.session.startDate
+            let end = req.session.endDate
             const orders = await order.find({status:"Delivered",deliveryDate:{
                 $gte: start,
                 $lte: end
@@ -150,9 +150,9 @@ const generatePDFpage = async(req,res,next)=>{
         }
         else if(req.session.timePeriod){
             const timePeriod = req.session.timePeriod
-            const today = new Date();
+            let today = new Date();
             if(timePeriod == 'week'){
-                const lastWeek = new Date();
+                let lastWeek = new Date();
                 lastWeek.setDate(today.getDate() - 7);
                 const orders = await order.find({status:"Delivered",deliveryDate:{
                     $gte: lastWeek,
@@ -242,7 +242,7 @@ const generateExcel = async(req,res,next)=>{
     try {
         let totalAmount = 0
         let discount = 0
-        if(req.session.startDate){
+        if(req.session.startDate && req.session.endDate){
             const start = req.session.startDate
             const end = req.session.endDate
             const orders = await order.find({status:"Delivered",deliveryDate:{

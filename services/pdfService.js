@@ -1,6 +1,7 @@
 const PdfPrinter = require('pdfmake');
 const path = require('path');
 const fs = require('fs');
+const { strategies } = require('passport');
 
 const fonts = {
     Roboto: {
@@ -13,7 +14,12 @@ const printer = new PdfPrinter(fonts);
 
 const generatePDF = async (orders, totalOrderAmount, discountAmount, start, end) => {
     if(start && end){
-        const dateText = `From: ${start.split('T')[0]}  To: ${end.split('T')[0]}`
+        let dateText
+        if(typeof(start)=="object"){
+            dateText = `From: ${start.toISOString().split('T')[0]}  To: ${end.toISOString().split('T')[0]}`;
+        } else {
+            dateText = `From: ${start.split('T')[0]}  To: ${end.split('T')[0]}`
+        }
         return new Promise((resolve, reject) => {
             const logoPath = path.join(__dirname, '../public/images', 'logo.png');
             const docDefinition = {

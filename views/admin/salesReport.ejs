@@ -202,22 +202,22 @@
                         </div>
                     </div>
                 </form>
-                    <form id="plan-view" class="d-flex gap-2 align-items-center flex-wrap">
                         <div style="display: flex; justify-content: center; width: 100%;">
-                      
+                            <form id="plan-view" class="d-flex gap-2 align-items-center flex-wrap">
                                 <label for="timePeriod">Time Period</label>
-                                <select id="timePeriod" class="form-select" name="timePeriod" style="padding: 0px 10px; height: 40px; margin: 0px 20px; width: 20%;">
+                                <select id="timePeriod" class="form-select" name="timePeriod" style="padding: 0px 10px; height: 40px; margin: 0px 20px 0px 0px; width: 29%;">
                                     <option disabled value="" <%= timePeriod === null ? "selected" : "" %>>Select</option>
                                     <option value="week" <%= timePeriod === "week" ? "selected" : "" %>>Week</option>
                                     <option value="month" <%= timePeriod === "month" ? "selected" : "" %>>Month</option>
                                     <option value="year" <%= timePeriod === "year" ? "selected" : "" %>>Year</option>
                                 </select>
-                                <button id="filterBtn" class="btn btn-success" disabled style="width: 20%;">Filter</button>
+                                <button id="filterBtn" type="submit" class="btn btn-success" disabled style="width: 20%;">Filter</button>
+                            </form>
                                 <button class="btn btn-outline-secondary" style="width: 20%; height: 40px; margin: 0px 20px;" onclick="clearFilter()">Clear Filters</button>
                                 <button class="btn btn-info" style="width: 20%; height: 40px;" onclick="window.location.href='/admin/salesreport-pdf'">Download (PDF)</button>
                                 <button class="btn btn-info" style="width: 20%; height: 40px; margin: 0px 5px;" onclick="window.location.href='/admin/salesreport-xlsx'">Download (xlsx)</button>
                         </div>
-                    </form>
+                    
             </div>
         </div>
 
@@ -328,7 +328,6 @@
         
         document.getElementById("plan-view").addEventListener("submit", async function(event) {
             event.preventDefault(); // Prevent page reload
-        
             const timePeriod = document.getElementById("timePeriod").value;
             const filterBtn = document.getElementById("filterBtn");
         
