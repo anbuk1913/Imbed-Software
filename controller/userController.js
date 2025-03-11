@@ -185,9 +185,9 @@ const loginPost = async(req,res,next)=>{
             } else {
                 return res.status(208).send({ success: false })
             }
-          } else {
+        } else {
             return res.status(208).send({ success: false })
-          }
+        }
     } catch (error) {
         console.log(error);
         next(new AppError('Sorry...Something went wrong', 500));
@@ -237,7 +237,6 @@ const logout = async(req,res)=>{
     req.session.user = null
     req.session.logError = null
     req.session.signError = null
-    req.session.otp = null
     req.session.otpError = null
     req.session.checkOne = null
     req.session.firstName = null

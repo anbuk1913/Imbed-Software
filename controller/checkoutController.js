@@ -492,7 +492,7 @@ const verifyPayment = async(req,res,next)=>{
         }
     } catch (error) {
         console.log(error)
-        res.status(500).json({status: 'error', message: 'Error verification payment'})
+        next(new AppError('Sorry...Something went wrong', 500));
     }
 }
 
