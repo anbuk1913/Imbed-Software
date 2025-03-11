@@ -652,10 +652,10 @@
         <div class="container text-center">
             <h2>Shop by Category</h2>
             <div class="d-flex justify-content-center">
-                <% categories.forEach(category => { %>
+                <% categories.forEach((category ,ind) => { %>
                     <div class="category mx-2">
                         <a href="/shop">
-                            <img src="/category/<%= category.categoryName %>.jpg" alt="<%= category.categoryName %>" class="img-fluid">
+                            <img src="/category/<%= ind %>.jpg" alt="<%= category.categoryName %>" class="img-fluid">
                             <p><%= category.categoryName %></p>
                         </a>
                     </div>
