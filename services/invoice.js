@@ -11,7 +11,7 @@ const fonts = {
 
 const printer = new PdfPrinter(fonts);
 
-const generateInvoice = (orderData) => {
+const generateInvoice = async (orderData) => {
   return new Promise((resolve, reject) => {
     const logoPath = path.join(__dirname, '../public/images', 'logo.png');
     const docDefinition = {

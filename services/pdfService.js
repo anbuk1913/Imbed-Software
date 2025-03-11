@@ -11,7 +11,7 @@ const fonts = {
 
 const printer = new PdfPrinter(fonts);
 
-const generatePDF = (orders, totalOrderAmount, discountAmount, start, end) => {
+const generatePDF = async (orders, totalOrderAmount, discountAmount, start, end) => {
     if(start && end){
         const dateText = `From: ${start.split('T')[0]}  To: ${end.split('T')[0]}`
         return new Promise((resolve, reject) => {
