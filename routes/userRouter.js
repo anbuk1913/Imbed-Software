@@ -26,7 +26,7 @@ router.get("/otpsend",userController.otpSend)
 router.get("/otp",userController.otpPage)
 router.post("/otp",userController.otpPost)
 router.get('/auth/google', passport.authenticate('google',{scope:['email','profile']}))
-router.get('/auth/google/callback', passport.authenticate('google',{failureRedirect:'http://localhost:3000/login'}),userController.googleCallback)
+router.get('/auth/google/callback', passport.authenticate('google',{failureRedirect:'http://www.imbedsoftware.shop/login'}),userController.googleCallback)
 router.get("/blocked",userController.blockedUser)
 router.post("/logout",userController.logout)
 
