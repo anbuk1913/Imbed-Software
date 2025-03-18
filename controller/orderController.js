@@ -157,4 +157,15 @@ const generateInvoice = async(req,res,next)=>{
     }
 }
 
-module.exports = {userOrder,userOrderView,adminSingleOrderView,adminOrderview,adminEditOrder,editOrder,adminEditOrderPost,cancelOrder,returnOrder,generateInvoice}
+const rePay = async(req,res,next)=>{
+    try {
+        await order.updateOne({_id:req.body.id},{$set:{status:"Pending"}})
+        req.session.orderId = req.body.id
+        return res.json({success:true})
+    } catch (error) {
+        console.log(error)
+        next(new AppError('Sorry...Something went wrong', 500))
+    }
+}
+
+module.exports = {userOrder,userOrderView,adminSingleOrderView,adminOrderview,adminEditOrder,editOrder,adminEditOrderPost,cancelOrder,returnOrder,generateInvoice,rePay}

@@ -7,7 +7,7 @@ const walletSchema= new mongoose.Schema({
         {
             transactionDate: { type: Date, default : new Date()},
             transactionAmount: { type: Number },
-            transactionType: { type: String,enum : ['Credit on Cancel', 'Debit', 'Refund'] }
+            transactionType: { type: String,enum : ['Credit on Cancel', 'Debit', 'Money from Razorpay'] }
         }
     ]
 },

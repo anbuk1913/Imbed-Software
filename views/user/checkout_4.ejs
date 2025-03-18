@@ -709,7 +709,7 @@
     </script>
     <script>
         async function placeOrder() {
-            try {    
+            try {
                 const response1 = await fetch('/finalstockcheck', {method: 'PATCH'});
                 const result1 = await response1.json();
                 if (result1.success) {
@@ -717,6 +717,7 @@
                         paymentMethod: "<%= paymentMethod %>"
                     }
                     if(payMethod.paymentMethod == "Online Payment"){
+                        const preOrder = await paymentCheck()
                         const ans = await payNow();
                     } else if(payMethod.paymentMethod == "COD"){
                         await orderItem();
@@ -733,10 +734,10 @@
                         }).then(() => {
                             window.location.reload()
                         });
-                        } else {
-                            alert(result1.message);
-                        }
+                    } else {
+                        alert(result1.message);
                     }
+                }
             } catch (error) {
                 console.error('Error placing order:', error);
                 if (typeof Swal !== "undefined") {
@@ -766,7 +767,8 @@
             } else {
                 orderPrice = { subTotal, delivery, gst,  total };
             }
-            if(total>1000){
+            const paymentMethod = "<%= paymentMethod %>"
+            if(total>1000 && paymentMethod == "COD"){
                 Swal.fire({
                         title: 'OOPS!',
                         text: 'Cash on Delivery is not available for orders above ₹1000. Please choose a different payment method.',
@@ -867,16 +869,16 @@
         }
     </script>
     <script>
-        async function payNow() {
+        async function payNow(){
             let total = parseFloat(document.getElementById("total").innerText.slice(1));
-            const amount = Math.round(total * 100); 
+            const amount = Math.round(total * 100);
             const response = await fetch('/onlinepayment', {
                 method: 'POST',
                 headers: {'Content-Type': 'application/json'},
                 body: JSON.stringify({ amount, currency: 'INR', receipt: 'receipt#1', notes: {} })
             });
 
-            const { order, key } = await response.json(); 
+            const { order, key } = await response.json();
             
             const options = {
                 key: key,
@@ -929,6 +931,48 @@
             checkoutBtn.style.cursor = "not-allowed";
           }
         });
+      </script>
+      <script>
+        async function paymentCheck(){
+            const subTotal = parseFloat(document.getElementById("sub-total").innerText.slice(1));
+            const delivery = parseFloat(document.getElementById("delivery").innerText.slice(1));
+            const gst = parseFloat(document.getElementById("gst").innerText.slice(1));
+            const tem = document.getElementById("coupon-value")
+            const total = parseFloat(document.getElementById("total").innerText.slice(1));
+            let orderPrice
+            if(tem){
+                let coupon = parseFloat(document.getElementById("coupon-value").innerText.slice(1));
+                orderPrice = { subTotal, delivery, gst, coupon, total };
+            } else {
+                orderPrice = { subTotal, delivery, gst,  total };
+            }
+            try {
+                const response = await fetch('/fail-payment', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(orderPrice)
+                });
+                const result = await response.json();
+                if(result.success){
+                    return
+                } else {
+                    Swal.fire({
+                        title: "Error",
+                        text: "Somthing Went Wrong!",
+                        icon: 'error',
+                        confirmButtonText: 'OK'
+                    });
+                }
+            } catch (error) {
+                console.log(error)
+                Swal.fire({
+                    title: "Error",
+                    text: "Somthing Went Wrong!",
+                    icon: 'error',
+                    confirmButtonText: 'OK'
+                });
+            }
+        }
       </script>
 </body>
 </html>

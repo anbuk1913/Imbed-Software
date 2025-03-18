@@ -326,6 +326,7 @@ const orderPost = async(req,res,next)=>{
             amounts = 0
         }
         amounts = -amounts
+        await order.deleteOne({_id:req.session.failPaymentId})
         await cart.deleteMany({userId:userVer._id})
         await coupon.updateOne({ code:req.session.couponCode },{$inc: { usedCount: 1, totalDiscount: amounts },$push: { usedBy: userVer._id }});
         let newID = await orders.save();
@@ -496,4 +497,116 @@ const verifyPayment = async(req,res,next)=>{
     }
 }
 
-module.exports = {checkoutPageOne,checkoutTwoPost,billingPage,billingMethodPost,paymentPage,paymentMethod,finalReview,finalQuantityCheck,orderPost,confirmPage,applyCoupon,removeCoupon,onlinePay,verifyPayment}
+const failPayment = async(req,res,next)=>{
+    try {
+        console.log(req.body)
+        const userEmail = req.session.user.email
+        const userVer = await usercollection.findOne({ email: userEmail });
+        let placedAddress = {}
+        let priceDetail = {
+            subTotal:req.body.subTotal,
+            delivery:req.body.delivery,
+            gst:req.body.gst,
+            coupon:req.body.coupon ?? 0,
+            total:req.body.total
+        }
+        if(req.session.addressId){
+            const orderAddress = await address.findOne({_id:req.session.addressId})
+            placedAddress = {
+                doorNo:orderAddress.doorNo,
+                street:orderAddress.street,
+                city:orderAddress.city,
+                district:orderAddress.district,
+                pinCode:orderAddress.pinCode,
+            }
+        } else {
+            placedAddress = {
+                doorNo:req.session.doorNums,
+                street:req.session.street,
+                city:req.session.city,
+                district:req.session.district,
+                pinCode:req.session.postcode,
+            }
+            const addressCount = await address.countDocuments({userId:userVer._id});
+            const newaddress = new address({
+                userId: userVer._id ,
+                addressCount: addressCount+1,
+                doorNo: req.session.doorNums,
+                street: req.session.street,
+                city: req.session.city,
+                district: req.session.district,
+                pinCode: req.session.postcode,
+            });
+            newaddress.save();
+        }
+        
+        let cartItems = await cart.find({userId:userVer._id}).populate({
+            path: "productId",
+            select: "productName productPrice productOfferPrice productImage1 productCategoryId isListed productStock _id"
+        });
+
+        const offers = await offer.find({})
+        for(let i of cartItems){
+            for(let j of offers){
+                if(i.productId.productCategoryId.toString() == j.categoryId.toString()){
+                    const expiryDate = new Date(j.expiryDate);
+                    const today = new Date();
+                    const todayDateOnly = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+                    if(expiryDate >= todayDateOnly){
+                        const tem = Math.floor(i.productId.productPrice-(i.productId.productPrice*j.offerPercentage/100))
+                        if(i.productId.productOfferPrice && i.productId.productOfferPrice > tem){
+                            i.productId.productOfferPrice = tem
+                        } else {
+                            i.productId.productOfferPrice = tem
+                        }
+                    }
+                    break
+                }
+            }
+        }
+
+        let productDetails=[]
+        let totalDiscountAmount = 0
+        for(let i=0;i<cartItems.length;i++){
+            let price = 0
+            if(cartItems[i].productId?.productOfferPrice){
+                price = cartItems[i].productId.productOfferPrice
+                totalDiscountAmount += (cartItems[i].productId.productPrice - cartItems[i].productId.productOfferPrice)*(cartItems[i].productQuantity)
+            }
+            else{
+                price = cartItems[i].productId.productPrice
+            } 
+            let obj={
+                productName:cartItems[i].productId.productName,
+                productPrice:price,
+                quantity:cartItems[i].productQuantity
+            }
+            productDetails.push(obj)
+        }
+
+        totalDiscountAmount += req.body.coupon ?? 0
+        priceDetail.totalDiscountAmount = totalDiscountAmount
+        
+        const orders = new order({
+            userId:userVer._id,
+            address:placedAddress,
+            fullName:req.session.firstName+" "+req.session.lastName,
+            phone:req.session.phone,
+            email:req.session.email,
+            paymentMethod:req.session.paymentMethod,
+            orderNotes:req.session.orderNotes,
+            totalDiscountAmount:totalDiscountAmount,
+            priceDetails:priceDetail,
+            products:productDetails,
+            status:"Payment Pending"
+        })
+        let newID = await orders.save();
+        req.session.failPaymentId = newID._id
+        return res.status(200).send({ success: true})
+    } catch (error) {
+        console.log(error)
+        next(new AppError('Sorry...Something went wrong', 500));
+    }
+}
+
+module.exports = {checkoutPageOne,checkoutTwoPost,billingPage,billingMethodPost,paymentPage,paymentMethod,finalReview,finalQuantityCheck,orderPost,confirmPage,applyCoupon,removeCoupon,onlinePay,verifyPayment,failPayment}

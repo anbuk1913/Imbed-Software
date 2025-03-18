@@ -230,7 +230,6 @@ const blockedUser = async(req,res,next)=>{
     }
 }
 
-
 const logout = async(req,res)=>{
     req.session.loginSession = null
     req.session.signupSession = null

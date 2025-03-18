@@ -65,6 +65,7 @@ router.patch("/removeCoupon",userAuth,checkoutController.removeCoupon)
 router.post("/onlinepayment",userAuth,checkoutController.onlinePay)
 router.post("/verify-payment",userAuth,checkoutController.verifyPayment)
 router.get("/confirm",userAuth,checkoutController.confirmPage)
+router.post("/fail-payment",userAuth,checkoutController.failPayment)
 
 // Wishlist
 router.get("/wishlist",userAuth,wishlistController.wishlistPage)
@@ -74,6 +75,8 @@ router.post("/addalltocart",userAuth,wishlistController.addAlltoCart)
 
 // Wallet
 router.get("/wallet",userAuth,profileController.walletPage)
+router.post("/addtowallet",userAuth,profileController.addMoney)
+router.post("/wallet-verify-payment",userAuth,profileController.verifyPayments)
 
 // Order
 router.get("/orders",userAuth,orderController.userOrder)
@@ -81,5 +84,6 @@ router.get('/orderview/:id',userAuth,orderController.userOrderView)
 router.patch('/cancelorder',userAuth,orderController.cancelOrder)
 router.patch('/returnorder',userAuth,orderController.returnOrder)
 router.get("/generate-invoice/:id",userAuth,orderController.generateInvoice)
+router.post("/re-pay",userAuth,orderController.rePay)
 
 module.exports = router

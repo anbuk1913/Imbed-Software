@@ -9,6 +9,10 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Source+Sans+3:ital,wght@0,200..900;1,200..900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.7.0/dist/sweetalert2.all.min.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+
     <style>
         /* Navbar */
         .navbar {
@@ -86,6 +90,11 @@
         .transaction-table th {
             background-color: rgba(255, 255, 255, 0.1);
         }
+        input[type="number"]::-webkit-outer-spin-button,
+        input[type="number"]::-webkit-inner-spin-button {
+        -webkit-appearance: none;
+        margin: 0;
+        }
         .footer {
             background-color: #8dc63f;
             color: white;
@@ -141,7 +150,7 @@
                 <nav class="mt-4">
                     <ul class="nav flex-column">
                         <li class="nav-item">
-                            <a class="nav-link" href="">Dashboard</a>
+                            <a class="nav-link" href="/profile">Dashboard</a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link" href="/orders">Orders</a>
@@ -159,13 +168,10 @@
                 </nav>
             </div>
 
-            <!-- Main Content -->
             <div class="col-md-10">
-                <!-- Wallet Section -->
                 <div class="wallet-container">
                     <div class="wallet-balance">Wallet Balance: ₹<%= walletData?.walletBalance %></div>
-                    <button class="btn">ADD MONEY TO WALLET</button>
-                
+                    <button class="btn" id="addmoney">Add Money to Wallet</button> 
                     <table class="transaction-table">
                         <thead>
                             <tr>
@@ -230,5 +236,129 @@
             </div>
         </div>
     </div>
+    <!-- Add Money Modal -->
+    <div class="modal fade" id="addMoneyModal" tabindex="-1" aria-labelledby="addMoneyModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="addMoneyModalLabel">Add Money to Wallet</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="addMoneyForm">
+                        <div class="mb-3">
+                            <label for="amount" class="form-label">Enter Amount (₹)</label>
+                            <input type="number" class="form-control money-input" id="amount" name="amount" maxlength="5">
+                            <p class="error-money-input text-danger"></p>
+                        </div>
+                        <button type="submit" class="btn btn-primary w-100">Add Money</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+<script>
+    document.getElementById("addmoney").addEventListener("click", function() {
+        var addMoneyModal = new bootstrap.Modal(document.getElementById("addMoneyModal"));
+        addMoneyModal.show();
+    });
+
+    document.getElementById("addMoneyForm").addEventListener("submit", async function(event) {
+        event.preventDefault();
+        let amountInput = document.getElementById("amount");
+        let errorMessage = document.querySelector(".error-money-input");
+        let amount = parseFloat(amountInput.value);
+
+        if (!amountInput.value) {
+            errorMessage.textContent = "Amount is required.";
+            return;
+        }
+        
+        if (amount <= 0) {
+            errorMessage.textContent = "Amount must be a positive value.";
+            return;
+        }
+        
+        if (amount < 1) {
+            errorMessage.textContent = "Minimum amount is ₹1.";
+            return;
+        }
+
+        if (amount > 10000) {
+            errorMessage.textContent = "Maximum amount allowed is ₹10,000.";
+            return;
+        }
+        
+        errorMessage.textContent = ""; // Clear error if valid
+        amount = Math.round(amount * 100);
+        const response = await fetch('/addtowallet', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({ amount, currency: 'INR', receipt: 'receipt#1', notes: {} })
+        });
+        const { order, key } = await response.json(); 
+            
+            const options = {
+                key: key,
+                amount: order.amount,
+                currency: order.currency,
+                name: "IMBED SOFTWARE",
+                description: 'Test Transaction',
+                order_id: order.id,
+                theme: {
+                    color: "#28a745"
+                },
+                handler: async function(response){
+                    await fetch('/wallet-verify-payment',{
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            razorpay_order_id: response.razorpay_order_id,
+                            razorpay_payment_id: response.razorpay_payment_id,
+                            razorpay_signature: response.razorpay_signature,
+                            amount
+                        })
+                    }).then( res => res.json())
+                    .then(async (data) => {
+                        if (data.status === 'ok') {
+                            try {
+                                Swal.fire({
+                                    title: "Money added!",
+                                    text: `₹${amount/100} rupees added to wallet`,
+                                    icon: 'success',
+                                    confirmButtonText: 'OK'
+                                }).then(() => {
+                                    window.location.reload()
+                                });
+                            } catch (error) {
+                                Swal.fire({
+                                    title: 'Error!',
+                                    text: 'An unexpected error occurred. Please try again.',
+                                    icon: 'error',
+                                    confirmButtonText: 'OK'
+                                });
+                            }
+                        } else {
+                            alert('Payment verification failed');
+                        }
+                    }).catch(error => {
+                        console.error('Error: ', error);
+                        alert("Error verifying payment");
+                    });
+                }
+            };
+            const rzp = new Razorpay(options);
+            rzp.open();
+        // alert("₹" + amount + " added to wallet!"); // Replace with actual API call
+    });
+    document.getElementById("amount").addEventListener("input", function () {
+        if (this.value.length > 5) {
+            this.value = this.value.slice(0, 5); // Trim extra digits
+        }
+    });
+</script>
 </body>
 </html>
