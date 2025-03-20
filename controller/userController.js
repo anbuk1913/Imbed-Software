@@ -96,15 +96,20 @@ const signUpPage = async(req,res,next)=>{
 }
 
 const otpSend = async(req,res,next)=>{
-    req.session.otpSession = true
-    const generatedOtp = Math.floor(100000 + Math.random() * 900000).toString()
-    req.session.otpError = null
-    req.session.otpTime = 75;  // Set it only if it's not already set
-    sendotp(generatedOtp,req.session.user.email,req.session.user.name)
-    const hashedOtp = await encryptPassword(generatedOtp)
-    await otpCollection.updateOne({email:req.session.user.email},{$set:{otp:hashedOtp}},{upsert:true})
-    req.session.otpStartTime = null
-    res.redirect("/otp")
+    try {
+        req.session.otpSession = true
+        const generatedOtp = Math.floor(100000 + Math.random() * 900000).toString()
+        req.session.otpError = null
+        req.session.otpTime = 75;  // Set it only if it's not already set
+        sendotp(generatedOtp,req.session.user.email,req.session.user.name)
+        const hashedOtp = await encryptPassword(generatedOtp)
+        await otpCollection.updateOne({email:req.session.user.email},{$set:{otp:hashedOtp}},{upsert:true})
+        req.session.otpStartTime = null
+        res.redirect("/otp")
+    } catch (error) {
+        console.log(error)
+        next(new AppError('Sorry...Something went wrong', 500));
+    }
 }
 
 const otpPage = async(req,res,next)=>{
@@ -230,6 +235,75 @@ const blockedUser = async(req,res,next)=>{
     }
 }
 
+const forgetPassEmailPage = async(req,res,next)=>{
+    try {
+        return res.render("user/forgetPasswordEmail")
+    } catch (error) {
+        console.log(error)
+        next(new AppError('Sorry...Something went wrong', 500));
+    }
+}
+
+const emailCheck = async(req,res,next)=>{
+    try {
+        const user = await usercollection.findOne({ email: req.body.email })
+        if(user){
+            const pass = req.body.password
+            const newPassword = await encryptPassword(pass)
+            req.session.user={
+                name:user.name,
+                email:user.email,
+                newPassword
+            }
+            return res.status(200).send({ success: true })
+        } else {
+            return res.status(200).send({ success: false })
+        }
+    } catch (error) {
+        console.log(error)
+    }
+}
+
+const forgetPassOtpSend = async(req,res,next)=>{
+    req.session.otpSession = true
+    const generatedOtp = Math.floor(100000 + Math.random() * 900000).toString()
+    req.session.otpError = null
+    req.session.otpTime = 75;  // Set it only if it's not already set
+    sendotp(generatedOtp,req.session.user.email,req.session.user.name)
+    const hashedOtp = await encryptPassword(generatedOtp)
+    await otpCollection.updateOne({email:req.session.user.email},{$set:{otp:hashedOtp,password:req.session.user.newPassword}},{upsert:true})
+    req.session.otpStartTime = null
+    res.redirect("/forget-password-opt")
+}
+
+const forgototpPage = async(req,res,next)=>{
+    if(req.session.otpSession){
+        const otpError = req.session.otpError
+        // If OTP time isn't set, set it
+        if (!req.session.otpStartTime) {
+            req.session.otpStartTime = Date.now();
+        }
+        const elapsedTime = Math.floor((Date.now() - req.session.otpStartTime) / 1000);
+        const remainingTime = Math.max(req.session.otpTime - elapsedTime, 0);
+        return res.render("user/forgetOtpPage",{otpError:otpError,time:remainingTime})
+    } else {
+        return res.redirect("/")
+    }
+} 
+
+const forgetOtpPost = async(req,res,next)=>{
+    const findOtp = await otpCollection.findOne({email:req.session.user.email})
+    if(await comparePassword(req.body.otp,findOtp.otp)){
+        await usercollection.updateOne({email:req.session.user.email},{password:findOtp.password})
+        req.session.signupSession = true
+        req.session.otpError = null
+        res.redirect("/")
+    } else {
+        req.session.otpError = "Incorrect OTP"
+        res.redirect("/forget-password-opt")
+    }
+}
+
 const logout = async(req,res)=>{
     req.session.loginSession = null
     req.session.signupSession = null
@@ -263,5 +337,10 @@ module.exports = {
     loginPost,
     googleCallback,
     blockedUser,
+    forgototpPage,
+    forgetPassEmailPage,
+    emailCheck,
+    forgetOtpPost,
+    forgetPassOtpSend,
     logout,
 }

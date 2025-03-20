@@ -88,7 +88,7 @@ const adminEditOrderPost = async(req,res,next)=>{
 const editOrder = async(req,res,next)=>{
     try {
         const datas = await order.findById({_id:req.body.orderId})
-        if(req.body.orderStatus == 'Returned' && datas.paymentMethod == "COD"){
+        if(req.body.orderStatus == 'Returned'){
             const transactionData = {
                 transactionDate: new Date(),
                 transactionAmount: datas.priceDetails.total,
