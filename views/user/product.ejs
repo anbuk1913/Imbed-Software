@@ -138,6 +138,47 @@
             transform: scale(1.5);
         }
 
+        .product-item img {
+            width: 100%;
+            aspect-ratio: 1 / 1;
+            object-fit: cover;
+            /* Ensures the image covers the space without distortion */
+            border-radius: 5px;
+            /* Optional: smooth corners */
+            height: 200px;
+            object-fit: cover;
+        }
+
+        .product-name{
+            color: #7fa73f;
+            padding-top: 5px;
+            font-size: 1rem;
+        }
+
+        .product-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 20px;
+            max-width: 1200px; /* Limits the width */
+            margin: 0 auto;    /* Centers the grid */
+        }
+
+        .product-item {
+            width: 200px;
+            border-radius: 3px;
+            background-color: #e4e4e4;
+            border: 1px solid #a7a7a7;
+            text-align: center;
+            padding: 10px;
+            border: 1px solid #ddd;
+            transition: transform 0.3s;
+        }
+
+        .product-item:hover {
+            cursor: pointer;
+            transform: scale(1.05); /* Optional: subtle hover effect */
+            box-shadow: 10px 10px 15px rgba(0, 0, 0, 0.5);
+        }
         /* Footer */
         footer {
             background-color: #8CBF3A; /* Updated background color */
@@ -694,7 +735,40 @@
     <div class="description">
         <h3>Description</h3>
         <p><%= products.productDescription %></p>
+        <h3><%= products?.productCategoryId?.categoryName %></h3>
+        <p><%= products?.productCategoryId?.categoryDescription %></p>
     </div>
+    <!-- Related Products Section -->
+     <main>
+        <h2 style="padding: 0px 15px;">Related Products</h2>
+        <div class="product-grid">
+            <% relatedProducts.forEach(product=> { %>
+                <% if(product?.isListed && product?.productCategoryId?.isListed && product._id.toString() !== products._id.toString()){ %>
+                    <div class="product-item">
+                        <a href="/product/<%= product._id %>" style="text-decoration: none;">
+                        <img src="<%= product.productImage1 %>" alt="<%= product.productName %>">
+                        <h5 class="product-name"><%= product.productName %></h5>
+                        <p style="font-size: 0.8rem;color: black;"><%= product.productCategoryId.categoryName %></p>
+                        <% if(product.productOfferPrice){ %>
+                            <strong>₹<%= product.productOfferPrice %></strong>
+                            <del>₹<%= product.productPrice %></del>
+                        <% } else { %>
+                            <strong>₹<%= product.productPrice %></strong>
+                        <% } %>
+                        <% if(product.productStock==0) { %>
+                            <p style="color: red;">Out of stock</p>
+                        <% } else if(product.productStock<=10) { %>
+                            <p style="color: red;">Only <%= product.productStock %> Stocks left</p>
+                        <% } else { %>
+                            <p style="color: red;"></p>
+                        <% } %>
+                    </a>
+                    </div>
+                <% } %>
+            <% }) %>
+        </div>
+    </main>
+
     <!-- Footer Section -->
     <footer class="py-5">
         <div class="container">

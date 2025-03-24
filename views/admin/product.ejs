@@ -74,7 +74,7 @@
             </div>
             
             <div class="d-flex justify-content-end mb-2">
-                <input type="text" class="form-control w-25" placeholder="Search Products">
+                <input type="text" class="form-control w-25" id="searchInput" placeholder="Search Products">
             </div>
             
             <table class="table table-bordered table-hover">
@@ -121,7 +121,25 @@
                 </tbody>
             </table>
         </main>
-
+        <ul class="pagination mb-5">
+            <% if (page > 1) { %>
+              <li class="page-item">
+                <a class="page-link" href="?page=<%= page - 1 %>">Previous</a>
+              </li>
+            <% } %>
+        
+            <% for (let i = 1; i <= totalPages; i++) { %>
+              <li class="page-item <%= i === page ? 'active' : '' %>">
+                <a class="page-link" href="?page=<%= i %>"><%= i %></a>
+              </li>
+            <% } %>
+        
+            <% if (page < totalPages) { %>
+              <li class="page-item">
+                <a class="page-link" href="?page=<%= page + 1 %>">Next</a>
+              </li>
+            <% } %>
+        </ul>
         <%- include('../adminPartials/footer') %>
         
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
@@ -215,23 +233,32 @@
     }
     </script>
     <script>
-        // JavaScript for search functionality
-        document.querySelector("input[placeholder='Search Products']").addEventListener("input", function (event) {
-        const query = event.target.value.toLowerCase(); // Get the search query and convert it to lowercase
-        const rows = document.querySelectorAll("table tbody tr"); // Get all rows in the table
-
-        rows.forEach(row => {
-            const categoryName = row.children[0].textContent.toLowerCase(); // Get Category Name (1st column)
-            const categoryDescription = row.children[1].textContent.toLowerCase(); // Get Category Description (2nd column)
-
-            // Check if the query matches either Category Name (1st priority) or Category Description (2nd priority)
-            if (categoryName.includes(query) || categoryDescription.includes(query)) {
-                row.style.display = ""; // Show the row if it matches
+        // Function to update the query and reload the page
+        document.getElementById("searchInput").addEventListener("input", function () {
+            let value = this.value.trim();
+            let url = new URL(window.location.href);
+        
+            if (value) {
+                url.searchParams.set("search", value);
             } else {
-                row.style.display = "none"; // Hide the row if it doesn't match
+                url.searchParams.delete("search"); // Remove if empty
             }
+        
+            window.location.href = url; // Reload the page with the updated query
         });
-    });
+        
+        // Function to pre-fill input and auto-focus after page reload
+        window.addEventListener("DOMContentLoaded", function () {
+            let searchInput = document.getElementById("searchInput");
+            let urlParams = new URLSearchParams(window.location.search);
+            let searchValue = urlParams.get("search");
+        
+            if (searchValue) {
+                searchInput.value = searchValue;
+            }
+        
+            searchInput.focus(); // Auto-focus on input after reload
+        });
     </script>
     </body>
 </html>

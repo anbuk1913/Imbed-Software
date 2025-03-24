@@ -491,9 +491,15 @@
                         </tr>
                     <% } %>
                     <tr>
-                        <td><strong>Total:</strong></td>
+                        <td><strong>Grand Total:</strong></td>
                         <td id="total"><strong>₹0.00</strong></td>
                     </tr>
+                    <% if(paymentMethod=="Wallet"){ %>
+                        <tr>
+                            <td>Wallet Balance:</td>
+                            <td>₹<%= walletAmount %></td>
+                        </tr>
+                    <% } %>
                 </table>
                 <button class="checkout-btn" onclick="placeOrder()">Pay & Order</button>
             </div>
@@ -768,10 +774,20 @@
                 orderPrice = { subTotal, delivery, gst,  total };
             }
             const paymentMethod = "<%= paymentMethod %>"
+            const walletAmount = "<%= walletAmount %>"
             if(total>1000 && paymentMethod == "COD"){
                 Swal.fire({
                         title: 'OOPS!',
                         text: 'Cash on Delivery is not available for orders above ₹1000. Please choose a different payment method.',
+                        icon: 'error',
+                        confirmButtonText: 'OK'
+                    })
+                    return 
+            }
+            else if(total>walletAmount && paymentMethod == "Wallet"){
+                Swal.fire({
+                        title: 'OOPS!',
+                        text: `Wallet Balance: ₹${walletAmount} Only`,
                         icon: 'error',
                         confirmButtonText: 'OK'
                     })

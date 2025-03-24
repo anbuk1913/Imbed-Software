@@ -288,7 +288,7 @@
         <p style="color: red;" class="phone-error"></p>
       </div>
 
-      <h3>Add Address</h3>
+      <h3>Delivery Address</h3>
       <div class="address-options">
         <div>
           <% addressCollection.forEach((address, index)=> { %>
@@ -299,7 +299,7 @@
             <% }) %>
         </div>
         <div>
-          <input type="radio" id="new-address" name="address" value="new">
+          <input type="radio" id="new-address" name="address" value="new" required>
           <label for="new-address">New Address</label>
         </div>
       </div>

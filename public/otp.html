@@ -1,80 +1,91 @@
-<!DOCTYPE html>
+<!doctype html>
 <html>
-<head>
-  <style>
-    body {
-      font-family: sans-serif;
-      background-color: white;
-      margin: 0;
-      padding: 0;
-    }
-    .email-container {
-      max-width: 600px;
-      margin: 20px auto;
-      background: #d3d3d3;
-      border-radius: 8px;
-      border: 0.1px solid #000000;
-      box-shadow: 10px 10px 15px rgba(0, 0, 0, 0.5);
-      overflow: hidden;
-    }
-    .header {
-      background-color: #f4f4f4;
-      color: rgb(0, 0, 0);
-      text-align: center;
-      padding: 20px 0;
-      font-size: 24px;
-      position: relative;
-    }
-    .header .logo {
-      background-image: url('https://drive.google.com/uc?id=1NR8PvaRHjnaTUPVAv8fIYyF9s1lxUT0V');
-      background-size: contain;
-      background-repeat: no-repeat;
-      background-position: center;
-      width: 40px;
-      height: 40px;
-      margin: 0 auto 10px auto;
-    }
-    .content {
-      padding: 20px;
-      text-align: center;
-    }
-    .otp-code {
-      font-size: 28px;
-      font-weight: bold;
-      color: #000000;
-      margin: 20px 0;
-    }
-    .footer {
-      background-color: #f4f4f4;
-      color: #888;
-      text-align: center;
-      padding: 10px 0;
-      font-size: 12px;
-    }
-    .footer a {
-      color: #4CAF50;
-      text-decoration: none;
-    }
-  </style>
-</head>
-<body>
-  <div class="email-container">
-    <div class="header">
-      <div class="logo"></div>
-      <div>Your OTP Code</div>
+  <head>
+    <style>
+      body {
+        font-family: sans-serif;
+        background-color: white;
+        margin: 0;
+        padding: 0;
+      }
+      .email-container {
+        max-width: 600px;
+        margin: 20px auto;
+        background: #d3d3d3;
+        border-radius: 8px;
+        border: 0.1px solid #000000;
+        box-shadow: 10px 10px 15px rgba(0, 0, 0, 0.5);
+        overflow: hidden;
+      }
+      .header {
+        background-color: #f4f4f4;
+        color: rgb(0, 0, 0);
+        text-align: center;
+        padding: 20px 0;
+        font-size: 24px;
+        position: relative;
+      }
+      .header .logo {
+        background-image: url('https://drive.google.com/uc?id=1NR8PvaRHjnaTUPVAv8fIYyF9s1lxUT0V');
+        background-size: contain;
+        background-repeat: no-repeat;
+        background-position: center;
+        width: 40px;
+        height: 40px;
+        margin: 0 auto 10px auto;
+      }
+      .content {
+        padding: 20px;
+        text-align: center;
+      }
+      .otp-code {
+        font-size: 28px;
+        font-weight: bold;
+        color: #000000;
+        margin: 20px 0;
+      }
+      .footer {
+        background-color: #f4f4f4;
+        color: #888;
+        text-align: center;
+        padding: 10px 0;
+        font-size: 12px;
+      }
+      .footer a {
+        color: #4caf50;
+        text-decoration: none;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="email-container">
+      <div class="header">
+        <div class="logo"></div>
+        <div>Your OTP Code</div>
+      </div>
+      <div class="content">
+        <div>Dear {{NAME}}</div>
+        <div>Your OTP code for completing the action is:</div>
+        <div class="otp-code">{{OTP}}</div>
+        <div>
+          Please use this code within 75 seconds. If you didn't request this,
+          please ignore this email.
+        </div>
+        <div>Thank you,<br />IMBED SOFTWARE TEAM</div>
+      </div>
+      <div class="footer">
+        © 2025 Imbed Software. All rights reserved.
+        <br />
+        <a
+          href="https://mail.google.com/mail/?view=cm&fs=1&to=imbedsoftwareteam@gmail.com.com"
+          >Privacy Policy</a
+        >
+        |
+        <a
+          href="https://mail.google.com/mail/?view=cm&fs=1&to=imbedsoftwareteam@gmail.com"
+          >Contact Support</a
+        >
+      </div>
     </div>
-    <div class="content">
-      <div>Dear {{NAME}}</div>
-      <div>Your OTP code for completing the action is:</div>
-      <div class="otp-code">{{OTP}}</div>
-      <div>Please use this code within 75 seconds. If you didn't request this, please ignore this email.</div>
-      <div>Thank you,<br>IMBED SOFTWARE TEAM</div>
-    </div>
-    <div class="footer">
-      © 2025 Imbed Software. All rights reserved. 
-      <br>
-      <a href="https://mail.google.com/mail/?view=cm&fs=1&to=imbedsoftwareteam@gmail.com.com">Privacy Policy</a> | <a href="https://mail.google.com/mail/?view=cm&fs=1&to=imbedsoftwareteam@gmail.com">Contact Support</a>
-    </div>
-  </div>
-</body>
+  </body>
 </html>

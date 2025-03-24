@@ -1,94 +1,114 @@
-const express = require("express")
+const express = require('express')
 const passport = require('passport')
 const bodyParser = require('body-parser')
-const userController = require("../controller/userController")
-const userAuth = require('../middleware/userAuth');
+const userController = require('../controller/userController')
+const userAuth = require('../middleware/userAuth')
 const shopController = require('../controller/shopController')
-const productController = require("../controller/productController")
-const cartController = require("../controller/cartController")
-const profileController = require("../controller/profileController")
-const checkoutController = require("../controller/checkoutController")
+const productController = require('../controller/productController')
+const cartController = require('../controller/cartController')
+const profileController = require('../controller/profileController')
+const checkoutController = require('../controller/checkoutController')
 const orderController = require('../controller/orderController')
 const wishlistController = require('../controller/wishlistController')
 const router = express.Router()
 
-router.use(bodyParser.json());
-router.use(bodyParser.urlencoded({extended:true}));
-
+router.use(bodyParser.json())
+router.use(bodyParser.urlencoded({ extended: true }))
 
 //Landing Page & Authentication
-router.get("/",userController.homePage)
-router.get("/login",userController.loginPage)
-router.post("/login",userController.loginPost)
-router.get("/signup",userController.signUpPage)
-router.post("/signup",userController.signUpPost)
-router.get("/otpsend",userController.otpSend)
-router.get("/otp",userController.otpPage)
-router.post("/otp",userController.otpPost)
-router.get("/forget-password-opt",userController.forgototpPage)
-router.post("/forget-password-otp",userController.forgetOtpPost)
-router.get("/forget-password",userController.forgetPassEmailPage)
-router.post("/forgot-pass",userController.emailCheck)
-router.get("/forgototpsend",userController.forgetPassOtpSend)
-router.get('/auth/google', passport.authenticate('google',{scope:['email','profile']}))
-router.get('/auth/google/callback', passport.authenticate('google',{failureRedirect:'https://www.imbedsoftware.shop/login'}),userController.googleCallback)
-router.get("/blocked",userController.blockedUser)
-router.post("/logout",userController.logout)
+router.get('/', userController.homePage)
+router.get('/login', userController.loginPage)
+router.post('/login', userController.loginPost)
+router.get('/signup', userController.signUpPage)
+router.post('/signup', userController.signUpPost)
+router.get('/otpsend', userController.otpSend)
+router.get('/otp', userController.otpPage)
+router.post('/otp', userController.otpPost)
+router.get('/forget-password-opt', userController.forgototpPage)
+router.post('/forget-password-otp', userController.forgetOtpPost)
+router.get('/forget-password', userController.forgetPassEmailPage)
+router.post('/forgot-pass', userController.emailCheck)
+router.get('/forgototpsend', userController.forgetPassOtpSend)
+router.get(
+  '/auth/google',
+  passport.authenticate('google', { scope: ['email', 'profile'] })
+)
+router.get(
+  '/auth/google/callback',
+  passport.authenticate('google', {
+    failureRedirect: 'https://www.imbedsoftware.shop/login',
+  }),
+  userController.googleCallback
+)
+router.get('/blocked', userController.blockedUser)
+router.post('/logout', userController.logout)
 
 //Shop & Cart
-router.get('/shop',shopController.shopPage)
-router.get('/product/:id',productController.singleProductView)
-router.get("/cart",userAuth,cartController.cartView)
-router.post("/addcart",userAuth,cartController.addtoCart)
-router.delete("/removeitem",userAuth,cartController.removeItem)
-router.patch("/updatecart",userAuth,cartController.updateCartItems)
+router.get('/shop', shopController.shopPage)
+router.get('/product/:id', productController.singleProductView)
+router.get('/cart', userAuth, cartController.cartView)
+router.post('/addcart', userAuth, cartController.addtoCart)
+router.delete('/removeitem', userAuth, cartController.removeItem)
+router.patch('/updatecart', userAuth, cartController.updateCartItems)
 
 //Profile
-router.get("/profile",userAuth,profileController.profile)
-router.get("/address",userAuth,profileController.addressPage)
-router.get("/addaddress",userAuth,profileController.addAddress)
-router.post("/addaddress",userAuth,profileController.addAddressPost)
-router.get("/editaddress/:id",userAuth,profileController.editAddress)
-router.put("/editaddress",userAuth,profileController.editAddressPut)
-router.delete("/deleteaddress/:id",userAuth,profileController.deleteAddress)
-router.get("/changepassword",userAuth,profileController.changePassword)
-router.patch("/changepassword",userAuth,profileController.changePasswordPatch)
-router.patch("/edituserdata",userAuth,profileController.editUserData)
+router.get('/profile', userAuth, profileController.profile)
+router.get('/address', userAuth, profileController.addressPage)
+router.get('/addaddress', userAuth, profileController.addAddress)
+router.post('/addaddress', userAuth, profileController.addAddressPost)
+router.get('/editaddress/:id', userAuth, profileController.editAddress)
+router.put('/editaddress', userAuth, profileController.editAddressPut)
+router.delete('/deleteaddress/:id', userAuth, profileController.deleteAddress)
+router.get('/changepassword', userAuth, profileController.changePassword)
+router.patch('/changepassword', userAuth, profileController.changePasswordPatch)
+router.patch('/edituserdata', userAuth, profileController.editUserData)
 
 // Checkout Pages
-router.get("/checkoutaddress",userAuth,checkoutController.checkoutPageOne)
-router.post("/checkouttwo",userAuth,checkoutController.checkoutTwoPost)
-router.get("/billing",userAuth,checkoutController.billingPage)
-router.post("/billing",userAuth,checkoutController.billingMethodPost)
-router.get("/payment",userAuth,checkoutController.paymentPage)
-router.post("/paymethod",userAuth,checkoutController.paymentMethod)
-router.get("/review",userAuth,checkoutController.finalReview)
-router.patch("/finalstockcheck",userAuth,checkoutController.finalQuantityCheck)
-router.post("/orderproduct",userAuth,checkoutController.orderPost)
-router.post("/applycoupon",userAuth,checkoutController.applyCoupon)
-router.patch("/removeCoupon",userAuth,checkoutController.removeCoupon)
-router.post("/onlinepayment",userAuth,checkoutController.onlinePay)
-router.post("/verify-payment",userAuth,checkoutController.verifyPayment)
-router.get("/confirm",userAuth,checkoutController.confirmPage)
-router.post("/fail-payment",userAuth,checkoutController.failPayment)
+router.get('/checkoutaddress', userAuth, checkoutController.checkoutPageOne)
+router.post('/checkouttwo', userAuth, checkoutController.checkoutTwoPost)
+router.get('/billing', userAuth, checkoutController.billingPage)
+router.post('/billing', userAuth, checkoutController.billingMethodPost)
+router.get('/payment', userAuth, checkoutController.paymentPage)
+router.post('/paymethod', userAuth, checkoutController.paymentMethod)
+router.get('/review', userAuth, checkoutController.finalReview)
+router.patch(
+  '/finalstockcheck',
+  userAuth,
+  checkoutController.finalQuantityCheck
+)
+router.post('/orderproduct', userAuth, checkoutController.orderPost)
+router.post('/applycoupon', userAuth, checkoutController.applyCoupon)
+router.patch('/removeCoupon', userAuth, checkoutController.removeCoupon)
+router.post('/onlinepayment', userAuth, checkoutController.onlinePay)
+router.post('/verify-payment', userAuth, checkoutController.verifyPayment)
+router.get('/confirm', userAuth, checkoutController.confirmPage)
+router.post('/fail-payment', userAuth, checkoutController.failPayment)
 
 // Wishlist
-router.get("/wishlist",userAuth,wishlistController.wishlistPage)
-router.patch("/updatewishlist",userAuth,wishlistController.editWishlist)
-router.delete("/romovewishlistproduct",userAuth,wishlistController.deleteProduct)
-router.post("/addalltocart",userAuth,wishlistController.addAlltoCart)
+router.get('/wishlist', userAuth, wishlistController.wishlistPage)
+router.patch('/updatewishlist', userAuth, wishlistController.editWishlist)
+router.delete(
+  '/romovewishlistproduct',
+  userAuth,
+  wishlistController.deleteProduct
+)
+router.post('/addalltocart', userAuth, wishlistController.addAlltoCart)
 
 // Wallet
-router.get("/wallet",userAuth,profileController.walletPage)
-router.post("/addtowallet",userAuth,profileController.addMoney)
-router.post("/wallet-verify-payment",userAuth,profileController.verifyPayments)
+router.get('/wallet', userAuth, profileController.walletPage)
+router.post('/addtowallet', userAuth, profileController.addMoney)
+router.post(
+  '/wallet-verify-payment',
+  userAuth,
+  profileController.verifyPayments
+)
 
 // Order
-router.get("/orders",userAuth,orderController.userOrder)
-router.get('/orderview/:id',userAuth,orderController.userOrderView)
-router.patch('/cancelorder',userAuth,orderController.cancelOrder)
-router.patch('/returnorder',userAuth,orderController.returnOrder)
-router.get("/generate-invoice/:id",userAuth,orderController.generateInvoice)
-router.post("/re-pay",userAuth,orderController.rePay)
+router.get('/orders', userAuth, orderController.userOrder)
+router.get('/orderview/:id', userAuth, orderController.userOrderView)
+router.patch('/cancelorder', userAuth, orderController.cancelOrder)
+router.patch('/returnorder', userAuth, orderController.returnOrder)
+router.get('/generate-invoice/:id', userAuth, orderController.generateInvoice)
+router.post('/re-pay', userAuth, orderController.rePay)
 
 module.exports = router
