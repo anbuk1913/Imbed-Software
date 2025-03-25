@@ -2,8 +2,25 @@ const category = require('../model/categoryModel')
 const AppError = require('../middleware/errorHandling')
 
 const categoryPage = async (req, res, next) => {
-  const categories = await category.find({}).sort({ createdAt: -1 })
-  return res.render('admin/category', { categories })
+  try {
+    let page = parseInt(req.query.page) || 1
+    let limit = 10
+    let skip = (page - 1) * limit
+    let searchQuery = req.query.search || ''
+    let regexPattern = new RegExp(searchQuery, 'i')
+    let filter = searchQuery ? { categoryName: regexPattern } : {}
+    const categories = await category
+    .find(filter)
+    .skip(skip)
+    .limit(limit)
+    .sort({ createdAt: -1 })
+    const totalUsers = await category.countDocuments()
+    const totalPages = Math.ceil(totalUsers / limit)
+    return res.render('admin/category', { categories, totalPages, page })
+  } catch (error) {
+    console.log(error)
+    next(new AppError('Sorry...Something went wrong', 500))
+  }
 }
 
 const addCategory = async (req, res, next) => {

@@ -4,15 +4,39 @@ const AppError = require('../middleware/errorHandling')
 
 const offerPage = async (req, res, next) => {
   try {
-    const categoryOffer = await offer
-      .find({})
-      .populate({
-        path: 'categoryId',
-        select: 'categoryName isListed _id',
-      })
-      .sort({ createdAt: -1 })
+    let page = parseInt(req.query.page) || 1
+    let limit = 10
+    let skip = (page - 1) * limit
+    let searchQuery = req.query.search || ''
+    let regexPattern = new RegExp(searchQuery, 'i')
+    const categoryOffer = await offer.aggregate([
+      {
+        $lookup: {
+          from: "categories", // Make sure this matches your category collection name
+          localField: "categoryId",
+          foreignField: "_id",
+          as: "categoryData",
+        },
+      },
+      {
+        $match: searchQuery
+          ? {
+              $or: [
+                { "categoryData.categoryName": regexPattern }, // Search in categoryName
+                { email: regexPattern }, // Search in email
+              ],
+            }
+          : {},
+      },
+      { $skip: skip },
+      { $limit: limit },
+      { $sort: { createdAt: -1 } },
+    ]);
+    console.log(categoryOffer[0]?.categoryData)
+    const totalUsers = await offer.countDocuments()
+    const totalPages = Math.ceil(totalUsers / limit)
     const categories = await category.find({})
-    return res.render('admin/offer', { categoryOffer, categories })
+    return res.render('admin/offer', { categoryOffer, categories, page, totalPages })
   } catch (error) {
     console.log(error)
     next(new AppError('Sorry...Something went wrong', 500))

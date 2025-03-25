@@ -3,8 +3,21 @@ const AppError = require('../middleware/errorHandling')
 
 const couponPage = async (req, res, next) => {
   try {
-    const coupons = await coupon.find({}).sort({ createdAt: -1 })
-    res.render('admin/coupons', { coupons })
+    let page = parseInt(req.query.page) || 1
+    let limit = 10
+    let skip = (page - 1) * limit
+    let searchQuery = req.query.search || ''
+    let regexPattern = new RegExp(searchQuery, 'i')
+    let filter = searchQuery ? { code: regexPattern } : {}
+    const coupons = await coupon
+    .find(filter)
+    .skip(skip)
+    .limit(limit)
+    .sort({ createdAt: -1 })
+    const totalUsers = await coupon.countDocuments()
+    const totalPages = Math.ceil(totalUsers / limit)
+
+    res.render('admin/coupons', { coupons, page, totalPages })
   } catch (error) {
     console.log(error)
     next(new AppError('Sorry...Something went wrong', 500))

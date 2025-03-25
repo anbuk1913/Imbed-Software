@@ -9,10 +9,21 @@ const userOrder = async (req, res, next) => {
     const userEmail = req.session.user.email
     const userVer = await usercollection.findOne({ email: userEmail })
     const name = userVer.name
+    let page = parseInt(req.query.page) || 1
+    let limit = 10
+    let skip = (page - 1) * limit
+    let searchQuery = req.query.search || ''
+    let regexPattern = new RegExp(searchQuery, 'i')
+    let filter = searchQuery ? { orderId: regexPattern } : {}
     const orders = await order
-      .find({ userId: userVer._id })
-      .sort({ createdAt: -1 })
-    return res.render('user/orders', { userVer, name, orders })
+    .find(filter)
+    .find({ userId: userVer._id })
+    .skip(skip)
+    .limit(limit)
+    .sort({ createdAt: -1 })
+    const totalUsers = await order.countDocuments({ userId: userVer._id })
+    const totalPages = Math.ceil(totalUsers / limit)
+    return res.render('user/orders', { userVer, name, orders, totalPages, page })
   } catch (error) {
     console.log(error)
     next(new AppError('Sorry...Something went wrong', 500))

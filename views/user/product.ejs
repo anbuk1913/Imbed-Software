@@ -580,6 +580,35 @@
             opacity: 0;
         }
         }
+        /* breadcrumbs */
+        .breadcrumbs {
+            font-family: Arial, sans-serif;
+            padding: 10px;
+            background-color: #aeacac;
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+        
+        .breadcrumbs a {
+            font-size: medium;
+            font-weight: bold;
+            color: #5b8a11;
+            text-decoration: none;
+        }
+        
+        .breadcrumbs a:hover {
+            text-decoration: underline;
+        }
+        
+        .breadcrumbs span.separator {
+            margin: 0 5px;
+            color: #666;
+        }
+        
+        .breadcrumbs span.current {
+            color: #676767;
+            font-weight: bold;
+        }
     </style>
 </head>
 <body>
@@ -626,7 +655,13 @@
             </div>
         </nav>
     </header>
-    
+    <nav class="breadcrumbs" aria-label="Breadcrumb navigation">
+        <a href="/">Home</a>
+        <span class="separator">›</span>
+        <a href="/shop">Shop</a>
+        <span class="separator">›</span>
+        <span class="current"><%= products?.productName %></span>
+    </nav>
     <div class="main-container">
         <div class="toast-container"></div>
         <div class="product-image">

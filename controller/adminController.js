@@ -145,14 +145,12 @@ const adminUser = async (req, res, next) => {
     let skip = (page - 1) * limit
     let searchQuery = req.query.search || ''
     let regexPattern = new RegExp(searchQuery, 'i')
-    let filter = searchQuery
-      ? { $or: [{ name: regexPattern }, { email: regexPattern }] }
-      : {}
+    let filter = searchQuery ? { $or: [{ name: regexPattern }, { email: regexPattern }] }  : {}
     const users = await usercollection
-      .find(filter)
-      .skip(skip)
-      .limit(limit)
-      .sort({ createdAt: -1 })
+    .find(filter)
+    .skip(skip) 
+    .limit(limit)
+    .sort({ createdAt: -1 })
     const totalUsers = await usercollection.countDocuments()
     const totalPages = Math.ceil(totalUsers / limit)
     return res.render('admin/users', { users, page, totalPages })

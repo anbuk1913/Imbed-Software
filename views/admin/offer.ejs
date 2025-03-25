@@ -141,9 +141,8 @@
     <div class="container">
         <button class="btn btn-success mb-3" data-bs-toggle="modal" data-bs-target="#addOfferModal">Add Category Offer</button>
 
-        <div class="d-flex justify-content-end mb-2">
-            <label for="search">Search:</label>
-            <input type="text" id="search" class="ms-2">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <input type="text" class="form-control w-25" id="searchInput" placeholder="Search Offer Category">
         </div>
 
         <table class="table table-bordered text-center">
@@ -160,13 +159,13 @@
             <tbody>
                 <% categoryOffer.forEach((offer, index) => { %>
                     <tr>
-                        <td><%= index + 1 %></td>
-                        <td><%= offer?.categoryId.categoryName %></td>
+                        <td><%= ((page-1)*10)+index+1 %></td>
+                        <td><%= offer?.categoryData[0].categoryName %></td>
                         <td><%= offer?.offerPercentage %>%</td>
                         <td><%= offer?.startDate.toISOString().split('T')[0]; %></td>
                         <td><%= offer?.expiryDate.toISOString().split('T')[0]; %></td>
                         <td>
-                            <button class="edit-btn" data-id="<%= offer._id %>" data-categoryId="<%= offer?.categoryId._id %>" data-offerpercentage="<%= offer?.offerPercentage %>" data-startdate="<%= offer?.startDate.toISOString().split('T')[0]; %>" data-expirydate="<%= offer?.expiryDate.toISOString().split('T')[0]; %>">
+                            <button class="edit-btn" data-id="<%= offer._id %>" data-categoryId="<%= offer?.categoryData[0]._id %>" data-offerpercentage="<%= offer?.offerPercentage %>" data-startdate="<%= offer?.startDate.toISOString().split('T')[0]; %>" data-expirydate="<%= offer?.expiryDate.toISOString().split('T')[0]; %>">
                                 Edit
                             </button>
                             <button class="btn-danger">Delete</button>
@@ -176,8 +175,27 @@
             </tbody>
         </table>
     </div>
-
-
+    <% if(totalPages>1){ %>
+        <ul class="pagination mb-5">
+            <% if (page > 1) { %>
+            <li class="page-item">
+                <a class="page-link" href="?page=<%= page - 1 %>">Previous</a>
+            </li>
+            <% } %>
+        
+            <% for (let i = 1; i <= totalPages; i++) { %>
+            <li class="page-item <%= i === page ? 'active' : '' %>">
+                <a class="page-link" href="?page=<%= i %>"><%= i %></a>
+            </li>
+            <% } %>
+        
+            <% if (page < totalPages) { %>
+            <li class="page-item">
+                <a class="page-link" href="?page=<%= page + 1 %>">Next</a>
+            </li>
+            <% } %>
+        </ul>
+    <% } %>
     <!-- Add Category Offer Modal -->
     <div class="modal fade" id="addOfferModal" tabindex="-1" aria-labelledby="addOfferModalLabel" aria-hidden="true">
         <div class="modal-dialog">
@@ -296,6 +314,34 @@
     <%- include('../adminPartials/footer') %>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Function to update the query and reload the page
+        document.getElementById("searchInput").addEventListener("input", function () {
+            let value = this.value.trim();
+            let url = new URL(window.location.href);
+        
+            if (value) {
+                url.searchParams.set("search", value);
+            } else {
+                url.searchParams.delete("search"); // Remove if empty
+            }
+        
+            window.location.href = url; // Reload the page with the updated query
+        });
+        
+        // Function to pre-fill input and auto-focus after page reload
+        window.addEventListener("DOMContentLoaded", function () {
+            let searchInput = document.getElementById("searchInput");
+            let urlParams = new URLSearchParams(window.location.search);
+            let searchValue = urlParams.get("search");
+        
+            if (searchValue) {
+                searchInput.value = searchValue;
+            }
+        
+            searchInput.focus(); // Auto-focus on input after reload
+        });
+    </script>
     <script>
         document.addEventListener("DOMContentLoaded", function () {
             const modal = document.querySelector(".modal-box");

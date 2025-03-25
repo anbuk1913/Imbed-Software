@@ -8,6 +8,11 @@ const shopPage = async (req, res, next) => {
   try {
     let name = ''
     const offers = await offer.find({})
+    let page = parseInt(req.query.page) || 1
+    let limit = 12
+    let skip = (page - 1) * limit
+    const totalUsers = await product.countDocuments()
+    const totalPages = Math.ceil(totalUsers / limit)
     const categories = await category.find({}).sort({ createdAt: -1 })
     const products = await product
       .find({})
@@ -15,6 +20,8 @@ const shopPage = async (req, res, next) => {
         path: 'productCategoryId',
         select: 'categoryName isListed _id',
       })
+      .skip(skip)
+      .limit(limit)
       .sort({ createdAt: -1 })
     for (let i of products) {
       for (let j of offers) {
@@ -49,13 +56,13 @@ const shopPage = async (req, res, next) => {
           return res.redirect('/blocked')
         } else {
           name = userVer.name
-          return res.render('user/shop', { name, products, categories })
+          return res.render('user/shop', { name, products, categories, totalPages, page })
         }
       } else {
-        return res.render('user/shop', { name, products, categories })
+        return res.render('user/shop', { name, products, categories, totalPages, page })
       }
     } else {
-      return res.render('user/shop', { name, products, categories })
+      return res.render('user/shop', { name, products, categories, totalPages, page })
     }
   } catch (error) {
     console.log(error)
