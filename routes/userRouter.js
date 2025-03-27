@@ -29,17 +29,8 @@ router.post('/forget-password-otp', userController.forgetOtpPost)
 router.get('/forget-password', userController.forgetPassEmailPage)
 router.post('/forgot-pass', userController.emailCheck)
 router.get('/forgototpsend', userController.forgetPassOtpSend)
-router.get(
-  '/auth/google',
-  passport.authenticate('google', { scope: ['email', 'profile'] })
-)
-router.get(
-  '/auth/google/callback',
-  passport.authenticate('google', {
-    failureRedirect: 'https://www.imbedsoftware.shop/login',
-  }),
-  userController.googleCallback
-)
+router.get('/auth/google',passport.authenticate('google', { scope: ['email', 'profile'] }))
+router.get('/auth/google/callback',passport.authenticate('google', {failureRedirect: 'https://www.imbedsoftware.shop/login',}),userController.googleCallback)
 router.get('/blocked', userController.blockedUser)
 router.post('/logout', userController.logout)
 
@@ -71,11 +62,7 @@ router.post('/billing', userAuth, checkoutController.billingMethodPost)
 router.get('/payment', userAuth, checkoutController.paymentPage)
 router.post('/paymethod', userAuth, checkoutController.paymentMethod)
 router.get('/review', userAuth, checkoutController.finalReview)
-router.patch(
-  '/finalstockcheck',
-  userAuth,
-  checkoutController.finalQuantityCheck
-)
+router.patch('/finalstockcheck',userAuth,checkoutController.finalQuantityCheck)
 router.post('/orderproduct', userAuth, checkoutController.orderPost)
 router.post('/applycoupon', userAuth, checkoutController.applyCoupon)
 router.patch('/removeCoupon', userAuth, checkoutController.removeCoupon)
@@ -87,21 +74,13 @@ router.post('/fail-payment', userAuth, checkoutController.failPayment)
 // Wishlist
 router.get('/wishlist', userAuth, wishlistController.wishlistPage)
 router.patch('/updatewishlist', userAuth, wishlistController.editWishlist)
-router.delete(
-  '/romovewishlistproduct',
-  userAuth,
-  wishlistController.deleteProduct
-)
+router.delete('/romovewishlistproduct',userAuth,wishlistController.deleteProduct)
 router.post('/addalltocart', userAuth, wishlistController.addAlltoCart)
 
 // Wallet
 router.get('/wallet', userAuth, profileController.walletPage)
 router.post('/addtowallet', userAuth, profileController.addMoney)
-router.post(
-  '/wallet-verify-payment',
-  userAuth,
-  profileController.verifyPayments
-)
+router.post('/wallet-verify-payment',userAuth,profileController.verifyPayments)
 
 // Order
 router.get('/orders', userAuth, orderController.userOrder)
