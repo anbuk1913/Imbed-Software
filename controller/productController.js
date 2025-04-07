@@ -1,5 +1,6 @@
 const offer = require('../model/offerModel')
 const product = require('../model/productModel')
+const review = require('../model/productReview')
 const wishlist = require('../model/wishlistModel')
 const category = require('../model/categoryModel')
 const usercollection = require('../model/userModel')
@@ -232,6 +233,27 @@ const singleProductView = async (req, res, next) => {
       path: 'productCategoryId',
       select: 'categoryName categoryDescription _id',
     })
+
+    // Fetch all reviews for this product
+    const reviews = await review.find({ productId:req.params.id })
+      .populate('userId', 'name') // Optional: populate user's name
+      .sort({ createdAt: -1 });
+
+    const ratingCounts = {
+      1: 0, 2: 0, 3: 0, 4: 0, 5: 0,
+    };
+
+    let totalRating = 0;
+
+    reviews.forEach(review => {
+      const rating = review.rating;
+      totalRating += rating;
+      ratingCounts[rating] = (ratingCounts[rating] || 0) + 1;
+    });
+
+    const totalReviews = reviews.length;
+    const averageRating = totalReviews ? (totalRating / totalReviews).toFixed(1) : 0;
+
     const relatedProducts = await product
       .find({ productCategoryId: products.productCategoryId._id })
       .populate({
@@ -280,8 +302,13 @@ const singleProductView = async (req, res, next) => {
             userId = userVer._id
             return res.render('user/product', {
               name,
+              reviews,
               products,
               userId,
+              reviews,
+              totalReviews,
+              averageRating,
+              ratingCounts,
               wishlistProduct,
               relatedProducts,
             })
@@ -289,8 +316,13 @@ const singleProductView = async (req, res, next) => {
         } else {
           return res.render('user/product', {
             name,
+            reviews,
             products,
             userId,
+            reviews,
+            totalReviews,
+            averageRating,
+            ratingCounts,
             wishlistProduct,
             relatedProducts,
           })
@@ -300,12 +332,16 @@ const singleProductView = async (req, res, next) => {
           name,
           products,
           userId,
+          reviews,
+          totalReviews,
+          averageRating,
+          ratingCounts,
           wishlistProduct,
           relatedProducts,
         })
       }
     } else {
-      return res.redirect('/shop')
+      next(new AppError('Product Not Found', 400))
     }
   } catch (error) {
     console.log(error)

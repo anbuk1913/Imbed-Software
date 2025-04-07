@@ -6,6 +6,7 @@
     <title>Final Review</title>
     <link rel="icon" href="/images/logo.png">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet"/>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.7.0/dist/sweetalert2.all.min.js"></script>
     <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -202,6 +203,45 @@
             transition: all 0.475s;
         }
 
+        /* Review */
+        .error {
+            color: red;
+            font-size: 0.875rem;
+            display: none;
+        }
+        .star {
+            font-size: 1.8rem;
+            color: #ddd;
+            cursor: pointer;
+            transition: color 0.2s;
+        }
+
+        .btn-success{
+            border-color: #57702e;
+            background-color: #8CBF3A;
+        }
+
+        .btn-success:hover{
+            border-color: #57702e;
+            background-color: #8CBF3A;
+        }
+
+        .star.hovered,
+        .star.selected {
+            color: #ffc107;
+        }
+
+        .text-white, .sub-button{
+            background-color: #8CBF3A !important;
+        }
+
+        .sub-button{
+            border: #57702e;
+        }
+
+        .sub-button:hover{
+            background-color: #5d7931 !important;
+        }
 
         /* Footer */
         footer {
@@ -238,6 +278,51 @@
             footer .row {
                 width: 100%;
                 text-align: center;
+            }
+        }
+
+        .toast-container {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 9999;
+        }
+
+        .toast {
+            display: none;
+            background-color: #ff6600;
+            color: white;
+            padding: 15px 30px;
+            border-radius: 12px;
+            font-size: 16px;
+            text-align: center;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+            opacity: 0;
+            transform: translateX(100%);
+            animation: slideInFromRight 0.8s ease-out forwards;
+        }
+
+        @keyframes slideInFromRight {
+            0% {
+                opacity: 0;
+                transform: translateX(100%);
+            }
+
+            100% {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        @keyframes slideOutToRight {
+            0% {
+                opacity: 1;
+                transform: translateX(0);
+            }
+
+            100% {
+                opacity: 0;
+                transform: translateX(100%);
             }
         }
         
@@ -298,6 +383,7 @@
         </div>
     </nav>
   </header>
+  <div class="toast-container"></div>
     <div class="cart-container">
         <div class="d-flex justify-content-between align-items-center mb-3">
             <div>
@@ -323,6 +409,9 @@
                     <th>Unit Price</th>
                     <th>Quantity</th>
                     <th>Total</th>
+                    <% if(orderData.status != "Pending" && orderData.status != "Shipping" && orderData.status != "Cancelled" && orderData.status != "Payment Pending"){ %>
+                        <th>Review</th>
+                    <% } %>
                 </tr>
             </thead>
             <tbody>
@@ -336,6 +425,19 @@
                         </div>
                       </td>
                       <td><%= item.productPrice * item.quantity %></td>
+                      <% if(orderData.status != "Pending" && orderData.status != "Shipping" && orderData.status != "Cancelled" && orderData.status != "Payment Pending"){ %>
+                        <td>
+                                <button type="button" 
+                                class="btn btn-success" 
+                                data-bs-toggle="modal" 
+                                data-bs-target="#reviewModal"
+                                data-id="<%= item.productId%>"
+                                data-name="<%= item.productName%>"
+                                data-img="<%= item.img%>">
+                                    Write a Review
+                                </button>
+                        </td>
+                      <% } %>
                     </tr>
                 <% }) %>
             </tbody>
@@ -392,6 +494,65 @@
             </div>
         </div>
     </div>
+
+    <!-- Review Modal -->
+    <div class="modal fade" id="reviewModal" tabindex="-1" aria-labelledby="reviewModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content rounded-4 shadow">
+                <div class="modal-header bg-primary text-white">
+                    <h5 class="modal-title" id="reviewModalLabel">Add Product Review</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+
+                <form id="reviewForm">
+                    <div class="modal-body">
+                        <!-- Product Info -->
+                        <div class="d-flex align-items-center mb-4">
+                            <img src="" alt="Product Image" class="img-thumbnail" style="width: 100px; height: auto;">
+                            <div class="ms-3">
+                                <h6 class="mb-0 fw-bold"></h6>
+                                <small class="text-muted">Leave your thoughts below</small>
+                            </div>
+                        </div>
+
+                        <!-- Star Rating -->
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold">Overall Rating</label>
+                            <div id="starRating" class="mb-1">
+                                <i class="fas fa-star star" data-value="1"></i>
+                                <i class="fas fa-star star" data-value="2"></i>
+                                <i class="fas fa-star star" data-value="3"></i>
+                                <i class="fas fa-star star" data-value="4"></i>
+                                <i class="fas fa-star star" data-value="5"></i>
+                            </div>
+                            <p class="error" id="ratingError">Please select a rating.</p>
+                        </div>
+
+                        <input type="text" hidden id="product-id">
+                        <!-- Headline -->
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold">Review Headline</label>
+                            <input type="text" class="form-control" id="headline" placeholder="Summary of your review">
+                            <p class="error" id="headlineError">Headline must be at least 5 characters.</p>
+                        </div>
+
+                        <!-- Review Text -->
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold">Written Review</label>
+                            <textarea class="form-control" id="reviewText" rows="4" placeholder="Share your thoughts on the product"></textarea>
+                            <p class="error" id="reviewError">Review must be at least 10 characters.</p>
+                        </div>
+                    </div>
+
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
+                        <button type="submit" class="btn btn-primary sub-button">Submit Review</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
     <!-- Footer Section -->
     <footer class="py-5">
       <div class="container">
@@ -503,7 +664,153 @@
         rzp.open();
     }
   </script>
+  <!-- Review Form Script -->
+  <script>
+    const stars = document.querySelectorAll('.star');
+   let selectedRating = 0;
+
+   stars.forEach((star, index) => {
+       // Hover effect
+       star.addEventListener('mouseenter', () => {
+           stars.forEach((s, i) => {
+               s.classList.toggle('hovered', i <= index);
+           });
+       });
+
+       // Remove hover when mouse leaves
+       star.addEventListener('mouseleave', () => {
+           stars.forEach((s, i) => {
+               s.classList.remove('hovered');
+           });
+       });
+
+       // Select rating
+       star.addEventListener('click', () => {
+           selectedRating = index + 1;
+           stars.forEach((s, i) => {
+               s.classList.toggle('selected', i < selectedRating);
+           });
+           document.getElementById('ratingError').style.display = 'none';
+       });
+   });
+
+   document.getElementById('reviewForm').addEventListener('submit', async function (e) {
+       e.preventDefault();
+       const headline = document.getElementById('headline');
+       const reviewText = document.getElementById('reviewText');
+       const headlineError = document.getElementById('headlineError');
+       const reviewError = document.getElementById('reviewError');
+
+       let isValid = true;
+
+       // Rating Validation
+       if (selectedRating === 0) {
+           ratingError.style.display = 'block';
+           isValid = false;
+       } else {
+           ratingError.style.display = 'none';
+       }
+
+       // Headline Validation
+       if (headline.value.trim().length < 5) {
+           headlineError.style.display = 'block';
+           isValid = false;
+       } else {
+           headlineError.style.display = 'none';
+       }
+
+       // Review Text Validation
+       if (reviewText.value.trim().length < 10) {
+           reviewError.style.display = 'block';
+           isValid = false;
+       } else {
+           reviewError.style.display = 'none';
+       }
+
+       if (isValid) {
+            let reviewProductId = document.getElementById("product-id").value
+           // alert("Review submitted successfully!");
+           let formData = {
+                productId: reviewProductId,
+                selectedRating,
+                headline : headline.value,
+                reviewText : reviewText.value
+           }
+           let response = await fetch('/addreview', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(formData)
+            });
+
+            const result = await response.json();
+
+            const toastContainer = document.querySelector(".toast-container");
+            const toast = document.createElement("div");
+            toast.className = "toast";
+
+            if (result.success) {
+                toast.textContent = result.message;
+                toast.style.backgroundColor = "#28a745"; // Green color for success
+                toastContainer.appendChild(toast);
+
+                setTimeout(() => {
+                    toast.style.display = "block";
+                }, 100);
+
+                setTimeout(() => {
+                    toast.style.animation = "slideOutToRight 0.8s ease-out forwards";
+                }, 2000);
+
+                setTimeout(() => {
+                    toast.style.display = "none";
+                    toast.remove(); // Remove toast from DOM
+                }, 2800);
+            } else {
+                toast.textContent = result.message;
+                toast.style.backgroundColor = "#dc3545"; // Red color for error
+                toastContainer.appendChild(toast);
+                setTimeout(() => {
+                    toast.style.display = "block";
+                }, 100);
+
+                setTimeout(() => {
+                    toast.style.animation = "slideOutToRight 0.8s ease-out forwards";
+                }, 3000);
+
+                setTimeout(() => {
+                    toast.style.display = "none";
+                    toast.remove(); // Remove toast from DOM
+                }, 3800);
+            }
+           document.getElementById('reviewForm').reset();
+           stars.forEach(s => s.classList.remove('selected'));
+           selectedRating = 0;
+           const modal = bootstrap.Modal.getInstance(document.getElementById('reviewModal'));
+           modal.hide();
+    }
+   })
+</script>
+<script>
+    const reviewModal = document.getElementById('reviewModal');
+
+    reviewModal.addEventListener('show.bs.modal', function (event) {
+        const button = event.relatedTarget;
+
+        // Get data attributes from the button
+        const productName = button.getAttribute('data-name');
+        const productImg = button.getAttribute('data-img');
+        const productid = button.getAttribute("data-id")
+
+        // Set the product name and image inside the modal
+        const modalTitle = reviewModal.querySelector('.modal-body h6');
+        const modalImage = reviewModal.querySelector('.modal-body img');
+        const modalId = document.getElementById("product-id")
+
+        modalTitle.textContent = productName;
+        modalImage.src = productImg;
+        modalId.value = productid;
+    });
+</script>
+
 </body>
 </html>
-
-

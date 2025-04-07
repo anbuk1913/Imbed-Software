@@ -16,7 +16,6 @@ const couponPage = async (req, res, next) => {
     .sort({ createdAt: -1 })
     const totalUsers = await coupon.countDocuments()
     const totalPages = Math.ceil(totalUsers / limit)
-
     res.render('admin/coupons', { coupons, page, totalPages })
   } catch (error) {
     console.log(error)

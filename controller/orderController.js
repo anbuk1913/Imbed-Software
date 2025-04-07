@@ -1,8 +1,11 @@
 const order = require('../model/orders')
 const wallet = require('../model/walletModel')
+const product = require('../model/productModel')
+const review = require('../model/productReview')
 const usercollection = require('../model/userModel')
 const pdfService = require('../services/invoice')
 const AppError = require('../middleware/errorHandling')
+// const { default: products } = require('razorpay/dist/types/products')
 
 const userOrder = async (req, res, next) => {
   try {
@@ -37,7 +40,16 @@ const userOrderView = async (req, res, next) => {
     const userVer = await usercollection.findOne({ email: userEmail })
     const name = userVer.name
     const orderData = await order.findById({ _id: orderId })
-    return res.render('user/singleOrder', { orderData, userVer, name })
+    if(orderData.userId.toString()==userVer._id.toString()){
+      for(let i=0;i<orderData.products.length;i++){
+        const productDetails = await product.findOne({_id:orderData.products[i].productId})
+        orderData.products[i].img = productDetails.productImage1
+      }
+      return res.render('user/singleOrder', { orderData, userVer, name })
+    } else {
+      return res.redirect("/orders")
+    }
+  
   } catch (error) {
     console.log(error)
     next(new AppError('Sorry...Something went wrong', 500))
@@ -231,6 +243,33 @@ const rePay = async (req, res, next) => {
   }
 }
 
+const addReview = async(req,res,next)=>{
+  try {
+    const userEmail = req.session.user.email
+    const userVer = await usercollection.findOne({ email: userEmail })
+    const data = await review.updateOne({productId:req.body.productId, userId:userVer._id},{$set:{
+        rating: req.body.selectedRating,
+        productId: req.body.productId, 
+        userId: userVer._id,
+        headline: req.body.headline,
+        reviewContent: req.body.reviewText
+      }
+    },
+    { upsert: true })
+    if(data.modifiedCount == 1){
+        return res.json({ success: true, message: "Review Edited Successfully!"})
+    }
+    if(data.upsertedCount == 1){
+        return res.json({ success: true, message: "Review Added Successfully!"})
+    } else  {
+        return res.json({ success: false, message: "Somthing Went Wrong!"})
+    }
+  } catch (error) {
+    console.log(error)
+    next(new AppError('Sorry...Something went wrong', 500))
+  }
+}
+
 module.exports = {
   userOrder,
   userOrderView,
@@ -243,4 +282,5 @@ module.exports = {
   returnOrder,
   generateInvoice,
   rePay,
+  addReview,
 }

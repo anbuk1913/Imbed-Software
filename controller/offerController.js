@@ -32,7 +32,6 @@ const offerPage = async (req, res, next) => {
       { $limit: limit },
       { $sort: { createdAt: -1 } },
     ]);
-    console.log(categoryOffer[0]?.categoryData)
     const totalUsers = await offer.countDocuments()
     const totalPages = Math.ceil(totalUsers / limit)
     const categories = await category.find({})

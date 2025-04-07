@@ -501,7 +501,11 @@
                         </tr>
                     <% } %>
                 </table>
-                <button class="checkout-btn" onclick="placeOrder()">Pay & Order</button>
+                <% if(paymentMethod == "COD"){ %>
+                    <button class="checkout-btn" onclick="placeOrder()">Place Order</button>
+                <% } else { %>
+                    <button class="checkout-btn" onclick="placeOrder()">Pay & Order</button>
+                <% } %>
             </div>
         </div>
     </div>

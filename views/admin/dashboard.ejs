@@ -348,6 +348,18 @@
         });
   </script>
   <script>
+    // Get today's date in YYYY-MM-DD format
+    const today = new Date().toISOString().split("T")[0];
+
+    // Select input elements
+    const startDates = document.getElementById("startDate");
+    const endDates = document.getElementById("endDate");
+
+    // Set max attribute to disable future dates
+    startDates.setAttribute("max", today);
+    endDates.setAttribute("max", today);
+</script>
+  <script>
     document.getElementById("date-wise-filter").addEventListener("submit", async function(event) {
         event.preventDefault(); // Prevent form from reloading the page
     

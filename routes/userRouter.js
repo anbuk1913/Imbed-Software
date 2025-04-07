@@ -89,5 +89,6 @@ router.patch('/cancelorder', userAuth, orderController.cancelOrder)
 router.patch('/returnorder', userAuth, orderController.returnOrder)
 router.get('/generate-invoice/:id', userAuth, orderController.generateInvoice)
 router.post('/re-pay', userAuth, orderController.rePay)
+router.post('/addreview',userAuth, orderController.addReview)
 
 module.exports = router

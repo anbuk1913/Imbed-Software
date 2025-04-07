@@ -13,7 +13,7 @@ const walletSchema = new mongoose.Schema(
           enum: [
             'Credit on Cancel',
             'Credit on Return',
-            'Debit',
+            'Debit for Order',
             'Money from Razorpay',
           ],
         },

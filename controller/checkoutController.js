@@ -358,6 +358,7 @@ const orderPost = async (req, res, next) => {
         price = cartItems[i].productId.productPrice
       }
       let obj = {
+        productId: cartItems[i].productId._id,
         productName: cartItems[i].productId.productName,
         productPrice: price,
         quantity: cartItems[i].productQuantity,
@@ -369,7 +370,21 @@ const orderPost = async (req, res, next) => {
     priceDetail.totalDiscountAmount = totalDiscountAmount
 
     const orderId = generateOrderID()
-
+    if(req.session.paymentMethod == "Wallet"){
+      const transactionData = {
+        transactionDate: new Date(),
+        transactionAmount: priceDetail.total,
+        transactionType: 'Debit for Order',
+      }
+      await wallet.updateOne(
+        { userId: userVer._id },
+        {
+          $inc: { walletBalance: Number(- priceDetail.total) },
+          $push: { walletTransaction: transactionData },
+        },
+        { new: true }
+      )
+    }
     const orders = new order({
       userId: userVer._id,
       orderId: orderId,
@@ -720,6 +735,7 @@ const failPayment = async (req, res, next) => {
         productName: cartItems[i].productId.productName,
         productPrice: price,
         quantity: cartItems[i].productQuantity,
+        productId: cartItems[i].productId._id,
       }
       productDetails.push(obj)
     }
