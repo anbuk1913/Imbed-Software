@@ -24,7 +24,7 @@ const homePage = async (req, res, next) => {
   try {
     let name = ''
     const offers = await offer.find({})
-    const products = await product.find({}).limit(4)
+    const products = await product.find({}).sort({ createdAt: -1 }).limit(4);
     const categories = await category.find({}).limit(5)
     for (let i of products) {
       for (let j of offers) {

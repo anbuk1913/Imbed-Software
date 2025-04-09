@@ -97,7 +97,6 @@ const removeItem = async (req, res, next) => {
 const updateCartItems = async (req, res) => {
   try {
     for (const data of req.body.arr) {
-      console.log(data.productId.length)
       if (data.productId.length != 24) {
         continue
       }

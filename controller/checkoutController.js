@@ -179,6 +179,24 @@ const finalReview = async (req, res, next) => {
         }
       }
     }
+    let total = cartItems.reduce((acc,cur)=>{
+        if(cur.productId.productOfferPrice){
+            return acc+cur.productId.productOfferPrice
+        } else {
+            return acc+cur.productId.productPrice
+        }
+    },0)
+    
+    const today = new Date();
+    let availableCoupon = await coupon.find({minPurchase: {
+        $gte: total - 500,
+        $lte: total + 500
+      },
+        expiryDate: {
+        $gte: today
+      }
+    }).limit(3)
+
     let walletData = await wallet.findOne({ userId: userVer._id })
     walletAmount = Math.floor(walletData.walletBalance * 100) / 100
     res.render('user/checkout_4', {
@@ -187,6 +205,7 @@ const finalReview = async (req, res, next) => {
       deliveryFee,
       paymentMethod,
       walletAmount,
+      availableCoupon,
     })
   } catch (error) {
     console.log(error)
@@ -204,12 +223,10 @@ const finalQuantityCheck = async (req, res, next) => {
         'productName productPrice productOfferPrice productImage1 isListed productStock _id',
     })
     for (let i = 0; i < cartItems.length; i++) {
-      if (
-        cartItems[i]?.productQuantity > cartItems[i]?.productId?.productStock
-      ) {
+      if (cartItems[i]?.productQuantity > cartItems[i]?.productId?.productStock && cartItems[i]?.productId?.isListed){
         return res.json({
           success: false,
-          title: "'Stock Check!'",
+          title: "Stock Unavailable!",
           message: `${cartItems[i].productId?.productName} Only ${cartItems[i].productId?.productStock} left in stock!`,
         })
       }
@@ -311,6 +328,8 @@ const orderPost = async (req, res, next) => {
       select:
         'productName productPrice productOfferPrice productImage1 productCategoryId isListed productStock _id',
     })
+
+    cartItems = cartItems.filter((product => product.productId?.isListed))
 
     const offers = await offer.find({})
     for (let i of cartItems) {
@@ -685,6 +704,8 @@ const failPayment = async (req, res, next) => {
       select:
         'productName productPrice productOfferPrice productImage1 productCategoryId isListed productStock _id',
     })
+
+    cartItems = cartItems.filter((product => product.productId?.isListed))
 
     const offers = await offer.find({})
     for (let i of cartItems) {

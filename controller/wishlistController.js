@@ -48,6 +48,7 @@ const wishlistPage = async (req, res, next) => {
         }
       }
     }
+    products = products.filter((product => product.productId?.isListed))
     res.render('user/wishlist', { name, products, userVer })
   } catch (error) {
     console.log(error)
