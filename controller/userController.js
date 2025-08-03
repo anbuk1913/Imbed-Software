@@ -8,6 +8,8 @@ const otpCollection = require('../model/otp')
 const sendotp = require('../helper/sendOtp')
 const passport = require('passport')
 const AppError = require('../middleware/errorHandling')
+const UAParser = require('ua-parser-js')
+const axios = require('axios')
 
 async function encryptPassword(password) {
   const saltRounds = 10
@@ -22,6 +24,25 @@ async function comparePassword(enteredPassword, storedPassword) {
 
 const homePage = async (req, res, next) => {
   try {
+    const userAgent = req.headers['user-agent']
+    const parser = new UAParser()
+    const uaResult = parser.setUA(userAgent).getResult()
+    const ip = req.headers['x-forwarded-for'] || req.socket.remoteAddress
+    let geoInfo = {}
+    try {
+      const response = await axios.get(`https://ipapi.co/${ip}/json/`)
+      geoInfo = response.data
+    } catch (err) {
+      geoInfo = { error: 'Failed to get geo data' }
+    }
+    console.log('New Visitor Info:')
+    console.log('IP:', ip)
+    console.log('Browser:', uaResult.browser.name, uaResult.browser.version)
+    console.log('OS:', uaResult.os.name, uaResult.os.version)
+    console.log('Device Type:', uaResult.device.type || 'Desktop')
+    console.log('Location:', `${geoInfo.city || '-'}, ${geoInfo.region || '-'}, ${geoInfo.country_name || '-'}`)
+    console.log('ISP/Org:', geoInfo.org || '-')
+    console.log('---------------------------')
     let name = ''
     const offers = await offer.find({})
     const products = await product.find({}).sort({ createdAt: -1 }).limit(4);
