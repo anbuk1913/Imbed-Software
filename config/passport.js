@@ -6,7 +6,7 @@ passport.use(
     {
       clientID: process.env.GOOGLE_CLIENT_ID,
       clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-      callbackURL: 'https://www.imbedsoftware.shop/auth/google/callback',
+      callbackURL: 'https://imbedsoftware.shop/auth/google/callback',
     },
     (accessToken, refreshToken, profile, done) => {
       return done(null, profile)

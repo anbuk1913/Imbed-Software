@@ -30,7 +30,7 @@ router.get('/forget-password', userController.forgetPassEmailPage)
 router.post('/forgot-pass', userController.emailCheck)
 router.get('/forgototpsend', userController.forgetPassOtpSend)
 router.get('/auth/google',passport.authenticate('google', { scope: ['email', 'profile'] }))
-router.get('/auth/google/callback',passport.authenticate('google', {failureRedirect: 'https://www.imbedsoftware.shop/login',}),userController.googleCallback)
+router.get('/auth/google/callback',passport.authenticate('google', {failureRedirect: 'https://imbedsoftware.shop/login',}),userController.googleCallback)
 router.get('/blocked', userController.blockedUser)
 router.post('/logout', userController.logout)
 
